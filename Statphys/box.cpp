@@ -21,9 +21,7 @@ private:
         while (true)
         {
             std::this_thread::sleep_for(200ms);
-            sem.lock();
             calculate_positions();
-            sem.unlock();
         }
     }
 
