@@ -21,7 +21,9 @@ private:
         while (true)
         {
             std::this_thread::sleep_for(200ms);
+            sem.lock();
             calculate_positions();
+            sem.unlock();
         }
     }
 
@@ -37,13 +39,13 @@ public:
         using namespace std::chrono_literals;
         auto f = std::async(std::launch::async, &Box::box_think, this);
         while (f.wait_for(500ms) == std::future_status::timeout) {
-            sem.lock();
             system("cls");
+            sem.lock();
             for (size_t i = 0; i < molecules.size(); i++) {
                 std::cout << i << " " << "x: " << molecules[i].position.first << " y: " << molecules[i].position.second << std::endl;
             }
-            std::cout << std::endl;
             sem.unlock();
+            std::cout << std::endl;
         }
     }
 };
