@@ -11,12 +11,19 @@ struct Box
 private:
     void calculate_positions()
     {
+        auto [l, r, d, u] = bounds;
         for (size_t i = 0; i < molecules.size(); i++) {
             molecules[i].position.first = molecules[i].position.first + (double(calculate_ms) / ms_in_s) * molecules[i].velocity.first;
             molecules[i].position.second = molecules[i].position.second + (double(calculate_ms) / ms_in_s) * molecules[i].velocity.second;
+            
+            if(molecules[i].position.second < d || molecules[i].position.second > u) {
+                molecules[i].velocity.second *= -1;
+            }
+            
+            if(molecules[i].position.first < l || molecules[i].position.first > r) {
+                molecules[i].velocity.first *= -1;
+            }
         }
-        
-        
     }
 
     void box_think()
@@ -39,7 +46,7 @@ private:
     unsigned int show_ms;
 public:
 
-    Box(std::tuple<double, double, double, double> bounds, size_t molecules_num, unsigned calc_ms = 10, unsigned show_ms = 10) 
+    Box(std::tuple<double, double, double, double> bounds, size_t molecules_num, unsigned calc_ms = 10, unsigned show_ms = 30) 
         : bounds(bounds), molecules (molecules_num), calculate_ms{calc_ms}, show_ms{show_ms}
     {
         using namespace std::chrono_literals;
@@ -49,7 +56,7 @@ public:
             system("clear");
             sem.lock();
             for (size_t i = 0; i < molecules.size(); i++) {
-                std::cout << i << " " << "x: " << molecules[i].position.first << " y: " << molecules[i].position.second << std::endl;
+                std::cout << i << " x: " << molecules[i].position.first << " \ty: " << molecules[i].position.second << std::endl;
             }
             sem.unlock();
             std::cout << std::endl;
@@ -59,5 +66,5 @@ public:
 
 int main()
 {
-    Box b({ -101.4, 102.5, -103.6, 104.7 }, 5);
+    Box b({ -10.0, 10.0, -10.0, 10.0 }, 5);
 }
