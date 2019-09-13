@@ -1,5 +1,3 @@
-#pragma once
-
 #include <random>
 #include <vector>
 #include <iostream>
@@ -42,11 +40,17 @@ struct UniformHandler : RandomHandler
 struct Molecule
 {
 private:
-    NormalHandler normal{ 0.0, 1.0 };
-    UniformHandler uniform{ 0.0, 10.0 };
+    double radius;
 public:
     std::pair<double, double> position, velocity;
-    Molecule() : position{ uniform, uniform }, velocity{ normal, normal } { }
+    Molecule(double mean = 0.0, double std = 2.0, double left = -10.0, double right = 10.0, double radius = 0.1) 
+        : radius { radius }
+    {
+        NormalHandler normal { mean, std };
+        UniformHandler uniform { left, right };
+        position = { uniform, uniform };
+        velocity = { normal, normal };
+    }
     Molecule(std::pair<double, double> position, std::pair<double, double> velocity)
-        : position{ position }, velocity{ velocity } {  }
+        : position{ position }, velocity{ velocity } { }
 };
