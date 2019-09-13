@@ -53,7 +53,7 @@ public:
         auto f = std::async(std::launch::async, &Box::box_think, this);
         auto dt = std::chrono::milliseconds(show_ms);
         while (f.wait_for(dt) == std::future_status::timeout) {
-            system("clear");
+            system("cls");
             sem.lock();
             for (size_t i = 0; i < molecules.size(); i++) {
                 std::cout << i << " x: " << molecules[i].position.first << " \ty: " << molecules[i].position.second << std::endl;
