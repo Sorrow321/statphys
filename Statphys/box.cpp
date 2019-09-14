@@ -30,6 +30,14 @@ public:
 struct Box
 {
 private:
+
+    double distance(std::pair<double, double> x, std::pair<double, double> y)
+    {
+        double u = x.first - y.first;
+        double v = x.second - y.second;
+        return sqrt(u * u + v * v);
+    }
+
     void calculate_positions()
     {
         auto [l, r, d, u] = bounds;
@@ -41,6 +49,7 @@ private:
                                             + (double(calculate_ms) / ms_in_s)
                                             * molecules[i].velocity.second;
             
+            // walls handler
             if(molecules[i].position.second < d || molecules[i].position.second > u) {
                 molecules[i].velocity.second *= -1;
             }
@@ -48,6 +57,9 @@ private:
             if(molecules[i].position.first < l || molecules[i].position.first > r) {
                 molecules[i].velocity.first *= -1;
             }
+
+            // interactions handler
+
         }
     }
 

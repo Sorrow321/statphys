@@ -7,6 +7,7 @@ constexpr double def_mean = 0.0;
 constexpr double def_std = 2.0;
 constexpr double def_left = -10.0;
 constexpr double def_right = 10.0;
+constexpr double def_radius = 0.1;
 
 struct RandomHandler
 {
@@ -70,7 +71,7 @@ private:
 
 public:
     std::pair<double, double> position, velocity;
-    Molecule(double radius = 0.1) 
+    Molecule(double radius = def_radius)
         : radius { radius },
           position { uniform, uniform },
           velocity { normal, normal }
