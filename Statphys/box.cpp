@@ -6,6 +6,27 @@
 
 constexpr int ms_in_s = 1000;
 
+template<typename T>
+class MutexWrapper
+{
+    std::mutex* sem;
+    const T& resource;
+public:
+    MutexWrapper(std::mutex* sem, const T& resource)
+        : sem(sem), resource(resource)
+    {
+        sem->lock();
+    }
+    ~MutexWrapper()
+    {
+        sem->unlock();
+    }
+    const T& get()
+    {
+        return resource;
+    }
+};
+
 struct Box
 {
 private:
@@ -45,11 +66,12 @@ private:
     std::mutex sem;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
+    std::future<void> calculate_thread;
     unsigned int calculate_ms;
     unsigned int show_ms;
 public:
     Box(std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
-        size_t molecules_num = 30,
+        size_t molecules_num = 300,
         unsigned calc_ms = 10,
         unsigned show_ms = 30) 
         : bounds(bounds),
@@ -57,7 +79,7 @@ public:
           calculate_ms{calc_ms},
           show_ms{show_ms}
     {
-        auto f = std::async(std::launch::async, &Box::box_think, this);
+        calculate_thread = std::async(std::launch::async, &Box::box_think, this);
 
         /*
         auto dt = std::chrono::milliseconds(show_ms);
@@ -73,10 +95,27 @@ public:
         }*/
     }
 
-    const std::vector<Molecule>& get_molecules ()
+    const MutexWrapper<std::vector<Molecule>> get_molecules ()
     {
-        sem.lock();
-        return molecules;
-        sem.unlock();
+        return MutexWrapper<std::vector<Molecule>> (&sem, molecules);
     }
 };
+
+int main()
+{
+    Box b;
+    std::cout << "hi" << std::endl;
+    while (true) {
+        {
+            auto m = b.get_molecules();
+            const std::vector<Molecule>& v = m.get();
+            system("cls"); // system("clear"); in linux
+            for (size_t i = 0; i < v.size(); i++) {
+                std::cout << i << std::setprecision(4) << " x: " << v[i].position.first
+                    << " \ty: " << v[i].position.second << std::endl;
+            }
+        }
+        auto dt = std::chrono::milliseconds(20);
+        std::this_thread::sleep_for(dt);
+    }
+}
