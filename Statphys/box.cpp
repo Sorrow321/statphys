@@ -6,6 +6,7 @@
 
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 20;
+constexpr double def_radius = 0.1;
 
 template<typename T>
 class MutexWrapper
@@ -87,12 +88,12 @@ private:
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
 public:
-    Box(double radius = 0.1, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
+    Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = 10,
         unsigned calc_ms = calc_ms) 
         : radius {radius},
           bounds(bounds),
-          molecules (molecules_num),
+          molecules (molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
           calculate_ms{calc_ms}
     {
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
@@ -106,7 +107,7 @@ public:
 
 int main()
 {
-    Box b;
+    Box b(0.1, { -100, 100, -1.0, 1.0 }, 20);
     std::cout << "hi" << std::endl;
     while (true) {
         {

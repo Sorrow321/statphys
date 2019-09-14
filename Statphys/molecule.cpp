@@ -7,6 +7,8 @@ constexpr double def_mean = 0.0;
 constexpr double def_std = 2.0;
 constexpr double def_left = -10.0;
 constexpr double def_right = 10.0;
+constexpr double def_down = -10.0;
+constexpr double def_up = 10.0;
 
 struct RandomHandler
 {
@@ -47,33 +49,44 @@ struct UniformHandler : RandomHandler
     }
 };
 
-template<typename T>
+template<typename T, int p = 1>
 struct SingletonWrapper : T
 {
     SingletonWrapper(SingletonWrapper const&) = delete;
     void operator= (SingletonWrapper const&) = delete;
-    static SingletonWrapper& getInstance()
+    static SingletonWrapper& getInstance(double value_1, double value_2)
     {
-        static SingletonWrapper instance;
+        static SingletonWrapper instance(value_1, value_2);
         return instance;
     }
 private:
-    SingletonWrapper() {}
+    SingletonWrapper(double value_1, double value_2) : T(value_1, value_2) {}
 };
 
 struct Molecule
 {
 private:
-    SingletonWrapper<NormalHandler>& normal = SingletonWrapper<NormalHandler>::getInstance();
-    SingletonWrapper<UniformHandler>& uniform = SingletonWrapper<UniformHandler>::getInstance();
+    SingletonWrapper<NormalHandler>& normal;
+    SingletonWrapper<UniformHandler>& uniform_x;
+    SingletonWrapper<UniformHandler, 2>& uniform_y;
 
 public:
     std::pair<double, double> position, velocity;
-    Molecule()
-        : position { uniform, uniform },
+    Molecule(double left, double right, double down, double up)
+        : normal{ SingletonWrapper<NormalHandler>::getInstance(def_mean, def_std) },
+          uniform_x { SingletonWrapper<UniformHandler>::getInstance(left, right) },
+          uniform_y { SingletonWrapper<UniformHandler, 2>::getInstance(down, up) },
+          position { uniform_x, uniform_y },
           velocity { normal, normal }
     {
     }
-    Molecule(std::pair<double, double> position, std::pair<double, double> velocity)
-        : position{ position }, velocity{ velocity } { }
+
+    Molecule(const Molecule& mol)
+        : normal{ mol.normal },
+        uniform_x{ mol.uniform_x},
+        uniform_y{ mol.uniform_y },
+        position{ uniform_x, uniform_y },
+        velocity{ normal, normal }
+    {
+    }
 };
