@@ -36,7 +36,7 @@ private:
     {
         double u = x.first - y.first;
         double v = x.second - y.second;
-        return sqrt(u * u + v * v);
+        return u * u + v * v;
     }
 
     void calculate_positions()
@@ -61,8 +61,8 @@ private:
 
             // interactions handler
             for (size_t j = i + 1; j < molecules.size(); j++) {
-                if (distance(molecules[i].position, molecules[j].position) < 2 * radius) {
-                    std::swap(molecules[i].position, molecules[j].position);
+                if (distance(molecules[i].position, molecules[j].position) < 4 * radius * radius) {
+                    std::swap(molecules[i].velocity, molecules[j].velocity);
                 }
             }
         }
@@ -88,7 +88,7 @@ private:
     unsigned int calculate_ms;
 public:
     Box(double radius = 0.1, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
-        size_t molecules_num = 30,
+        size_t molecules_num = 10,
         unsigned calc_ms = calc_ms) 
         : radius {radius},
           bounds(bounds),
@@ -115,7 +115,9 @@ int main()
             system("cls"); // system("clear"); in linux
             for (size_t i = 0; i < v.size(); i++) {
                 std::cout << i << std::setprecision(4) << " x: " << v[i].position.first
-                    << " \ty: " << v[i].position.second << std::endl;
+                    << " \ty: " << v[i].position.second <<
+                    " \tv_x: " << v[i].velocity.first << 
+                    " \tv_y: " << v[i].velocity.second << std::endl;
             }
         }
         auto dt = std::chrono::milliseconds(20);
