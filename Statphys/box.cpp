@@ -81,9 +81,9 @@ private:
     }
 
     std::mutex sem;
+    double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
-    double radius;
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
 public:
