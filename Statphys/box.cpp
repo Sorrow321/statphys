@@ -5,6 +5,7 @@
 #include <iomanip>
 
 constexpr int ms_in_s = 1000;
+constexpr int calc_ms = 20;
 
 template<typename T>
 class MutexWrapper
@@ -31,7 +32,7 @@ struct Box
 {
 private:
 
-    double distance(std::pair<double, double> x, std::pair<double, double> y)
+    double distance(const std::pair<double, double>& x, const std::pair<double, double>& y)
     {
         double u = x.first - y.first;
         double v = x.second - y.second;
@@ -59,7 +60,11 @@ private:
             }
 
             // interactions handler
-
+            for (size_t j = i + 1; j < molecules.size(); j++) {
+                if (distance(molecules[i].position, molecules[j].position) < 2 * radius) {
+                    std::swap(molecules[i].position, molecules[j].position);
+                }
+            }
         }
     }
 
@@ -78,18 +83,17 @@ private:
     std::mutex sem;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
+    double radius;
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
-    unsigned int show_ms;
 public:
     Box(std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = 30,
-        unsigned calc_ms = 10,
-        unsigned show_ms = 30) 
+        unsigned calc_ms = calc_ms) 
         : bounds(bounds),
           molecules (molecules_num),
-          calculate_ms{calc_ms},
-          show_ms{show_ms}
+          radius {molecules[0].get_radius()},
+          calculate_ms{calc_ms}
     {
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }

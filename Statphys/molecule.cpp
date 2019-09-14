@@ -79,4 +79,8 @@ public:
     }
     Molecule(std::pair<double, double> position, std::pair<double, double> velocity)
         : position{ position }, velocity{ velocity } { }
+    double get_radius()
+    {
+        return radius;
+    }
 };
