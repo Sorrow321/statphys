@@ -49,7 +49,6 @@ private:
     unsigned int calculate_ms;
     unsigned int show_ms;
 public:
-
     Box(std::tuple<double, double, double, double> bounds,
         size_t molecules_num,
         unsigned calc_ms = 10,
@@ -73,9 +72,9 @@ public:
             std::cout << std::endl;
         }
     }
-};
 
-int main()
-{
-    Box b({ -10.0, 10.0, -10.0, 10.0 }, 5);
-}
+    const std::vector<Molecule>& get_molecules ()
+    {
+        return molecules;
+    }
+};
