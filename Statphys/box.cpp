@@ -87,12 +87,12 @@ private:
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
 public:
-    Box(std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
+    Box(double radius = 0.1, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = 30,
         unsigned calc_ms = calc_ms) 
-        : bounds(bounds),
+        : radius {radius},
+          bounds(bounds),
           molecules (molecules_num),
-          radius {molecules[0].get_radius()},
           calculate_ms{calc_ms}
     {
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);

@@ -7,7 +7,6 @@ constexpr double def_mean = 0.0;
 constexpr double def_std = 2.0;
 constexpr double def_left = -10.0;
 constexpr double def_right = 10.0;
-constexpr double def_radius = 0.1;
 
 struct RandomHandler
 {
@@ -65,22 +64,16 @@ private:
 struct Molecule
 {
 private:
-    double radius;
     SingletonWrapper<NormalHandler>& normal = SingletonWrapper<NormalHandler>::getInstance();
     SingletonWrapper<UniformHandler>& uniform = SingletonWrapper<UniformHandler>::getInstance();
 
 public:
     std::pair<double, double> position, velocity;
     Molecule(double radius = def_radius)
-        : radius { radius },
-          position { uniform, uniform },
+        : position { uniform, uniform },
           velocity { normal, normal }
     {
     }
     Molecule(std::pair<double, double> position, std::pair<double, double> velocity)
         : position{ position }, velocity{ velocity } { }
-    double get_radius()
-    {
-        return radius;
-    }
 };
