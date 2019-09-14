@@ -32,7 +32,6 @@ private:
 
     void box_think()
     {
-        using namespace std::chrono_literals;
         auto dt = std::chrono::milliseconds(calculate_ms);
         while (true)
         {
@@ -49,8 +48,8 @@ private:
     unsigned int calculate_ms;
     unsigned int show_ms;
 public:
-    Box(std::tuple<double, double, double, double> bounds,
-        size_t molecules_num,
+    Box(std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
+        size_t molecules_num = 30,
         unsigned calc_ms = 10,
         unsigned show_ms = 30) 
         : bounds(bounds),
@@ -58,7 +57,6 @@ public:
           calculate_ms{calc_ms},
           show_ms{show_ms}
     {
-        using namespace std::chrono_literals;
         auto f = std::async(std::launch::async, &Box::box_think, this);
 
         /*
