@@ -60,6 +60,8 @@ public:
     {
         using namespace std::chrono_literals;
         auto f = std::async(std::launch::async, &Box::box_think, this);
+
+        /*
         auto dt = std::chrono::milliseconds(show_ms);
         while (f.wait_for(dt) == std::future_status::timeout) {
             system("cls");
@@ -70,11 +72,13 @@ public:
             }
             sem.unlock();
             std::cout << std::endl;
-        }
+        }*/
     }
 
     const std::vector<Molecule>& get_molecules ()
     {
+        sem.lock();
         return molecules;
+        sem.unlock();
     }
 };
