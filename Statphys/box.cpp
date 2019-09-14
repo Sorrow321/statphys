@@ -71,7 +71,7 @@ private:
     unsigned int show_ms;
 public:
     Box(std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
-        size_t molecules_num = 300,
+        size_t molecules_num = 30,
         unsigned calc_ms = 10,
         unsigned show_ms = 30) 
         : bounds(bounds),
