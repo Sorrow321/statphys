@@ -69,7 +69,7 @@ private:
 
 public:
     std::pair<double, double> position, velocity;
-    Molecule(double radius = def_radius)
+    Molecule()
         : position { uniform, uniform },
           velocity { normal, normal }
     {
