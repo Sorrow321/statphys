@@ -83,10 +83,10 @@ public:
 
     Molecule(const Molecule& mol)
         : normal{ mol.normal },
-        uniform_x{ mol.uniform_x},
-        uniform_y{ mol.uniform_y },
-        position{ uniform_x, uniform_y },
-        velocity{ normal, normal }
+          uniform_x{ mol.uniform_x},
+          uniform_y{ mol.uniform_y },
+          position{ uniform_x, uniform_y },
+          velocity{ normal, normal }
     {
     }
 };
