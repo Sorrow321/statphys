@@ -3,8 +3,8 @@
 #include <iostream>
 #include <memory>
 
-constexpr double def_mean = 0.0;
-constexpr double def_std = 2.0;
+constexpr double def_mean = 100.0;
+constexpr double def_std = 50.0;
 constexpr double def_left = -10.0;
 constexpr double def_right = 10.0;
 constexpr double def_down = -10.0;
