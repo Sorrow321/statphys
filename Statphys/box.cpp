@@ -45,10 +45,11 @@ private:
         std::swap(molecules[i].velocity, molecules[j].velocity);
         
         // draw trajectory
+        /*
         if(!observed && i == observing) {
             observed = true;
             observing_pos.push_back(molecules[i].position);
-        }
+        }*/
     }
 
     void calculate_positions()
@@ -116,9 +117,9 @@ private:
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
     bool is_active;
-    int observing;
-    bool observed;
-    std::vector<std::pair<double, double>> observing_pos;
+    //int observing;
+    //bool observed;
+    //std::vector<std::pair<double, double>> observing_pos;
 public:
     Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = 10,
