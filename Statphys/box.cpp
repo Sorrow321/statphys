@@ -40,16 +40,15 @@ private:
         return u * u + v * v;
     }
 
-    inline void interact(int i, int j)
+    /*
+    inline double dot(const std::pair<double, double>& x, const std::pair<double, double>& y)
+    {
+        return x.first * y.first + x.second + y.second;
+    }*/
+
+    inline void interact(size_t i, size_t j)
     {
         std::swap(molecules[i].velocity, molecules[j].velocity);
-        
-        // draw trajectory
-        /*
-        if(!observed && i == observing) {
-            observed = true;
-            observing_pos.push_back(molecules[i].position);
-        }*/
     }
 
     void calculate_positions()
@@ -98,6 +97,11 @@ private:
         }
     }
 
+    void show_traces()
+    {
+
+    }
+
     void box_think()
     {
         auto dt = std::chrono::milliseconds(calculate_ms);
@@ -106,6 +110,7 @@ private:
             std::this_thread::sleep_for(dt);
             sem.lock();
             calculate_positions();
+            show_traces();
             sem.unlock();
         }
     }

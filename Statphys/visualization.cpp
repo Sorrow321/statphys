@@ -24,39 +24,17 @@ int main()
 
     std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
     
-    sf::RenderWindow window(sf::VideoMode(1200, 600), "StatPhys");
+    sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
     Box b(5.0, bounds, n_mol);
     std::vector<sf::CircleShape> myvec(n_mol, sf::CircleShape(10));
 
-    
-    /*
-    sf::RectangleShape line1;
-    line1.setSize(sf::Vector2f(3, 600));
-    line1.setFillColor(sf::Color(100, 100, 100));
-    line1.setPosition(600.0, 0.0);
-
-    sf::RectangleShape line2;
-    line2.setSize(sf::Vector2f(3, 600));
-    line2.setFillColor(sf::Color(100, 100, 100));
-    line2.setPosition(0.0, 0.0);
-
-    sf::RectangleShape line3;
-    line3.setSize(sf::Vector2f(600, 3));
-    line3.setFillColor(sf::Color(100, 100, 100));
-    line3.setPosition(0.0, 0.0);
-
-    sf::RectangleShape line4;
-    line4.setSize(sf::Vector2f(600, 3));
-    line4.setFillColor(sf::Color(100, 100, 100));
-    line4.setPosition(0.0, 597.0);*/
-
     std::vector<Button> gui;
     sf::Texture guiTexture;
 
-    guiTexture.loadFromFile("text/iphone.jpg");
-    gui.emplace_back(guiTexture, sf::Vector2f(800, 200), sf::IntRect(0, 0, 707, 370));
-    gui.emplace_back(guiTexture, sf::Vector2f(800, 200), sf::IntRect(0, 450, 707, 370));
+    guiTexture.loadFromFile("text/onoff.png");
+    gui.emplace_back(guiTexture, sf::Vector2f(864.4, 264.4), sf::IntRect(0, 0, 356, 356));
+    gui.emplace_back(guiTexture, sf::Vector2f(864.4, 264.4), sf::IntRect(438, 0, 356, 356));
     
     bool toggle = true;
     
@@ -117,11 +95,6 @@ int main()
             window.draw(myvec[i]);
         }
         
-        
-        //window.draw(line1);
-        //window.draw(line2);
-        //window.draw(line3);
-        //window.draw(line4);
         window.draw(gui[0].sprite);
         window.display();
     }
