@@ -118,6 +118,7 @@ int main() {
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
+    std::string amount_molecules_string = std::to_string(amount_molecule);
     amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setColor(sf::Color::Black);
     amount_molecules_text.setPosition(sf::Vector2f(800, 600));
@@ -137,6 +138,9 @@ int main() {
     }
     molecule_box.pause();
     is_molecules_active = false;
+
+    int enter_press_amount = 0;
+    int demo_parameters_amount = 4;
 
     while (main_window.isOpen()) {
         if (main_window_state == 0) {
@@ -213,15 +217,135 @@ int main() {
                                     is_molecules_active = false;
                                 }
                             } else if (bounds_input.contains(mouse)) {
-                                main_window_state = 1;
                                 if (is_molecules_active) {
+                                    demo_start_stop.bText.setString("Start");
                                     molecule_box.pause();
                                     is_molecules_active = false;
                                 }
-                                
+                                main_window_state = 2; // PARAMETERS INPUT
                             }
                         }
                         break;
+                }
+            }
+            main_window.clear(sf::Color(255, 255, 255));
+            for (int i = 0; i < molecules.size(); i++) {
+                main_window.draw(molecules[i]);
+            }
+            main_window.draw(demo_start_stop.sprite);
+            main_window.draw(demo_start_stop.bText);
+
+            main_window.draw(demo_back.sprite);
+            main_window.draw(demo_back.bText);
+
+            main_window.draw(demo_input.sprite);
+            main_window.draw(demo_input.bText);
+            main_window.draw(demo_length_or_collisions_text);
+            main_window.draw(demo_regime_text);
+            main_window.draw(radius_size_text);
+            main_window.draw(amount_molecules_text);
+        } else if (main_window_state == 2) {
+            std::vector<std::string>  input_button_strings = {"Enter regime type: ",
+                                                              "Enter length of trajectory: ",
+                                                              "Enter radius size: ",
+                                                              "Enter molecules amount: "};
+
+            demo_input.bText.setString(input_button_strings[enter_press_amount]);
+            bool is_all_params_were_passed = false;
+            if (enter_press_amount < 1) {
+                demo_length_or_collisions_string = "";
+            }
+            if (enter_press_amount < 2) {
+                radius_size_string = "";
+            }
+            if (enter_press_amount < 3) {
+                amount_molecules_string = "";
+            }
+            sf::Event event;
+            while ((main_window.pollEvent(event)) && (not is_all_params_were_passed)) {
+                switch (event.type) {
+                    case sf::Event::Closed:
+                        main_window.close();
+                        exit(0);
+                    case sf::Event::TextEntered:
+                        if (enter_press_amount == 0) {
+                            if (event.key.code == 49) {
+                                demo_regime_text.setString("Regime type: " + std::to_string(event.text.unicode - 48));
+                            } else if (event.key.code == 50) {
+                                demo_regime_text.setString("Regime type: " + std::to_string(event.text.unicode - 48));
+                            } else if (event.key.code == 13) {
+                                enter_press_amount += 1;
+                            }
+                        } else if (enter_press_amount == 1) {
+                            if ((event.key.code >= 48) && (event.key.code < 58)) {
+                                demo_length_or_collisions_string += std::to_string(event.text.unicode - 48);
+                                demo_length_or_collisions_text.setString(
+                                        "Length of trajectory: " + demo_length_or_collisions_string);
+                            } else if (event.key.code == 8) {
+                                if (demo_length_or_collisions_string.length() != 0) {
+                                    demo_length_or_collisions_string.pop_back();
+                                }
+                                demo_length_or_collisions_text.setString(
+                                        "Length of trajectory: " + demo_length_or_collisions_string);
+                            } else if (event.key.code == 13) {
+                                enter_press_amount += 1;
+                            }
+                        } else if (enter_press_amount == 2) {
+                            if (((event.key.code >= 48) && (event.key.code < 58)) || (event.key.code == 46)) {
+                                radius_size_string += static_cast<char>(event.text.unicode);
+                                radius_size_text.setString("Radius size: " + radius_size_string);
+                            } else if (event.key.code == 8) {
+                                if (radius_size_string.length() != 0) {
+                                    radius_size_string.pop_back();
+                                }
+                                radius_size_text.setString(
+                                        "Radius size: " + radius_size_string);
+                            } else if (event.key.code == 13) {
+                                enter_press_amount += 1;
+                            }
+                        } else if (enter_press_amount == 3) {
+                            if ((event.key.code >= 48) && (event.key.code < 58)) {
+                                amount_molecules_string += std::to_string(event.text.unicode - 48);
+                                amount_molecules_text.setString(
+                                        "Molecules amount: " + amount_molecules_string);
+                            } else if (event.key.code == 8) {
+                                if (amount_molecules_string.length() != 0) {
+                                    amount_molecules_string.pop_back();
+                                }
+                                amount_molecules_text.setString(
+                                        "Molecules amount: " + amount_molecules_string);
+                            } else if (event.key.code == 13) {
+                                enter_press_amount += 1;
+                            }
+                        }
+                        if (enter_press_amount == demo_parameters_amount) {
+                            radius_molecule = std::stod(radius_size_string);
+                            amount_molecule = std::stoi(amount_molecules_string);
+                            molecule_box.set_radius((radius_molecule));
+                            molecule_box.set_molecules_num(amount_molecule);
+//                            molecule_box = Box(radius_molecule, bounds, amount_molecule);
+                            molecule_box.unpause();
+                            is_molecules_active = true;
+                            molecules.clear();
+                            molecules = std::vector<sf::CircleShape>(amount_molecule, sf::CircleShape(radius_molecule));
+                            {
+                                auto m = molecule_box.get_molecules();
+                                //srand(1723210);
+                                const std::vector<Molecule> &v = m.get();
+                                for (int i = 0; i < v.size(); i++) {
+                                    molecules[i].setRadius(radius_molecule);
+                                    molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                                    molecules[i].setPointCount(100);
+                                    molecules[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
+                                }
+                            }
+                            molecule_box.pause();
+                            is_molecules_active = false;t
+                            enter_press_amount = 0;
+                            is_all_params_were_passed = true;
+                            demo_input.bText.setString("Input");
+                            main_window_state = 1;
+                        }
                 }
             }
             main_window.clear(sf::Color(255, 255, 255));
