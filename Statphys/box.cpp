@@ -9,7 +9,9 @@
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
 constexpr size_t def_molnum = 50;
+constexpr size_t def_obs = 2;
 constexpr double def_radius = 1.0;
+constexpr int def_interactions_num = 10;
 
 template<typename T>
 class MutexWrapper
@@ -79,13 +81,15 @@ private:
             }
             if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
                 std::swap(lhs.velocity, rhs.velocity);
+                if (id < observing_num) {
+                    interactions[id]++;
+                }
                 return true;
             }
         }
         return false;
     }
     
-
     void calculate_positions()
     {
         for (size_t i = 0; i < molecules.size(); i++) {
@@ -154,6 +158,8 @@ private:
         }
     }
 
+    size_t observing_num;
+    int interactions_num;
     std::mutex sem;
     double radius;
     std::tuple<double, double, double, double> bounds;
@@ -161,22 +167,25 @@ private:
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
     std::vector<std::pair<int, int>> grid_pos;
+    std::vector<int> interactions;
     std::vector<std::vector<std::unordered_set<Molecule*>>> grid;
 public:
-    Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
+    Box(double radius = def_radius,
+        std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = def_molnum,
-        unsigned calc_ms = calc_ms)
-        : radius{ radius },
+        unsigned calc_ms = calc_ms,
+        size_t observing_num = def_obs,
+        int interactions_num = def_interactions_num)
+        : observing_num{ observing_num },
+          interactions_num{ interactions_num },
+          radius{ radius },
           bounds(bounds),
           molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
           calculate_ms{ calc_ms },
-          grid_pos(molecules_num)
+          grid_pos(molecules_num),
+          interactions(observing_num),
+          grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<Molecule*>>(ceil(std::get<3>(bounds))))
     {
-        grid.resize(std::get<1>(bounds) + 1);
-        for (size_t i = 0; i < grid.size(); i++) {
-            grid[i].resize(std::get<3>(bounds) + 1);
-        }
-
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = int(molecules[i].position.first / (2 * radius));
             grid_pos[i].second = int(molecules[i].position.second / (2 * radius));
