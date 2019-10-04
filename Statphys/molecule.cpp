@@ -66,7 +66,7 @@ private:
 struct Molecule
 {
 private:
-    inline double angle_by_coords(double x, double y)
+    double angle_by_coords(double x, double y)
     {
         return atan(y / x);
     }

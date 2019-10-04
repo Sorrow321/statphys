@@ -20,11 +20,12 @@ struct Button
 
 int main()
 {
-    int n_mol = 500;
-    double radius = 2.0;
+    int n_mol = 10000;
+    double radius = 1.0;
 
-    std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
-    
+    //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
+    std::tuple<double, double, double, double> bounds = { 5.0, 800.0, 5.0, 590.0 };
+
     sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
     Box b(radius, bounds, n_mol);
@@ -100,6 +101,7 @@ int main()
         }
         
         window.draw(gui[0].sprite);
+        /*
         if (toggle) {
             auto m = b.get_molecules();
             const std::vector<Molecule>& v = m.get();
@@ -115,7 +117,7 @@ int main()
 
                 window.draw(line, 2, sf::Lines);
             }
-        }
+        }*/
         window.display();
     }
 }

@@ -7,8 +7,9 @@
 #include <unordered_set>
 
 constexpr int ms_in_s = 1000;
-constexpr int calc_ms = 20;
-constexpr double def_radius = 0.1;
+constexpr int calc_ms = 5;
+constexpr size_t def_molnum = 50;
+constexpr double def_radius = 1.0;
 
 template<typename T>
 class MutexWrapper
@@ -102,6 +103,7 @@ private:
             int grid_y = int(molecules[i].position.second / (2 * radius));
             
             if (grid_pos[i].first != grid_x || grid_pos[i].second != grid_y) {
+                // if fast molecule flew out of bounds
                 if (grid_x < 0 || grid_y < 0 || grid_x >= grid.size() || grid_y >= grid[0].size()) {
                     continue;
                 }
@@ -162,7 +164,7 @@ private:
     std::vector<std::vector<std::unordered_set<Molecule*>>> grid;
 public:
     Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
-        size_t molecules_num = 10,
+        size_t molecules_num = def_molnum,
         unsigned calc_ms = calc_ms)
         : radius{ radius },
           bounds(bounds),
