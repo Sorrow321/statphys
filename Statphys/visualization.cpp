@@ -20,13 +20,14 @@ struct Button
 
 int main()
 {
-    int n_mol = 100;
+    int n_mol = 500;
+    double radius = 2.0;
 
     std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
     
     sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
-    Box b(5.0, bounds, n_mol);
+    Box b(radius, bounds, n_mol);
     std::vector<sf::CircleShape> myvec(n_mol, sf::CircleShape(10));
 
     std::vector<Button> gui;
@@ -41,15 +42,17 @@ int main()
     srand(100500);
     {
         auto m = b.get_molecules();
-        //srand(1723210); 
         const std::vector<Molecule>& v = m.get();
         for (int i = 0; i < v.size(); i++) {
-            myvec[i].setRadius(5);
+            myvec[i].setRadius(radius);
             myvec[i].setPosition(v[i].position.first, v[i].position.second);
+            myvec[i].setOrigin(radius, radius);
             myvec[i].setPointCount(500);
             myvec[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
         }
     }
+
+    std::vector<std::vector<sf::Vertex>> t;
 
     while (window.isOpen())
     {
@@ -57,6 +60,7 @@ int main()
             auto m = b.get_molecules();
             const std::vector<Molecule>& v = m.get();
             for (int i = 0; i < v.size(); i++) {
+                // moving the molecule
                 myvec[i].setPosition(v[i].position.first, v[i].position.second);
             }
         }
@@ -68,7 +72,7 @@ int main()
             {
             case sf::Event::Closed:
                 window.close();
-                break;
+                exit(0);
             case sf::Event::MouseButtonPressed:
                 if(event.key.code == sf::Mouse::Left) {
                     sf::Vector2f mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -96,6 +100,22 @@ int main()
         }
         
         window.draw(gui[0].sprite);
+        if (toggle) {
+            auto m = b.get_molecules();
+            const std::vector<Molecule>& v = m.get();
+            for (int i = 0; i < v.size(); i++) {
+
+                // show velocity vector
+                sf::Vertex line[] =
+                {
+                    sf::Vertex(sf::Vector2f(v[i].position.first, v[i].position.second), {100, 100, 100}),
+                    sf::Vertex(sf::Vector2f(v[i].position.first + 0.1 * v[i].velocity.first,
+                                            v[i].position.second + 0.1 * v[i].velocity.second), {100, 100, 100})
+                };
+
+                window.draw(line, 2, sf::Lines);
+            }
+        }
         window.display();
     }
 }

@@ -3,9 +3,11 @@
 #include <future>
 #include <thread>
 #include <iomanip>
+#include <cmath>
+#include <unordered_set>
 
 constexpr int ms_in_s = 1000;
-constexpr int calc_ms = 1;
+constexpr int calc_ms = 20;
 constexpr double def_radius = 0.1;
 
 template<typename T>
@@ -40,22 +42,53 @@ private:
         return u * u + v * v;
     }
 
-    /*
-    inline double dot(const std::pair<double, double>& x, const std::pair<double, double>& y)
+    void walls_handler(size_t id)
     {
-        return x.first * y.first + x.second + y.second;
-    }*/
+        auto[l, r, u, d] = bounds;
+        if (molecules[id].position.second > d) {
+            if (molecules[id].velocity.second > 0) {
+                molecules[id].velocity.second *= -1;
+            }
+        }
+        if (molecules[id].position.second < u) {
+            if (molecules[id].velocity.second < 0) {
+                molecules[id].velocity.second *= -1;
+            }
+        }
 
-    inline void interact(size_t i, size_t j)
-    {
-        std::swap(molecules[i].velocity, molecules[j].velocity);
+        if (molecules[id].position.first < l) {
+            if (molecules[id].velocity.first < 0) {
+                molecules[id].velocity.first *= -1;
+            }
+        }
+        if (molecules[id].position.first > r) {
+            if (molecules[id].velocity.first > 0) {
+                molecules[id].velocity.first *= -1;
+            }
+        }
     }
+
+    bool interact_cell(size_t id, int x, int y)
+    {
+        auto& lhs = molecules[id];
+        for (auto it : grid[x][y]) {
+            auto& rhs = *it;
+            if (&rhs == &lhs) {
+                continue;
+            }
+            if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
+                std::swap(lhs.velocity, rhs.velocity);
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
     void calculate_positions()
     {
-        auto[l, r, u, d] = bounds;
         for (size_t i = 0; i < molecules.size(); i++) {
-            
+
             // moving the molecule
             molecules[i].position.first = molecules[i].position.first
                 + (double(calculate_ms) / ms_in_s)
@@ -64,42 +97,47 @@ private:
                 + (double(calculate_ms) / ms_in_s)
                 * molecules[i].velocity.second;
 
-                
-            // walls handler
-            if (molecules[i].position.second > d) {
-                if (molecules[i].velocity.second > 0) {
-                    molecules[i].velocity.second *= -1;
+            // grid indexes
+            int grid_x = int(molecules[i].position.first / (2 * radius));
+            int grid_y = int(molecules[i].position.second / (2 * radius));
+            
+            if (grid_pos[i].first != grid_x || grid_pos[i].second != grid_y) {
+                if (grid_x < 0 || grid_y < 0 || grid_x >= grid.size() || grid_y >= grid[0].size()) {
+                    continue;
                 }
-            }
-            if (molecules[i].position.second < u) {
-                if (molecules[i].velocity.second < 0) {
-                    molecules[i].velocity.second *= -1;
-                }
+
+                auto& prev = grid[grid_pos[i].first][grid_pos[i].second];
+                prev.erase(prev.find(&molecules[i]));
+
+                auto& cur = grid[grid_x][grid_y];
+                cur.insert(&molecules[i]);
+
+                grid_pos[i].first = grid_x;
+                grid_pos[i].second = grid_y;
             }
 
-            if (molecules[i].position.first < l) {
-                if (molecules[i].velocity.first < 0) {
-                    molecules[i].velocity.first *= -1;
-                }
-            }
-            if (molecules[i].position.first > r) {
-                if (molecules[i].velocity.first > 0) {
-                    molecules[i].velocity.first *= -1;
-                }
-            }
-            
+            // walls handler
+            walls_handler(i);
+
             // interactions handler
-            for (size_t j = i + 1; j < molecules.size(); j++) {
-                if (distance(molecules[i].position, molecules[j].position) < 4 * radius * radius) {
-                    interact(i, j);
+            for (int k = -1; k <= 1; k++) {
+                bool _b = false;
+                for (int p = -1; p <= 1; p++) {
+                    int _i = grid_x + k;
+                    int _j = grid_y + p;
+
+                    if (_i >= 0 && _i < grid.size() && _j >= 0 && _j < grid[0].size()) {
+                        if (interact_cell(i, _i, _j)) {
+                            _b = true;
+                            break;
+                        }
+                    }
+                }
+                if (_b) {
+                    break;
                 }
             }
         }
-    }
-
-    void show_traces()
-    {
-
     }
 
     void box_think()
@@ -110,7 +148,6 @@ private:
             std::this_thread::sleep_for(dt);
             sem.lock();
             calculate_positions();
-            show_traces();
             sem.unlock();
         }
     }
@@ -121,10 +158,8 @@ private:
     std::vector<Molecule> molecules;
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
-    bool is_active;
-    //int observing;
-    //bool observed;
-    //std::vector<std::pair<double, double>> observing_pos;
+    std::vector<std::pair<int, int>> grid_pos;
+    std::vector<std::vector<std::unordered_set<Molecule*>>> grid;
 public:
     Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = 10,
@@ -132,8 +167,20 @@ public:
         : radius{ radius },
           bounds(bounds),
           molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
-          calculate_ms{ calc_ms }
+          calculate_ms{ calc_ms },
+          grid_pos(molecules_num)
     {
+        grid.resize(std::get<1>(bounds) + 1);
+        for (size_t i = 0; i < grid.size(); i++) {
+            grid[i].resize(std::get<3>(bounds) + 1);
+        }
+
+        for (size_t i = 0; i < molecules_num; i++) {
+            grid_pos[i].first = int(molecules[i].position.first / (2 * radius));
+            grid_pos[i].second = int(molecules[i].position.second / (2 * radius));
+            
+            grid[grid_pos[i].first][grid_pos[i].second].insert(&molecules[i]);
+        }
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }
 
@@ -150,5 +197,15 @@ public:
     void unpause()
     {
         sem.unlock();
+    }
+
+    void set_radius(double radius)
+    {
+
+    }
+
+    void set_molecules_num(size_t molecules_num)
+    {
+
     }
 };
