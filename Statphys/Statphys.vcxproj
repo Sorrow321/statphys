@@ -138,7 +138,6 @@
   <ItemGroup>
     <ClCompile Include="box.cpp" />
     <ClCompile Include="molecule.cpp" />
-    <ClCompile Include="trace.cpp" />
     <ClCompile Include="visualization.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
