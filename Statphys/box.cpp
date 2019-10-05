@@ -51,22 +51,30 @@ private:
         if (molecules[id].position.second > d) {
             if (molecules[id].velocity.second > 0) {
                 molecules[id].velocity.second *= -1;
+                molecules[id].interacted = true;
+                return;
             }
         }
         if (molecules[id].position.second < u) {
             if (molecules[id].velocity.second < 0) {
                 molecules[id].velocity.second *= -1;
+                molecules[id].interacted = true;
+                return;
             }
         }
 
         if (molecules[id].position.first < l) {
             if (molecules[id].velocity.first < 0) {
                 molecules[id].velocity.first *= -1;
+                molecules[id].interacted = true;
+                return;
             }
         }
         if (molecules[id].position.first > r) {
             if (molecules[id].velocity.first > 0) {
                 molecules[id].velocity.first *= -1;
+                molecules[id].interacted = true;
+                return;
             }
         }
     }
@@ -75,14 +83,27 @@ private:
     {
         auto& lhs = molecules[id];
         for (auto it : grid[x][y]) {
-            auto& rhs = *it;
+            auto& rhs = molecules[it];
             if (&rhs == &lhs) {
                 continue;
             }
             if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
+                int _i = (id < it) ? id : it;
+                int _j = (id < it) ? it : id;
+                if (prev_interactions[_i] == _j) {
+                    current_interactions[_i] = _j;
+                    continue;
+                }
+                molecules[_i].interacted = true;
+                molecules[_j].interacted = true;
+
+                current_interactions[_i] = _j;
                 std::swap(lhs.velocity, rhs.velocity);
                 if (id < observing_num) {
-                    interactions[id]++;
+                    if (++interactions[id] == observing_num) {
+                        std::cout << "id: " << id << " " << it << " "<< i_c << std::endl;
+                        interactions[id] = 0;
+                    }
                 }
                 return true;
             }
@@ -113,10 +134,10 @@ private:
                 }
 
                 auto& prev = grid[grid_pos[i].first][grid_pos[i].second];
-                prev.erase(prev.find(&molecules[i]));
+                prev.erase(prev.find(i));
 
                 auto& cur = grid[grid_x][grid_y];
-                cur.insert(&molecules[i]);
+                cur.insert(i);
 
                 grid_pos[i].first = grid_x;
                 grid_pos[i].second = grid_y;
@@ -144,6 +165,9 @@ private:
                 }
             }
         }
+
+        std::swap(current_interactions, prev_interactions);
+        current_interactions = std::vector<size_t>(molecules.size(), -1);
     }
 
     void box_think()
@@ -151,6 +175,7 @@ private:
         auto dt = std::chrono::milliseconds(calculate_ms);
         while (true)
         {
+            //i_c++;
             std::this_thread::sleep_for(dt);
             sem.lock();
             calculate_positions();
@@ -158,6 +183,7 @@ private:
         }
     }
 
+    long long i_c = 0;
     size_t observing_num;
     int interactions_num;
     std::mutex sem;
@@ -168,7 +194,10 @@ private:
     unsigned int calculate_ms;
     std::vector<std::pair<int, int>> grid_pos;
     std::vector<int> interactions;
-    std::vector<std::vector<std::unordered_set<Molecule*>>> grid;
+    std::vector<std::vector<std::unordered_set<size_t>>> grid;
+    std::vector<size_t> prev_interactions;
+    std::vector<size_t> current_interactions;
+
 public:
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
@@ -184,13 +213,15 @@ public:
           calculate_ms{ calc_ms },
           grid_pos(molecules_num),
           interactions(observing_num),
-          grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<Molecule*>>(ceil(std::get<3>(bounds))))
+          grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
+          prev_interactions(molecules_num, -1),
+          current_interactions(molecules_num, -1)
     {
         for (size_t i = 0; i < molecules_num; i++) {
-            grid_pos[i].first = int(molecules[i].position.first / (2 * radius));
-            grid_pos[i].second = int(molecules[i].position.second / (2 * radius));
+            grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
+            grid_pos[i].second = floor(molecules[i].position.second / (2 * radius));
             
-            grid[grid_pos[i].first][grid_pos[i].second].insert(&molecules[i]);
+            grid[grid_pos[i].first][grid_pos[i].second].insert(i);
         }
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }

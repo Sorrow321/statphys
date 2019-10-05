@@ -76,7 +76,9 @@ private:
     SingletonWrapper<UniformHandler, 2>& uniform_y;
     
 public:
+    bool interacted = false;
     std::pair<double, double> position, velocity;
+
     Molecule(double left, double right, double down, double up)
         : normal{ SingletonWrapper<NormalHandler>::getInstance(def_mean, def_std) },
           uniform_x { SingletonWrapper<UniformHandler>::getInstance(left, right) },
