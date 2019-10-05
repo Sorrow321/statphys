@@ -20,7 +20,7 @@ struct Button
 
 int main()
 {
-    int n_mol = 2000;
+    int n_mol = 1000;
     double radius = 2.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
@@ -110,9 +110,11 @@ int main()
         window.draw(gui[0].sprite);
 
         // начало примера работы с точками столкновений
+        // этот пример показывает вариант, когда отрезки рисуются не в реальном времени, а только после столкновений
         {
+            // да, надо оборачивать в scope из-за работы с разделяемым ресурсом 
             auto m = b.get_trajectory();
-            const auto& t = m.get();
+            const auto& t = m.get(); // const ссылка, иначе копирование
             for (size_t i = 0; i < def_obs; i++) {
                 if (!trajec[i].size() || trajec[i].back() != t[i]) {
                     trajec[i].push_back(t[i]);

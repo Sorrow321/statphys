@@ -217,6 +217,11 @@ private:
     std::vector<size_t> current_interactions;
     std::vector<std::pair<double, double>> trajectory;
 public:
+    /*
+    из новых аргументов:
+    observing_num - количество молекул, которыми мы следим (складываем в массив их соударения)
+    interactions_num - количество соударений для 2-го режима (не реализовано полностью)
+    */
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = def_molnum,
