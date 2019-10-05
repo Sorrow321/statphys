@@ -9,7 +9,7 @@
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
 constexpr size_t def_molnum = 50;
-constexpr size_t def_obs = 2;
+constexpr size_t def_obs = 1;
 constexpr double def_radius = 1.0;
 constexpr int def_interactions_num = 10;
 
@@ -45,6 +45,21 @@ private:
         return u * u + v * v;
     }
 
+    void fix_trajectory(size_t id)
+    {
+        if (id < observing_num) {
+            interactions[id]++;
+            sem_trajectory.lock();
+            trajectory[id] = molecules[id].position;
+            sem_trajectory.unlock();
+            
+            if (interactions[id] == observing_num) {
+                interactions[id] = 0;
+                //std::cout << "id1: " << id << " id2: " << it << std::endl;
+            }
+        }
+    }
+
     void walls_handler(size_t id)
     {
         auto[l, r, u, d] = bounds;
@@ -52,6 +67,7 @@ private:
             if (molecules[id].velocity.second > 0) {
                 molecules[id].velocity.second *= -1;
                 molecules[id].interacted = true;
+                fix_trajectory(id);
                 return;
             }
         }
@@ -59,6 +75,7 @@ private:
             if (molecules[id].velocity.second < 0) {
                 molecules[id].velocity.second *= -1;
                 molecules[id].interacted = true;
+                fix_trajectory(id);
                 return;
             }
         }
@@ -67,6 +84,7 @@ private:
             if (molecules[id].velocity.first < 0) {
                 molecules[id].velocity.first *= -1;
                 molecules[id].interacted = true;
+                fix_trajectory(id);
                 return;
             }
         }
@@ -74,6 +92,7 @@ private:
             if (molecules[id].velocity.first > 0) {
                 molecules[id].velocity.first *= -1;
                 molecules[id].interacted = true;
+                fix_trajectory(id);
                 return;
             }
         }
@@ -88,8 +107,12 @@ private:
                 continue;
             }
             if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
-                int _i = (id < it) ? id : it;
-                int _j = (id < it) ? it : id;
+                if (id > it) {
+                    continue;
+                }
+                size_t& _i = id;
+                size_t& _j = it;
+                // stucked molecules fix
                 if (prev_interactions[_i] == _j) {
                     current_interactions[_i] = _j;
                     continue;
@@ -98,13 +121,10 @@ private:
                 molecules[_j].interacted = true;
 
                 current_interactions[_i] = _j;
+                fix_trajectory(_i);
+                fix_trajectory(_j);
                 std::swap(lhs.velocity, rhs.velocity);
-                if (id < observing_num) {
-                    if (++interactions[id] == observing_num) {
-                        std::cout << "id: " << id << " " << it << " "<< i_c << std::endl;
-                        interactions[id] = 0;
-                    }
-                }
+
                 return true;
             }
         }
@@ -134,9 +154,8 @@ private:
                 }
 
                 auto& prev = grid[grid_pos[i].first][grid_pos[i].second];
-                prev.erase(prev.find(i));
-
                 auto& cur = grid[grid_x][grid_y];
+                prev.erase(prev.find(i));
                 cur.insert(i);
 
                 grid_pos[i].first = grid_x;
@@ -175,7 +194,6 @@ private:
         auto dt = std::chrono::milliseconds(calculate_ms);
         while (true)
         {
-            //i_c++;
             std::this_thread::sleep_for(dt);
             sem.lock();
             calculate_positions();
@@ -183,10 +201,10 @@ private:
         }
     }
 
-    long long i_c = 0;
     size_t observing_num;
     int interactions_num;
     std::mutex sem;
+    std::mutex sem_trajectory;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
@@ -197,7 +215,7 @@ private:
     std::vector<std::vector<std::unordered_set<size_t>>> grid;
     std::vector<size_t> prev_interactions;
     std::vector<size_t> current_interactions;
-
+    std::vector<std::pair<double, double>> trajectory;
 public:
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
@@ -215,7 +233,8 @@ public:
           interactions(observing_num),
           grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
           prev_interactions(molecules_num, -1),
-          current_interactions(molecules_num, -1)
+          current_interactions(molecules_num, -1),
+          trajectory(observing_num)
     {
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
@@ -229,6 +248,11 @@ public:
     const MutexWrapper<std::vector<Molecule>> get_molecules()
     {
         return MutexWrapper<std::vector<Molecule>>(&sem, molecules);
+    }
+
+    const MutexWrapper<std::vector<std::pair<double, double>>> get_trajectory()
+    {
+        return MutexWrapper<std::vector<std::pair<double, double>>>(&sem_trajectory, trajectory);
     }
     
     void pause()

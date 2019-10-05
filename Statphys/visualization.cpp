@@ -20,8 +20,8 @@ struct Button
 
 int main()
 {
-    int n_mol = 100;
-    double radius = 5.0;
+    int n_mol = 2000;
+    double radius = 2.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
     std::tuple<double, double, double, double> bounds = { 5.0, 800.0, 5.0, 590.0 };
@@ -49,11 +49,18 @@ int main()
             myvec[i].setPosition(v[i].position.first, v[i].position.second);
             myvec[i].setOrigin(radius, radius);
             myvec[i].setPointCount(500);
-            myvec[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
+            if (i) {
+                myvec[i].setFillColor(sf::Color(100, 100, 100));
+            } else {
+                myvec[i].setFillColor(sf::Color(255, 0, 0));
+            }
+            //myvec[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
         }
     }
 
     std::vector<std::vector<sf::Vertex>> t;
+
+    std::vector<std::vector<std::pair<double, double>>> trajec(def_obs);
 
     while (window.isOpen())
     {
@@ -101,6 +108,31 @@ int main()
         }
         
         window.draw(gui[0].sprite);
+
+        // начало примера работы с точками столкновений
+        {
+            auto m = b.get_trajectory();
+            const auto& t = m.get();
+            for (size_t i = 0; i < def_obs; i++) {
+                if (!trajec[i].size() || trajec[i].back() != t[i]) {
+                    trajec[i].push_back(t[i]);
+                }
+            }
+        }
+
+        for (size_t i = 0; i < def_obs; i++) {
+            for (size_t j = 1; j < trajec[i].size(); j++) {
+                sf::Vertex line[] =
+                {
+                    sf::Vertex(sf::Vector2f(trajec[i][j - 1].first, trajec[i][j - 1].second), {100, 100, 100}),
+                    sf::Vertex(sf::Vector2f(trajec[i][j].first, trajec[i][j].second), {100, 100, 100})
+                };
+
+                window.draw(line, 2, sf::Lines);
+            }
+        }
+        // конец примера
+
         /*
         if (toggle) {
             auto m = b.get_molecules();
