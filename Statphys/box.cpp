@@ -53,9 +53,10 @@ private:
             trajectory[id] = molecules[id].position;
             sem_trajectory.unlock();
             
-            if (interactions[id] == observing_num) {
+            if (interactions[id] == interactions_num) {
                 interactions[id] = 0;
-                //std::cout << "id1: " << id << " id2: " << it << std::endl;
+
+                // for debug std::cout << "id1: " << id << " id2: " << it << std::endl;
             }
         }
     }
@@ -218,9 +219,9 @@ private:
     std::vector<std::pair<double, double>> trajectory;
 public:
     /*
-    из новых аргументов:
-    observing_num - количество молекул, которыми мы следим (складываем в массив их соударения)
-    interactions_num - количество соударений для 2-го режима (не реализовано полностью)
+    new parameters:
+    observing_num - number of observing molecules (first observing_num) that box pushes to trajectory
+    interactions_num - number of interactions in 2nd mode (number of collisions counts in interactions, and when interactions[i] == interactions_num, interactions[i] = 0)
     */
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
@@ -268,6 +269,16 @@ public:
     void unpause()
     {
         sem.unlock();
+    }
+
+    void set_interacted(size_t id, bool value)
+    {
+        molecules[id].interacted = value;
+    }
+
+    bool get_interacted(size_t id)
+    {
+        return molecules[id].interacted;
     }
 
     void set_radius(double radius)

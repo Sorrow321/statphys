@@ -109,12 +109,12 @@ int main()
         
         window.draw(gui[0].sprite);
 
-        // начало примера работы с точками столкновений
-        // этот пример показывает вариант, когда отрезки рисуются не в реальном времени, а только после столкновений
+        // begin of the example
+        // this example shows case when segments draws not in real time but only after collisions
         {
-            // да, надо оборачивать в scope из-за работы с разделяемым ресурсом 
+            // yes, you have to wrap you code in scope because of work with shared resource
             auto m = b.get_trajectory();
-            const auto& t = m.get(); // const ссылка, иначе копирование
+            const auto& t = m.get(); // const reference, otherwise it will be copied
             for (size_t i = 0; i < def_obs; i++) {
                 if (!trajec[i].size() || trajec[i].back() != t[i]) {
                     trajec[i].push_back(t[i]);
@@ -133,7 +133,7 @@ int main()
                 window.draw(line, 2, sf::Lines);
             }
         }
-        // конец примера
+        // end of the example
 
         /*
         if (toggle) {
