@@ -312,14 +312,4 @@ public:
     {
         return molecules[id].finished;
     }
-
-    void set_radius(double radius)
-    {
-
-    }
-
-    void set_molecules_num(size_t molecules_num)
-    {
-
-    }
 };
