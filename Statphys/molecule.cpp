@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-constexpr double def_mean = 0.0;
+constexpr double def_mean = 100.0;
 constexpr double def_std = 200.0;
 constexpr double def_left = -10.0;
 constexpr double def_right = 10.0;
@@ -27,7 +27,7 @@ struct NormalHandler : RandomHandler
 {
     std::normal_distribution<double> d;
     NormalHandler(double mean = def_mean, double std = def_std)
-        : d{ mean, std }
+            : d{ mean, std }
     {
     }
     double get()
@@ -40,7 +40,7 @@ struct UniformHandler : RandomHandler
 {
     std::uniform_real_distribution<double> d;
     UniformHandler(double left = def_left, double right = def_right)
-        : d{ left, right }
+            : d{ left, right }
     {
     }
     double get()
@@ -66,27 +66,39 @@ private:
 struct Molecule
 {
 private:
+    double angle_by_coords(double x, double y)
+    {
+        return atan(y / x);
+    }
+
     SingletonWrapper<NormalHandler>& normal;
     SingletonWrapper<UniformHandler>& uniform_x;
     SingletonWrapper<UniformHandler, 2>& uniform_y;
 
 public:
+    bool interacted = false;
     std::pair<double, double> position, velocity;
+
     Molecule(double left, double right, double down, double up)
-        : normal{ SingletonWrapper<NormalHandler>::getInstance(def_mean, def_std) },
-          uniform_x { SingletonWrapper<UniformHandler>::getInstance(left, right) },
-          uniform_y { SingletonWrapper<UniformHandler, 2>::getInstance(down, up) },
-          position { uniform_x, uniform_y },
-          velocity { normal, normal }
+            : normal{ SingletonWrapper<NormalHandler>::getInstance(def_mean, def_std) },
+              uniform_x { SingletonWrapper<UniformHandler>::getInstance(left, right) },
+              uniform_y { SingletonWrapper<UniformHandler, 2>::getInstance(down, up) },
+              position { uniform_x, uniform_y },
+              velocity { normal, normal }
     {
     }
 
     Molecule(const Molecule& mol)
-        : normal{ mol.normal },
-          uniform_x{ mol.uniform_x},
-          uniform_y{ mol.uniform_y },
-          position{ uniform_x, uniform_y },
-          velocity{ normal, normal }
+            : normal{ mol.normal },
+              uniform_x{ mol.uniform_x},
+              uniform_y{ mol.uniform_y },
+              position{ uniform_x, uniform_y },
+              velocity{ normal, normal }
     {
+    }
+
+    double get_angle()
+    {
+        return angle_by_coords(velocity.first, velocity.second);
     }
 };

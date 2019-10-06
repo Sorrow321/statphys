@@ -3,10 +3,15 @@
 #include <future>
 #include <thread>
 #include <iomanip>
+#include <cmath>
+#include <unordered_set>
 
 constexpr int ms_in_s = 1000;
-constexpr int calc_ms = 1;
-constexpr double def_radius = 0.1;
+constexpr int calc_ms = 5;
+constexpr size_t def_molnum = 50;
+constexpr size_t def_obs = 2;
+constexpr double def_radius = 1.0;
+constexpr int def_interactions_num = 10;
 
 template<typename T>
 class MutexWrapper
@@ -40,20 +45,95 @@ private:
         return u * u + v * v;
     }
 
-    /*
-    inline double dot(const std::pair<double, double>& x, const std::pair<double, double>& y)
+    void fix_trajectory(size_t id)
     {
-        return x.first * y.first + x.second + y.second;
-    }*/
+        if (id < observing_num) {
+            interactions[id]++;
+            sem_trajectory.lock();
+            trajectory[id] = molecules[id].position;
+            sem_trajectory.unlock();
 
-    inline void interact(size_t i, size_t j)
+            if (interactions[id] == interactions_num) {
+                interactions[id] = 0;
+
+                // for debug std::cout << "id1: " << id << " id2: " << it << std::endl;
+            }
+        }
+    }
+
+    void walls_handler(size_t id)
     {
-        std::swap(molecules[i].velocity, molecules[j].velocity);
+        auto[l, r, u, d] = bounds;
+        if (molecules[id].position.second > d) {
+            if (molecules[id].velocity.second > 0) {
+                molecules[id].velocity.second *= -1;
+                molecules[id].interacted = true;
+                fix_trajectory(id);
+                return;
+            }
+        }
+        if (molecules[id].position.second < u) {
+            if (molecules[id].velocity.second < 0) {
+                molecules[id].velocity.second *= -1;
+                molecules[id].interacted = true;
+                fix_trajectory(id);
+                return;
+            }
+        }
+
+        if (molecules[id].position.first < l) {
+            if (molecules[id].velocity.first < 0) {
+                molecules[id].velocity.first *= -1;
+                molecules[id].interacted = true;
+                fix_trajectory(id);
+                return;
+            }
+        }
+        if (molecules[id].position.first > r) {
+            if (molecules[id].velocity.first > 0) {
+                molecules[id].velocity.first *= -1;
+                molecules[id].interacted = true;
+                fix_trajectory(id);
+                return;
+            }
+        }
+    }
+
+    bool interact_cell(size_t id, int x, int y)
+    {
+        auto& lhs = molecules[id];
+        for (auto it : grid[x][y]) {
+            auto& rhs = molecules[it];
+            if (&rhs == &lhs) {
+                continue;
+            }
+            if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
+                if (id > it) {
+                    continue;
+                }
+                size_t& _i = id;
+                size_t& _j = it;
+                // stucked molecules fix
+                if (prev_interactions[_i] == _j) {
+                    current_interactions[_i] = _j;
+                    continue;
+                }
+                molecules[_i].interacted = true;
+                molecules[_j].interacted = true;
+
+                current_interactions[_i] = _j;
+                fix_trajectory(_i);
+                fix_trajectory(_j);
+                std::swap(lhs.velocity, rhs.velocity);
+
+                return true;
+            }
+        }
+        return false;
     }
 
     void calculate_positions()
     {
-        auto[l, r, u, d] = bounds;
         for (size_t i = 0; i < molecules.size(); i++) {
 
             // moving the molecule
@@ -64,42 +144,50 @@ private:
                                            + (double(calculate_ms) / ms_in_s)
                                              * molecules[i].velocity.second;
 
+            // grid indexes
+            int grid_x = int(molecules[i].position.first / (2 * radius));
+            int grid_y = int(molecules[i].position.second / (2 * radius));
+
+            if (grid_pos[i].first != grid_x || grid_pos[i].second != grid_y) {
+                // if fast molecule flew out of bounds
+                if (grid_x < 0 || grid_y < 0 || grid_x >= grid.size() || grid_y >= grid[0].size()) {
+                    continue;
+                }
+
+                auto& prev = grid[grid_pos[i].first][grid_pos[i].second];
+                auto& cur = grid[grid_x][grid_y];
+                prev.erase(prev.find(i));
+                cur.insert(i);
+
+                grid_pos[i].first = grid_x;
+                grid_pos[i].second = grid_y;
+            }
 
             // walls handler
-            if (molecules[i].position.second > d) {
-                if (molecules[i].velocity.second > 0) {
-                    molecules[i].velocity.second *= -1;
-                }
-            }
-            if (molecules[i].position.second < u) {
-                if (molecules[i].velocity.second < 0) {
-                    molecules[i].velocity.second *= -1;
-                }
-            }
-
-            if (molecules[i].position.first < l) {
-                if (molecules[i].velocity.first < 0) {
-                    molecules[i].velocity.first *= -1;
-                }
-            }
-            if (molecules[i].position.first > r) {
-                if (molecules[i].velocity.first > 0) {
-                    molecules[i].velocity.first *= -1;
-                }
-            }
+            walls_handler(i);
 
             // interactions handler
-            for (size_t j = i + 1; j < molecules.size(); j++) {
-                if (distance(molecules[i].position, molecules[j].position) < 4 * radius * radius) {
-                    interact(i, j);
+            for (int k = -1; k <= 1; k++) {
+                bool _b = false;
+                for (int p = -1; p <= 1; p++) {
+                    int _i = grid_x + k;
+                    int _j = grid_y + p;
+
+                    if (_i >= 0 && _i < grid.size() && _j >= 0 && _j < grid[0].size()) {
+                        if (interact_cell(i, _i, _j)) {
+                            _b = true;
+                            break;
+                        }
+                    }
+                }
+                if (_b) {
+                    break;
                 }
             }
         }
-    }
 
-    void show_traces()
-    {
-
+        std::swap(current_interactions, prev_interactions);
+        current_interactions = std::vector<size_t>(molecules.size(), -1);
     }
 
     void box_think()
@@ -110,36 +198,67 @@ private:
             std::this_thread::sleep_for(dt);
             sem.lock();
             calculate_positions();
-            show_traces();
             sem.unlock();
         }
     }
 
+    size_t observing_num;
+    int interactions_num;
     std::mutex sem;
+    std::mutex sem_trajectory;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
     std::future<void> calculate_thread;
     unsigned int calculate_ms;
-    bool is_active;
-    //int observing;
-    //bool observed;
-    //std::vector<std::pair<double, double>> observing_pos;
+    std::vector<std::pair<int, int>> grid_pos;
+    std::vector<int> interactions;
+    std::vector<std::vector<std::unordered_set<size_t>>> grid;
+    std::vector<size_t> prev_interactions;
+    std::vector<size_t> current_interactions;
+    std::vector<std::pair<double, double>> trajectory;
 public:
-    Box(double radius = def_radius, std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
-        size_t molecules_num = 10,
-        unsigned calc_ms = calc_ms)
-            : radius{ radius },
+    /*
+    new parameters:
+    observing_num - number of observing molecules (first observing_num) that box pushes to trajectory
+    interactions_num - number of interactions in 2nd mode (number of collisions counts in interactions, and when interactions[i] == interactions_num, interactions[i] = 0)
+    */
+    Box(double radius = def_radius,
+        std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
+        size_t molecules_num = def_molnum,
+        unsigned calc_ms = calc_ms,
+        size_t observing_num = def_obs,
+        int interactions_num = def_interactions_num)
+            : observing_num{ observing_num },
+              interactions_num{ interactions_num },
+              radius{ radius },
               bounds(bounds),
               molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
-              calculate_ms{ calc_ms }
+              calculate_ms{ calc_ms },
+              grid_pos(molecules_num),
+              interactions(observing_num),
+              grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
+              prev_interactions(molecules_num, -1),
+              current_interactions(molecules_num, -1),
+              trajectory(observing_num)
     {
+        for (size_t i = 0; i < molecules_num; i++) {
+            grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
+            grid_pos[i].second = floor(molecules[i].position.second / (2 * radius));
+
+            grid[grid_pos[i].first][grid_pos[i].second].insert(i);
+        }
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }
 
     const MutexWrapper<std::vector<Molecule>> get_molecules()
     {
         return MutexWrapper<std::vector<Molecule>>(&sem, molecules);
+    }
+
+    const MutexWrapper<std::vector<std::pair<double, double>>> get_trajectory()
+    {
+        return MutexWrapper<std::vector<std::pair<double, double>>>(&sem_trajectory, trajectory);
     }
 
     void pause()
@@ -152,11 +271,23 @@ public:
         sem.unlock();
     }
 
-    void set_radius(double radius) {
-        this->radius = radius;
+    void set_interacted(size_t id, bool value)
+    {
+        molecules[id].interacted = value;
     }
 
-    void set_molecules_num(size_t molecules_num) {
-        this->molecules = {molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))};
+    bool get_interacted(size_t id)
+    {
+        return molecules[id].interacted;
+    }
+
+    void set_radius(double radius)
+    {
+
+    }
+
+    void set_molecules_num(size_t molecules_num)
+    {
+
     }
 };
