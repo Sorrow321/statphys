@@ -33,7 +33,7 @@ int main() {
     float radius_molecule = 5;
     bool is_molecules_active = true;
 
-    std::tuple<double, double, double, double> bounds = {5.0, 590.0, 5.0, 590.0};
+    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width, 5.0, sf::VideoMode::getDesktopMode().height/2};
 
     sf::RenderWindow main_window(
             sf::VideoMode(sf::VideoMode::getDesktopMode().width,sf::VideoMode::getDesktopMode().height),
@@ -46,24 +46,26 @@ int main() {
 
     // VISUAL BORDERS for molecules box
     sf::RectangleShape border1;
-    border1.setSize(sf::Vector2f(3, 600));
+    border1.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
     border1.setFillColor(sf::Color(100, 100, 100));
-    border1.setPosition(600.0, 0.0);
+    border1.setPosition(sf::VideoMode::getDesktopMode().width, 0.0);
 
     sf::RectangleShape border2;
-    border2.setSize(sf::Vector2f(3, 600));
+    border2.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
     border2.setFillColor(sf::Color(100, 100, 100));
     border2.setPosition(0.0, 0.0);
 
     sf::RectangleShape border3;
-    border3.setSize(sf::Vector2f(600, 3));
+    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border3.setFillColor(sf::Color(100, 100, 100));
     border3.setPosition(0.0, 0.0);
 
     sf::RectangleShape border4;
-    border4.setSize(sf::Vector2f(600, 3));
+    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border4.setFillColor(sf::Color(100, 100, 100));
-    border4.setPosition(0.0, 597.0);
+    border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
+
+
 
     std::vector<Button_menu> molecules_activation_button;
 
@@ -85,9 +87,14 @@ int main() {
 
     /* DEMONSTATION(1) */
     // BUTTONS
-    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(800, 200), sf::IntRect(0, 0, 350, 50));
-    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(800, 300), sf::IntRect(0, 0, 350, 50));
-    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(800, 400), sf::IntRect(0, 0, 350, 50));
+    int button_menu_demo_width = 350;
+    int button_menu_demo_height = 50;
+    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
+    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
+    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
+            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
 
     // INPUT VALUES
     int demo_regime_type = 1; //choose length - 1; choose amount of collisions - 2
@@ -97,7 +104,7 @@ int main() {
     demo_regime_text.setFont(global_font);
     demo_regime_text.setString("Regime type: " + std::to_string(demo_regime_type));
     demo_regime_text.setColor(sf::Color::Black);
-    demo_regime_text.setPosition(sf::Vector2f(800, 450));
+    demo_regime_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
     float demo_length_or_collisions = 1;
     sf::Text demo_length_or_collisions_text;
@@ -106,7 +113,7 @@ int main() {
     demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
     demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f(800, 500));
+    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
@@ -114,21 +121,37 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
     radius_size_text.setString(radius_size_string);
     radius_size_text.setColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f(800, 550));
+    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
     std::string amount_molecules_string = std::to_string(amount_molecule);
     amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f(800, 600));
+    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
     // INPUT VALUES END
 
+    // VISUAL BORDERS for graphs
+    sf::RectangleShape border5;
+    border5.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
+    border5.setFillColor(sf::Color(100, 100, 100));
+    border5.setPosition(amount_molecules_text.getPosition().x, sf::VideoMode::getDesktopMode().height/2);
+
     //TRAJECTORY LINES:
-    std::vector<sf::Vertex> trajectory;
-    std::vector<sf::Color> colors;
-    colors.emplace_back(sf::Color::Blue);
-    colors.emplace_back(sf::Color::Red);
+    std::vector<std::vector<sf::Vertex>> trajectories(def_obs);
+    std::vector<std::vector<sf::Color>> colors(def_obs);
+    for (int i = 0; i < def_obs; i++) {
+        colors[i].emplace_back(sf::Color::Blue);
+        colors[i].emplace_back(sf::Color::Red);
+    }
+
+
+    // INTERACTIONS AMOUNT BLOCK(HISTOGRAM)
+    sf::Text molecules_interactions_text;
+    molecules_interactions_text.setFont(global_font);
+    molecules_interactions_text.setString("Molecules interactions amount: ");
+    molecules_interactions_text.setColor(sf::Color::Black);
+    molecules_interactions_text.setPosition(sf::Vector2f(800, 450));
 
     // DEMONSTRATION(1) END
 
@@ -188,12 +211,19 @@ int main() {
                 }
             }
 
-        } else if (main_window_state == 1) {
+        } else if (main_window_state == 1) {  // DEMONSTATION WINDOW with molecules
             if (is_molecules_active) {
                 auto m = molecule_box.get_molecules();
                 const std::vector<Molecule> &v = m.get();
                 for (int i = 0; i < v.size(); i++) {
                     molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                }
+                for(int i=0; i < def_obs; i++) {
+                    if (molecule_box.get_interacted(i)) {
+                        molecule_box.set_interacted(i, false);
+                        std::swap(colors[i][0], colors[i][1]);
+                    }
+                    trajectories[i].emplace_back(molecules[i].getPosition(), colors[i][0]);
                 }
             }
             sf::Event event;
@@ -242,13 +272,14 @@ int main() {
             for (int i = 0; i < molecules.size(); i++) {
                 main_window.draw(molecules[i]);
             }
-            if (is_molecules_active) {
-                if (trajectory.size() % 1000 == 0) {
-                    std::swap(colors[0], colors[1]);
-                }
-                trajectory.emplace_back(molecules[0].getPosition(), colors[0]);
+//            molecule_box
+//          MOLECULE TRAJECTORY:
+            for (int i = 0; i < def_obs; i++) {
+                main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::PrimitiveType::LineStrip);
             }
-            main_window.draw(trajectory.data(), trajectory.size(), sf::PrimitiveType::LineStrip);
+
+            //INTERACTIONS AMOUNT
+//            molecules_interactions_text.setString();
 
 
             main_window.draw(demo_start_stop.sprite);
@@ -268,7 +299,8 @@ int main() {
             main_window.draw(border1);
             main_window.draw(border2);
             main_window.draw(border3);
-            main_window.draw(border4 );
+            main_window.draw(border4);
+            main_window.draw(border5);
         } else if (main_window_state == 2) {
             std::vector<std::string>  input_button_strings = {"Enter regime type: ",
                                                               "Enter length of trajectory: ",
@@ -432,8 +464,8 @@ int main() {
                         }
                         if (enter_press_amount == demo_parameters_amount) {
 
-                            molecule_box.set_radius((radius_molecule));
-                            molecule_box.set_molecules_num(amount_molecule);
+
+//                            molecule_box = Box(radius_molecule, bounds, amount_molecule);
                             molecule_box.unpause();
                             is_molecules_active = true;
                             molecules.clear();
@@ -450,7 +482,7 @@ int main() {
                                     molecules[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
                                 }
                             }
-                            trajectory.clear();
+                            trajectories.clear();
                             molecule_box.pause();
                             is_molecules_active = false;
                             enter_press_amount = 0;
@@ -465,7 +497,9 @@ int main() {
             for (int i = 0; i < molecules.size(); i++) {
                 main_window.draw(molecules[i]);
             }
-            main_window.draw(trajectory.data(), trajectory.size(), sf::PrimitiveType::LineStrip);
+            for (int i = 0; i < def_obs; i++) {
+                main_window.draw(trajectories[i].data(), trajectories[i].size(), sf::PrimitiveType::LineStrip);
+            }
 
             main_window.draw(demo_start_stop.sprite);
             main_window.draw(demo_start_stop.bText);
@@ -484,7 +518,8 @@ int main() {
             main_window.draw(border1);
             main_window.draw(border2);
             main_window.draw(border3);
-            main_window.draw(border4 );
+            main_window.draw(border4);
+            main_window.draw(border5);
         }
         main_window.display();
     }
