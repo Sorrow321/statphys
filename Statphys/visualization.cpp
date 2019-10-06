@@ -20,15 +20,15 @@ struct Button
 
 int main()
 {
-    int n_mol = 1000; 
-    double radius = 2.0;
+    int n_mol = 10000; 
+    double radius = 1.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
     std::tuple<double, double, double, double> bounds = { 5.0, 800.0, 5.0, 590.0 };
 
     sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
-    Box b(radius, bounds, n_mol, 5, 5, 10);
+    Box b(radius, bounds, n_mol, 5, 2, 30, 1000.0);
     std::vector<sf::CircleShape> myvec(n_mol, sf::CircleShape(10));
 
     std::vector<Button> gui;
@@ -92,6 +92,14 @@ int main()
                         if(toggle) {
                             b.pause();
                             toggle = false;
+
+                            /*
+                            std::ofstream myfile;
+                            myfile.open("output.txt", std::ios_base::app);
+                            const auto& ve = b.len_stats;
+                            for (size_t i = 0; i < ve.size(); i++) {
+                                myfile << ve[i] << std::endl;
+                            }*/
                         }else{
                             b.unpause();
                             toggle = true;

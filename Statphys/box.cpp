@@ -5,13 +5,17 @@
 #include <iomanip>
 #include <cmath>
 #include <unordered_set>
+#include <fstream>
 
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
 constexpr size_t def_molnum = 50;
-constexpr size_t def_obs = 1;
+constexpr size_t def_trajnum = 1;
 constexpr double def_radius = 1.0;
 constexpr int def_interactions_num = 10;
+constexpr int def_mode = 1;
+constexpr double def_trajlength = 50.0;
+constexpr double def_obs = 1;
 
 template<typename T>
 class MutexWrapper
@@ -45,19 +49,23 @@ private:
         return u * u + v * v;
     }
 
-    void fix_trajectory(size_t id)
+    void handle_interaction(size_t id)
     {
-        if (id < observing_num) {
-            interactions[id]++;
-            sem_trajectory.lock();
-            trajectory[id] = molecules[id].position;
-            sem_trajectory.unlock();
-            
-            if (interactions[id] == interactions_num) {
-                interactions[id] = 0;
+        molecules[id].interacted = true;
+        interactions[id]++;
 
-                // for debug std::cout << "id1: " << id << " id2: " << it << std::endl;
-            }
+        sem_trajectory.lock();
+        double dx = trajectory[id].first - molecules[id].position.first;
+        double dy = trajectory[id].first - molecules[id].position.second;
+        lengths[id] += sqrt(dx * dx + dy * dy);
+        trajectory[id] = molecules[id].position;
+        sem_trajectory.unlock();
+
+        if (interactions[id] == interactions_num) {
+            len_stats.push_back(lengths[id]);
+            lengths[id] = 0.0;
+            interactions[id] = 0;
+            molecules[id].finished = true;
         }
     }
 
@@ -67,16 +75,14 @@ private:
         if (molecules[id].position.second > d) {
             if (molecules[id].velocity.second > 0) {
                 molecules[id].velocity.second *= -1;
-                molecules[id].interacted = true;
-                fix_trajectory(id);
+                handle_interaction(id);
                 return;
             }
         }
         if (molecules[id].position.second < u) {
             if (molecules[id].velocity.second < 0) {
                 molecules[id].velocity.second *= -1;
-                molecules[id].interacted = true;
-                fix_trajectory(id);
+                handle_interaction(id);
                 return;
             }
         }
@@ -84,47 +90,43 @@ private:
         if (molecules[id].position.first < l) {
             if (molecules[id].velocity.first < 0) {
                 molecules[id].velocity.first *= -1;
-                molecules[id].interacted = true;
-                fix_trajectory(id);
+                handle_interaction(id);
                 return;
             }
         }
         if (molecules[id].position.first > r) {
             if (molecules[id].velocity.first > 0) {
                 molecules[id].velocity.first *= -1;
-                molecules[id].interacted = true;
-                fix_trajectory(id);
+                handle_interaction(id);
                 return;
             }
         }
     }
 
-    bool interact_cell(size_t id, int x, int y)
+    bool interact_cell(size_t _i, int x, int y)
     {
-        auto& lhs = molecules[id];
-        for (auto it : grid[x][y]) {
-            auto& rhs = molecules[it];
-            if (&rhs == &lhs) {
+        auto& lhs = molecules[_i];
+        for (auto _j : grid[x][y]) {
+            auto& rhs = molecules[_j];
+            if (_i == _j) {
                 continue;
             }
             if (distance(lhs.position, rhs.position) < 4 * radius * radius) {
-                if (id > it) {
+                // avoid duplications
+                if (_i > _j) {
                     continue;
                 }
-                size_t& _i = id;
-                size_t& _j = it;
                 // stucked molecules fix
                 if (prev_interactions[_i] == _j) {
                     current_interactions[_i] = _j;
                     continue;
                 }
-                molecules[_i].interacted = true;
-                molecules[_j].interacted = true;
 
                 current_interactions[_i] = _j;
-                fix_trajectory(_i);
-                fix_trajectory(_j);
                 std::swap(lhs.velocity, rhs.velocity);
+
+                handle_interaction(_i);
+                handle_interaction(_j);
 
                 return true;
             }
@@ -202,8 +204,9 @@ private:
         }
     }
 
-    size_t observing_num;
+    int mode;
     int interactions_num;
+    double trajectory_length;
     std::mutex sem;
     std::mutex sem_trajectory;
     double radius;
@@ -217,30 +220,39 @@ private:
     std::vector<size_t> prev_interactions;
     std::vector<size_t> current_interactions;
     std::vector<std::pair<double, double>> trajectory;
+    std::vector<double> lengths;
+    std::vector<double> len_stats;
 public:
     /*
     new parameters:
-    observing_num - number of observing molecules (first observing_num) that box pushes to trajectory
-    interactions_num - number of interactions in 2nd mode (number of collisions counts in interactions, and when interactions[i] == interactions_num, interactions[i] = 0)
+    
+    mode (1 or 2): if 1, then the number of collisions per length is examined
+                   if 2, then the trajectory length for the desired number of collisions is examined
+
+    trajectory_length - trajectory length in 1st mode
+    interactions_num - number of interactions in 2nd mode
+    
     */
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
         size_t molecules_num = def_molnum,
         unsigned calc_ms = calc_ms,
-        size_t observing_num = def_obs,
-        int interactions_num = def_interactions_num)
-        : observing_num{ observing_num },
+        int mode = def_mode,
+        int interactions_num = def_interactions_num,
+        double trajectory_length = def_trajlength)
+        : mode {mode},
           interactions_num{ interactions_num },
+          trajectory_length { trajectory_length },
           radius{ radius },
           bounds(bounds),
           molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
           calculate_ms{ calc_ms },
           grid_pos(molecules_num),
-          interactions(observing_num),
+          interactions(molecules_num),
           grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
           prev_interactions(molecules_num, -1),
           current_interactions(molecules_num, -1),
-          trajectory(observing_num)
+          trajectory(molecules_num)
     {
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
@@ -248,8 +260,16 @@ public:
             
             grid[grid_pos[i].first][grid_pos[i].second].insert(i);
         }
+
+        if (mode == 1) {
+
+        } else {
+            lengths.resize(molecules_num);
+        }
+
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }
+
 
     const MutexWrapper<std::vector<Molecule>> get_molecules()
     {
@@ -279,6 +299,16 @@ public:
     bool get_interacted(size_t id)
     {
         return molecules[id].interacted;
+    }
+
+    void set_finished(size_t id, bool value)
+    {
+        molecules[id].finished = value;
+    }
+
+    bool get_finished(size_t id)
+    {
+        return molecules[id].finished;
     }
 
     void set_radius(double radius)

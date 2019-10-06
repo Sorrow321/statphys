@@ -77,6 +77,7 @@ private:
     
 public:
     bool interacted = false;
+    bool finished = false;
     std::pair<double, double> position, velocity;
 
     Molecule(double left, double right, double down, double up)
