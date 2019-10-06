@@ -57,11 +57,12 @@ private:
         sem_trajectory.lock();
         double dx = trajectory[id].first - molecules[id].position.first;
         double dy = trajectory[id].first - molecules[id].position.second;
-        lengths[id] += sqrt(dx * dx + dy * dy);
         trajectory[id] = molecules[id].position;
         sem_trajectory.unlock();
 
         if (mode == 2) {
+            lengths[id] += sqrt(dx * dx + dy * dy);
+
             if (interactions[id] == interactions_num) {
                 len_stats.push_back(lengths[id]);
                 lengths[id] = 0.0;
