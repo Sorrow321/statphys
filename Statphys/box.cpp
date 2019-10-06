@@ -61,11 +61,13 @@ private:
         trajectory[id] = molecules[id].position;
         sem_trajectory.unlock();
 
-        if (interactions[id] == interactions_num) {
-            len_stats.push_back(lengths[id]);
-            lengths[id] = 0.0;
-            interactions[id] = 0;
-            molecules[id].finished = true;
+        if (mode == 2) {
+            if (interactions[id] == interactions_num) {
+                len_stats.push_back(lengths[id]);
+                lengths[id] = 0.0;
+                interactions[id] = 0;
+                molecules[id].finished = true;
+            }
         }
     }
 
