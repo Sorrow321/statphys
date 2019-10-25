@@ -20,8 +20,8 @@ struct Button
 
 int main()
 {
-    int n_mol = 10000; 
-    double radius = 1.0;
+    int n_mol = 500; 
+    double radius = 4.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
     std::tuple<double, double, double, double> bounds = { 5.0, 800.0, 5.0, 590.0 };

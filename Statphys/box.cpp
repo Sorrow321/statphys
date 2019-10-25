@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <cmath>
 #include <unordered_set>
-#include <fstream>
+#include <queue>
 
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
@@ -64,7 +64,9 @@ private:
             lengths[id] += sqrt(dx * dx + dy * dy);
 
             if (interactions[id] == interactions_num) {
-                len_stats.push_back(lengths[id]);
+                sem_len_stats.lock();
+                len_stats.push(lengths[id]);
+                sem_len_stats.unlock();
                 lengths[id] = 0.0;
                 interactions[id] = 0;
                 molecules[id].finished = true;
@@ -201,17 +203,18 @@ private:
         while (true)
         {
             std::this_thread::sleep_for(dt);
-            sem.lock();
+            sem_molecules.lock();
             calculate_positions();
-            sem.unlock();
+            sem_molecules.unlock();
         }
     }
 
     int mode;
     int interactions_num;
     double trajectory_length;
-    std::mutex sem;
     std::mutex sem_trajectory;
+    std::mutex sem_len_stats;
+    std::mutex sem_molecules;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
@@ -224,7 +227,7 @@ private:
     std::vector<size_t> current_interactions;
     std::vector<std::pair<double, double>> trajectory;
     std::vector<double> lengths;
-    std::vector<double> len_stats;
+    std::queue<double> len_stats;
 public:
     /*
     new parameters:
@@ -276,41 +279,65 @@ public:
 
     const MutexWrapper<std::vector<Molecule>> get_molecules()
     {
-        return MutexWrapper<std::vector<Molecule>>(&sem, molecules);
+        return MutexWrapper<std::vector<Molecule>>(&sem_molecules, molecules);
     }
 
     const MutexWrapper<std::vector<std::pair<double, double>>> get_trajectory()
     {
         return MutexWrapper<std::vector<std::pair<double, double>>>(&sem_trajectory, trajectory);
     }
+
+    double get_last_len()
+    {
+        double value;
+        sem_len_stats.lock();
+        if (len_stats.empty()) {
+            value = -1;
+        } else {
+            value = len_stats.front();
+            len_stats.pop();
+        }
+        sem_len_stats.unlock();
+        return value;
+    }
     
     void pause()
     {
-        sem.lock();
+        sem_molecules.lock();
     }
     
     void unpause()
     {
-        sem.unlock();
+        sem_molecules.unlock();
     }
 
     void set_interacted(size_t id, bool value)
     {
+        sem_molecules.lock();
         molecules[id].interacted = value;
+        sem_molecules.unlock();
     }
 
     bool get_interacted(size_t id)
     {
-        return molecules[id].interacted;
+        sem_molecules.lock();
+        bool value = molecules[id].interacted;
+        sem_molecules.unlock();
+        return value;
     }
 
     void set_finished(size_t id, bool value)
     {
+        sem_molecules.lock();
         molecules[id].finished = value;
+        sem_molecules.unlock();
     }
 
     bool get_finished(size_t id)
     {
-        return molecules[id].finished;
+        sem_molecules.lock();
+        bool value = molecules[id].finished;
+        sem_molecules.unlock();
+        return value;
     }
 };
