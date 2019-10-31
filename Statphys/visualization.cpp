@@ -361,6 +361,9 @@ int main() {
             main_window.draw(border4);
             main_window.draw(border5);
 
+//            fprintf(stderr, "%f", molecule_box->get_last_len());
+//            fprintf(stderr, "\n");
+
             //HISTOGRAM
 //            get_la
             for (int i = 0; i < histogram_bins; i++) {
