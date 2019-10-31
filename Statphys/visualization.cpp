@@ -64,6 +64,10 @@ int main()
 
     while (window.isOpen())
     {
+        auto x = b.get_last_len();
+        if (x != -1) {
+            std::cout << x << std::endl;
+        }
         if(toggle) {
             auto m = b.get_molecules();
             const std::vector<Molecule>& v = m.get();
@@ -93,6 +97,7 @@ int main()
                             b.pause();
                             toggle = false;
 
+ 
                             /*
                             std::ofstream myfile;
                             myfile.open("output.txt", std::ios_base::app);

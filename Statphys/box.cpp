@@ -51,7 +51,10 @@ private:
 
     void handle_interaction(size_t id)
     {
-        molecules[id].interacted = true;
+        sem_interacted.lock();
+        interacted[id] = true;
+        sem_interacted.unlock();
+        
         interactions[id]++;
 
         sem_trajectory.lock();
@@ -69,7 +72,10 @@ private:
                 sem_len_stats.unlock();
                 lengths[id] = 0.0;
                 interactions[id] = 0;
-                molecules[id].finished = true;
+
+                sem_finished.lock();
+                finished[id] = true;
+                sem_finished.unlock();
             }
         }
     }
@@ -215,6 +221,8 @@ private:
     std::mutex sem_trajectory;
     std::mutex sem_len_stats;
     std::mutex sem_molecules;
+    std::mutex sem_interacted;
+    std::mutex sem_finished;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
@@ -228,6 +236,8 @@ private:
     std::vector<std::pair<double, double>> trajectory;
     std::vector<double> lengths;
     std::queue<double> len_stats;
+    std::vector<bool> finished;
+    std::vector<bool> interacted;
 public:
     /*
     new parameters:
@@ -237,7 +247,6 @@ public:
 
     trajectory_length - trajectory length in 1st mode
     interactions_num - number of interactions in 2nd mode
-    
     */
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
@@ -258,7 +267,9 @@ public:
           grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
           prev_interactions(molecules_num, -1),
           current_interactions(molecules_num, -1),
-          trajectory(molecules_num)
+          trajectory(molecules_num),
+          finished(molecules_num),
+          interacted(molecules_num)
     {
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
@@ -313,31 +324,31 @@ public:
 
     void set_interacted(size_t id, bool value)
     {
-        sem_molecules.lock();
-        molecules[id].interacted = value;
-        sem_molecules.unlock();
+        sem_interacted.lock();
+        interacted[id] = value;
+        sem_interacted.unlock();
     }
 
     bool get_interacted(size_t id)
     {
-        sem_molecules.lock();
-        bool value = molecules[id].interacted;
-        sem_molecules.unlock();
+        sem_interacted.lock();
+        bool value = interacted[id];
+        sem_interacted.unlock();
         return value;
     }
 
     void set_finished(size_t id, bool value)
     {
-        sem_molecules.lock();
-        molecules[id].finished = value;
-        sem_molecules.unlock();
+        sem_finished.lock();
+        finished[id] = value;
+        sem_finished.unlock();
     }
 
     bool get_finished(size_t id)
     {
-        sem_molecules.lock();
-        bool value = molecules[id].finished;
-        sem_molecules.unlock();
+        sem_finished.lock();
+        bool value = finished[id];
+        sem_finished.unlock();
         return value;
     }
 };
