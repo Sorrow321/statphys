@@ -1,6 +1,7 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 #include "box.cpp"
+#include <fstream>
 
 struct Button
 {
@@ -62,12 +63,13 @@ int main()
 
     std::vector<std::vector<std::pair<double, double>>> trajec(def_obs);
 
+    std::ofstream myfile;
+    myfile.open("output.txt", std::ios_base::app);
+
     while (window.isOpen())
     {
-        auto x = b.get_last_len();
-        if (x != -1) {
-            std::cout << x << std::endl;
-        }
+
+
         if(toggle) {
             auto m = b.get_molecules();
             const std::vector<Molecule>& v = m.get();
@@ -76,6 +78,13 @@ int main()
                 myvec[i].setPosition(v[i].position.first, v[i].position.second);
             }
         }
+
+        // stats
+        double last_len = b.get_last_len();
+        if (last_len != -1) {
+            myfile << last_len << std::endl;
+        }
+
         sf::Event event;
 
         while (window.pollEvent(event))

@@ -59,7 +59,7 @@ private:
 
         sem_trajectory.lock();
         double dx = trajectory[id].first - molecules[id].position.first;
-        double dy = trajectory[id].first - molecules[id].position.second;
+        double dy = trajectory[id].second - molecules[id].position.second;
         trajectory[id] = molecules[id].position;
         sem_trajectory.unlock();
 
@@ -70,6 +70,7 @@ private:
                 sem_len_stats.lock();
                 len_stats.push(lengths[id]);
                 sem_len_stats.unlock();
+
                 lengths[id] = 0.0;
                 interactions[id] = 0;
 
@@ -311,6 +312,12 @@ public:
         sem_len_stats.unlock();
         return value;
     }
+
+    double get_last_interactions_num()
+    {
+        double value = rand() % 100;
+        return value;
+    }
     
     void pause()
     {
@@ -322,33 +329,23 @@ public:
         sem_molecules.unlock();
     }
 
-    void set_interacted(size_t id, bool value)
-    {
-        sem_interacted.lock();
-        interacted[id] = value;
-        sem_interacted.unlock();
-    }
-
     bool get_interacted(size_t id)
     {
         sem_interacted.lock();
         bool value = interacted[id];
+        interacted[id] = false;
         sem_interacted.unlock();
         return value;
-    }
-
-    void set_finished(size_t id, bool value)
-    {
-        sem_finished.lock();
-        finished[id] = value;
-        sem_finished.unlock();
     }
 
     bool get_finished(size_t id)
     {
         sem_finished.lock();
         bool value = finished[id];
+        finished[id] = false;
         sem_finished.unlock();
         return value;
     }
+
+    
 };
