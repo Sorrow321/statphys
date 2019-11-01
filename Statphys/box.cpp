@@ -13,9 +13,9 @@ constexpr size_t def_molnum = 50;
 constexpr size_t def_trajnum = 1;
 constexpr double def_radius = 1.0;
 constexpr int def_interactions_num = 10;
-int def_mode = 1;
+constexpr int def_mode = 1;
 constexpr double def_trajlength = 50.0;
-constexpr double def_obs = 1;
+constexpr double def_obs = 5;
 
 template<typename T>
 class MutexWrapper
@@ -24,7 +24,7 @@ class MutexWrapper
     const T& resource;
 public:
     MutexWrapper(std::mutex* sem, const T& resource)
-        : sem(sem), resource(resource)
+            : sem(sem), resource(resource)
     {
         sem->lock();
     }
@@ -51,12 +51,15 @@ private:
 
     void handle_interaction(size_t id)
     {
-        molecules[id].interacted = true;
+        sem_interacted.lock();
+        interacted[id] = true;
+        sem_interacted.unlock();
+
         interactions[id]++;
 
         sem_trajectory.lock();
         double dx = trajectory[id].first - molecules[id].position.first;
-        double dy = trajectory[id].first - molecules[id].position.second;
+        double dy = trajectory[id].second - molecules[id].position.second;
         trajectory[id] = molecules[id].position;
         sem_trajectory.unlock();
 
@@ -67,9 +70,13 @@ private:
                 sem_len_stats.lock();
                 len_stats.push(lengths[id]);
                 sem_len_stats.unlock();
+
                 lengths[id] = 0.0;
                 interactions[id] = 0;
-                molecules[id].finished = true;
+
+                sem_finished.lock();
+                finished[id] = true;
+                sem_finished.unlock();
             }
         }
     }
@@ -145,11 +152,11 @@ private:
 
             // moving the molecule
             molecules[i].position.first = molecules[i].position.first
-                + (double(calculate_ms) / ms_in_s)
-                * molecules[i].velocity.first;
+                                          + (double(calculate_ms) / ms_in_s)
+                                            * molecules[i].velocity.first;
             molecules[i].position.second = molecules[i].position.second
-                + (double(calculate_ms) / ms_in_s)
-                * molecules[i].velocity.second;
+                                           + (double(calculate_ms) / ms_in_s)
+                                             * molecules[i].velocity.second;
 
             // grid indexes
             int grid_x = int(molecules[i].position.first / (2 * radius));
@@ -215,6 +222,8 @@ private:
     std::mutex sem_trajectory;
     std::mutex sem_len_stats;
     std::mutex sem_molecules;
+    std::mutex sem_interacted;
+    std::mutex sem_finished;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
@@ -228,6 +237,8 @@ private:
     std::vector<std::pair<double, double>> trajectory;
     std::vector<double> lengths;
     std::queue<double> len_stats;
+    std::vector<bool> finished;
+    std::vector<bool> interacted;
 public:
     /*
     new parameters:
@@ -237,7 +248,6 @@ public:
 
     trajectory_length - trajectory length in 1st mode
     interactions_num - number of interactions in 2nd mode
-
     */
     Box(double radius = def_radius,
         std::tuple<double, double, double, double> bounds = { def_left, def_right, def_left, def_right },
@@ -246,19 +256,21 @@ public:
         int mode = def_mode,
         int interactions_num = def_interactions_num,
         double trajectory_length = def_trajlength)
-        : mode {mode},
-          interactions_num{ interactions_num },
-          trajectory_length { trajectory_length },
-          radius{ radius },
-          bounds(bounds),
-          molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
-          calculate_ms{ calc_ms },
-          grid_pos(molecules_num),
-          interactions(molecules_num),
-          grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
-          prev_interactions(molecules_num, -1),
-          current_interactions(molecules_num, -1),
-          trajectory(molecules_num)
+            : mode {mode},
+              interactions_num{ interactions_num },
+              trajectory_length { trajectory_length },
+              radius{ radius },
+              bounds(bounds),
+              molecules(molecules_num, Molecule(std::get<0>(bounds), std::get<1>(bounds), std::get<2>(bounds), std::get<3>(bounds))),
+              calculate_ms{ calc_ms },
+              grid_pos(molecules_num),
+              interactions(molecules_num),
+              grid(ceil(std::get<1>(bounds)), std::vector<std::unordered_set<size_t>>(ceil(std::get<3>(bounds)))),
+              prev_interactions(molecules_num, -1),
+              current_interactions(molecules_num, -1),
+              trajectory(molecules_num),
+              finished(molecules_num),
+              interacted(molecules_num)
     {
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
@@ -301,6 +313,12 @@ public:
         return value;
     }
 
+    double get_last_interactions_num()
+    {
+        double value = rand() % 100;
+        return value;
+    }
+
     void pause()
     {
         sem_molecules.lock();
@@ -311,33 +329,23 @@ public:
         sem_molecules.unlock();
     }
 
-    void set_interacted(size_t id, bool value)
-    {
-        sem_molecules.lock();
-        molecules[id].interacted = value;
-        sem_molecules.unlock();
-    }
-
     bool get_interacted(size_t id)
     {
-        sem_molecules.lock();
-        bool value = molecules[id].interacted;
-        sem_molecules.unlock();
+        sem_interacted.lock();
+        bool value = interacted[id];
+        interacted[id] = false;
+        sem_interacted.unlock();
         return value;
-    }
-
-    void set_finished(size_t id, bool value)
-    {
-        sem_molecules.lock();
-        molecules[id].finished = value;
-        sem_molecules.unlock();
     }
 
     bool get_finished(size_t id)
     {
-        sem_molecules.lock();
-        bool value = molecules[id].finished;
-        sem_molecules.unlock();
+        sem_finished.lock();
+        bool value = finished[id];
+        finished[id] = false;
+        sem_finished.unlock();
         return value;
     }
+
+
 };
