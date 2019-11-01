@@ -2,6 +2,7 @@
 #include <iostream>
 #include "box.cpp"
 
+int mode_curr = mode_curr;
 
 struct Button_menu
 {
@@ -106,14 +107,14 @@ int main() {
 
     sf::Text demo_regime_type_text;
     demo_regime_type_text.setFont(global_font);
-    demo_regime_type_text.setString("Regime type: " + std::to_string(def_mode));
+    demo_regime_type_text.setString("Regime type: " + std::to_string(mode_curr));
     demo_regime_type_text.setFillColor(sf::Color::Black);
     demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
-    //    int def_mode = 1; //choose length - 1; choose amount of collisions - 2
+    //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
     demo_statistics_type_text.setFont(global_font);
-    demo_statistics_type_text.setString("Statistics type: " + std::to_string(def_mode));
+    demo_statistics_type_text.setString("Statistics type: " + std::to_string(mode_curr));
     demo_statistics_type_text.setFillColor(sf::Color::Black);
     demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
@@ -121,7 +122,7 @@ int main() {
     sf::Text demo_length_or_collisions_text;
     demo_length_or_collisions_text.setFont(global_font);
     std::string demo_length_or_collisions_string = "Length of trajectory: " + std::to_string(demo_length_or_collisions);
-    if (def_mode == 2) {
+    if (mode_curr == 2) {
         demo_length_or_collisions_string = "Interactions amount: " + std::to_string(demo_length_or_collisions);
     }
     demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
@@ -172,13 +173,20 @@ int main() {
 
     // HISTOGRAM VISUALIZATION:
     int histogram_bins = 20;
+    constexpr int histogram_norm_const = 1000;
     int trajectory_max_len = 20;
     int trajectory_min_len = 0;
-            
-    std::vector<float> trajectory_lens(15);
+    float full_counts_max = 0;
+    bool statistics_collected = false;
+
+    std::vector<int> histogram_demo_counts(histogram_bins);
+    std::vector<float> trajectory_lens(histogram_bins);
     std::vector<sf::RectangleShape> histogram_demo(histogram_bins);
+
     for (int i = 0; i < histogram_bins; i++) {
-        histogram_demo[i].setSize(sf::Vector2f(1000/histogram_bins, 0));
+        histogram_demo_counts[i] = 0;
+        trajectory_lens[i] = i  * trajectory_max_len / histogram_bins;
+        histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const/histogram_bins, 0));
         histogram_demo[i].setFillColor(sf::Color(100, 100, 100));
         histogram_demo[i].setPosition(
                     i * histogram_demo[i].getSize().x,
@@ -255,14 +263,14 @@ int main() {
                     molecules[i].setPosition(v[i].position.first, v[i].position.second);
                 }
                 for(int i=0; i < def_obs; i++) {
-                    if (def_mode == 1) {
+                    if (mode_curr == 1) {
                         if (molecule_box->get_interacted(i)) {
-                            molecule_box->set_interacted(i, false);
+//                            molecule_box->set_interacted(i, false);
                             std::swap(colors[i][0], colors[i][1]);
                         }
                     } else {
                         if (molecule_box->get_finished(i)) {
-                            molecule_box->set_finished(i, false);
+//                            molecule_box->set_finished(i, false);
                             std::swap(colors[i][0], colors[i][1]);
                         }
                     }
@@ -361,15 +369,37 @@ int main() {
             main_window.draw(border4);
             main_window.draw(border5);
 
-//            fprintf(stderr, "%f", molecule_box->get_last_len());
 //            fprintf(stderr, "\n");
 
             //HISTOGRAM
 //            get_la
-            for (int i = 0; i < histogram_bins; i++) {
-                main_window.draw(histogram_demo[i]);
-            }
+            double last_len = molecule_box->get_last_len();
+            for (int i = 0; i < (histogram_bins-1); i++) {
+//                fprintf(stderr, "%d, %d\n", int(histogram_demo_counts[i] * 500.0 / full_counts_max), i);
+                if ((last_len >= trajectory_lens[i]) && (last_len < trajectory_lens[i+1])) {
+                    histogram_demo_counts[i] += 1;
+                    if (full_counts_max < histogram_demo_counts[i]) {
+                        full_counts_max = histogram_demo_counts[i];
+                    }
+                            histogram_demo[i].setSize(
+                            sf::Vector2f(histogram_norm_const / histogram_bins, histogram_demo_counts[i] * 500.0 / full_counts_max)
+                    );
+                    histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
+                                                histogram_demo[i].getSize().y);
 
+                }
+                if ((full_counts_max > 15000) && (!statistics_collected)) { // после набора статистики (чтобы узнать макс длину траектории)
+                    full_counts_max = 0;
+                    statistics_collected = true;
+                    for (int i = 0; i < histogram_bins; i++) {
+                        histogram_demo_counts[i] = 0;
+                        trajectory_lens[i] = i * trajectory_max_len / histogram_bins;
+                    }
+                }
+                if (statistics_collected) {
+                    main_window.draw(histogram_demo[i]);
+                }
+            }
         } else if (main_window_state == 2) {
             std::vector<std::string>  input_button_strings = {"Enter regime type",
                                                               "Enter statistics type: ",
@@ -419,23 +449,23 @@ int main() {
                             if (event.key.code != 13) {
                                 if (!was_first_key_press) {
                                     was_first_key_press = true;
-//                                    def_mode = 0;
+//                                    mode_curr = 0;
                                 }
                             }
                             if (event.key.code == 49) {
                                 demo_regime_type_text.setString(
                                         "Regime type: " + std::to_string(event.text.unicode - 48));
-                                def_mode = 1;
+                                mode_curr = 1;
                             } else if (event.key.code == 50) {
                                 demo_regime_type_text.setString(
                                         "Regime type: " + std::to_string(event.text.unicode - 48));
-                                def_mode = 2;
+                                mode_curr = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_regime_type_text.setFillColor(sf::Color::Black);
-//                                if (def_mode == 1) {
+//                                if (mode_curr == 1) {
 //                                    demo_length_or_collisions_text.setString("Length of trajectory: 1");
-//                                } else if (def_mode == 2) {
+//                                } else if (mode_curr == 2) {
 //                                    demo_length_or_collisions_text.setString("Interactions amount: 1");
 //                                }
 //                                main_window.draw(demo_length_or_collisions_text);
@@ -445,21 +475,21 @@ int main() {
                             if (event.key.code != 13) {
                                 if (!was_first_key_press) {
                                     was_first_key_press = true;
-//                                    def_mode = 0;
+//                                    mode_curr = 0;
                                 }
                             }
                             if (event.key.code == 49) {
                                 demo_statistics_type_text.setString("Statistics type: " + std::to_string(event.text.unicode - 48));
-                                def_mode = 1;
+                                mode_curr = 1;
                             } else if (event.key.code == 50) {
                                 demo_statistics_type_text.setString("Statistics type: " + std::to_string(event.text.unicode - 48));
-                                def_mode = 2;
+                                mode_curr = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_statistics_type_text.setFillColor(sf::Color::Black);
-                                if (def_mode == 1) {
+                                if (mode_curr == 1) {
                                     demo_length_or_collisions_text.setString("Length of trajectory: 1");
-                                } else if (def_mode == 2) {
+                                } else if (mode_curr == 2) {
                                     demo_length_or_collisions_text.setString("Interactions amount: 1");
                                 }
                                 main_window.draw(demo_length_or_collisions_text);
@@ -473,7 +503,7 @@ int main() {
                                 }
                             }
                             demo_length_or_collisions_text.setFillColor(sf::Color::Red);
-                            if (def_mode == 1) {
+                            if (mode_curr == 1) {
                                 if ((event.key.code >= 48) && (event.key.code < 58)) {
                                     if (demo_length_or_collisions_string.size() <= 3) {
                                         demo_length_or_collisions_string += std::to_string(event.text.unicode - 48);
@@ -491,7 +521,7 @@ int main() {
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
                                 }
-                            } else if (def_mode == 2) {
+                            } else if (mode_curr == 2) {
                                 if (event.key.code != 13) {
                                     if (!was_first_key_press) {
                                         was_first_key_press = true;
@@ -578,9 +608,18 @@ int main() {
                         }
                         if (enter_press_amount == demo_parameters_amount) {
 //                            delete molecule_box;  // BUG! WHY DELETE DOES NOT WORK?????????
+
+
+                            for (int i = 0; i < histogram_bins; i++) {
+                                statistics_collected = false;
+                                full_counts_max = 0;
+                                histogram_demo_counts[i] = 0;
+                                trajectory_lens[i] = i * trajectory_max_len / histogram_bins;
+                            }
+
                             molecule_box = NULL;
 
-                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, def_mode, demo_length_or_collisions, demo_length_or_collisions);
+                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, demo_length_or_collisions, demo_length_or_collisions);
                             molecule_box->unpause();
                             is_molecules_active = true;
                             molecules.clear();
