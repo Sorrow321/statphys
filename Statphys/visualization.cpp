@@ -21,7 +21,7 @@ struct Button
 
 int main()
 {
-    int n_mol = 1000; 
+    int n_mol = 500; 
     double radius = 4.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
@@ -29,7 +29,7 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
-    Box b(radius, bounds, n_mol, 5, 1, 1, 500.0);
+    Box b(radius, bounds, n_mol, 5, 1, 1, 2000.0);
     std::vector<sf::CircleShape> myvec(n_mol, sf::CircleShape(10));
 
     std::vector<Button> gui;

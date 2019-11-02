@@ -38,6 +38,23 @@ public:
     }
 };
 
+class PoissonEstimator
+{
+    double sum = 0;
+    int n = 0;
+public:
+    void push(double value)
+    {
+        sum += value;
+        n++;
+    }
+
+    bool test_value(double value)
+    {
+        return value <= sum / n * 2;
+    }
+};
+
 struct Box
 {
 private:
@@ -56,6 +73,7 @@ private:
         sem_interacted.unlock();
         
         interactions[id]++; 
+
 
         sem_trajectory.lock();
         double dx = trajectory[id].first - molecules[id].position.first;
@@ -252,6 +270,7 @@ private:
     std::queue<double> interaction_stats;
     std::vector<bool> finished;
     std::vector<bool> interacted;
+    PoissonEstimator p_est;
 public:
     /*
     new parameters:
@@ -332,6 +351,10 @@ public:
             value = -1;
         } else {
             value = interaction_stats.front();
+            p_est.push(value);
+            if (!p_est.test_value(value)) {
+                value = -1;
+            }
             interaction_stats.pop();
         }
         sem_int_stats.unlock();
