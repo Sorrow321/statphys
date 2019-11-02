@@ -29,7 +29,7 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(1200, 600), "Demonstration");
     window.clear(sf::Color(255, 255, 255));
-    Box b(radius, bounds, n_mol, 5, 2, 30, 1000.0);
+    Box b(radius, bounds, n_mol, 5, 1, 1, 500.0);
     std::vector<sf::CircleShape> myvec(n_mol, sf::CircleShape(10));
 
     std::vector<Button> gui;

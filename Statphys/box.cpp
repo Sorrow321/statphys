@@ -63,7 +63,18 @@ private:
         trajectory[id] = molecules[id].position;
         sem_trajectory.unlock();
 
-        if (mode == 2) {
+        if (mode == 1) {
+            lengths[id] += sqrt(dx * dx + dy * dy);
+
+            if (lengths[id] >= trajectory_length) {
+                sem_int_stats.lock();
+                interaction_stats.push(interactions[id] - 1);
+                sem_int_stats.unlock();
+
+                lengths[id] = 0.0;
+                interactions[id] = 0;
+            }
+        }else if (mode == 2) {
             lengths[id] += sqrt(dx * dx + dy * dy);
 
             if (interactions[id] == interactions_num) {
@@ -221,6 +232,7 @@ private:
     double trajectory_length;
     std::mutex sem_trajectory;
     std::mutex sem_len_stats;
+    std::mutex sem_int_stats;
     std::mutex sem_molecules;
     std::mutex sem_interacted;
     std::mutex sem_finished;
@@ -237,6 +249,7 @@ private:
     std::vector<std::pair<double, double>> trajectory;
     std::vector<double> lengths;
     std::queue<double> len_stats;
+    std::queue<double> interaction_stats;
     std::vector<bool> finished;
     std::vector<bool> interacted;
 public:
@@ -269,22 +282,20 @@ public:
           prev_interactions(molecules_num, -1),
           current_interactions(molecules_num, -1),
           trajectory(molecules_num),
+          lengths(molecules_num),
           finished(molecules_num),
           interacted(molecules_num)
     {
+        for (size_t i = 0; i < molecules_num; i++) {
+            trajectory[i] = molecules[i].position;
+        }
+
         for (size_t i = 0; i < molecules_num; i++) {
             grid_pos[i].first = floor(molecules[i].position.first / (2 * radius));
             grid_pos[i].second = floor(molecules[i].position.second / (2 * radius));
             
             grid[grid_pos[i].first][grid_pos[i].second].insert(i);
         }
-
-        if (mode == 1) {
-
-        } else {
-            lengths.resize(molecules_num);
-        }
-
         calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }
 
@@ -315,7 +326,15 @@ public:
 
     double get_last_interactions_num()
     {
-        double value = rand() % 100;
+        double value;
+        sem_int_stats.lock();
+        if (interaction_stats.empty()) {
+            value = -1;
+        } else {
+            value = interaction_stats.front();
+            interaction_stats.pop();
+        }
+        sem_int_stats.unlock();
         return value;
     }
     
@@ -346,6 +365,4 @@ public:
         sem_finished.unlock();
         return value;
     }
-
-    
 };
