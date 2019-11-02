@@ -21,7 +21,7 @@ struct Button
 
 int main()
 {
-    int n_mol = 500; 
+    int n_mol = 1000; 
     double radius = 4.0;
 
     //std::tuple<double, double, double, double> bounds = { 5.0, 590.0, 5.0, 590.0 };
@@ -80,7 +80,7 @@ int main()
         }
 
         // stats
-        double last_len = b.get_last_len();
+        double last_len = b.get_last_interactions_num();
         if (last_len != -1) {
             myfile << last_len << std::endl;
         }

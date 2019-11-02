@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /Statphys/text
 /Statphys/vis_nikita.cpp
+/Statphys/output.txt

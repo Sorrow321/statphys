@@ -55,7 +55,7 @@ private:
         interacted[id] = true;
         sem_interacted.unlock();
         
-        interactions[id]++;
+        interactions[id]++; 
 
         sem_trajectory.lock();
         double dx = trajectory[id].first - molecules[id].position.first;
