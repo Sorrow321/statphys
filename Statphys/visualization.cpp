@@ -1,6 +1,7 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 #include "box.cpp"
+#include <cmath>
 
 int mode_curr = mode_curr;
 
@@ -34,10 +35,10 @@ int main() {
     float radius_molecule = def_radius;
     bool is_molecules_active = true;
 
-    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width, 5.0, sf::VideoMode::getDesktopMode().height/2};
-
+    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width/2, 5.0, sf::VideoMode::getDesktopMode().height/2};
+    fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width/2, sf::VideoMode::getDesktopMode().height/2);
     sf::RenderWindow main_window(
-            sf::VideoMode(sf::VideoMode::getDesktopMode().width,sf::VideoMode::getDesktopMode().height),
+            sf::VideoMode(sf::VideoMode::getDesktopMode().width/2,sf::VideoMode::getDesktopMode().height),
             "StatPhys");
 
 
@@ -50,7 +51,7 @@ int main() {
     sf::RectangleShape border1;
     border1.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
     border1.setFillColor(sf::Color(100, 100, 100));
-    border1.setPosition(sf::VideoMode::getDesktopMode().width, 0.0);
+    border1.setPosition(sf::VideoMode::getDesktopMode().width/2, 0.0);
 
     sf::RectangleShape border2;
     border2.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
@@ -58,12 +59,12 @@ int main() {
     border2.setPosition(0.0, 0.0);
 
     sf::RectangleShape border3;
-    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
+    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2, 3));
     border3.setFillColor(sf::Color(100, 100, 100));
     border3.setPosition(0.0, 0.0);
 
     sf::RectangleShape border4;
-    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
+    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2, 3));
     border4.setFillColor(sf::Color(100, 100, 100));
     border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
 
@@ -78,26 +79,26 @@ int main() {
     demonstration_button_texture.loadFromFile("text/button.png");
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo("Demonstration", demonstration_button_texture,sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 - 50 * 0.5),sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_theory("Theory", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 100 * 0.5), sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_exit("Exit", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 250 * 0.5), sf::IntRect(0, 0, 350, 50));
 
     /* DEMONSTATION(1) */
     // BUTTONS
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
+    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     bool is_clear_box = false;
 
@@ -109,14 +110,14 @@ int main() {
     demo_regime_type_text.setFont(global_font);
     demo_regime_type_text.setString("Regime type: " + std::to_string(mode_curr));
     demo_regime_type_text.setFillColor(sf::Color::Black);
-    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
+    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
     demo_statistics_type_text.setFont(global_font);
     demo_statistics_type_text.setString("Statistics type: " + std::to_string(mode_curr));
     demo_statistics_type_text.setFillColor(sf::Color::Black);
-    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
+    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
     float demo_length_or_collisions = int(def_interactions_num);
     sf::Text demo_length_or_collisions_text;
@@ -128,7 +129,7 @@ int main() {
     demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
     demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
+    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
@@ -137,7 +138,7 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
     radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
+    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
@@ -145,7 +146,7 @@ int main() {
     std::string amount_molecules_string = std::to_string(amount_molecule);
     amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
+    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
     // INPUT VALUES END
 
     // VISUAL BORDERS for graphs
@@ -172,26 +173,31 @@ int main() {
 
 
     // HISTOGRAM VISUALIZATION:
-    int histogram_bins = 20;
+    int histogram_bins = 40;
     constexpr int histogram_norm_const = 1000;
-    int trajectory_max_len = 20;
-    int trajectory_min_len = 0;
+    double trajectory_max_len = 0;
+    double trajectory_min_len = 100000000;
+
+    double collision_max_amount = 0;
+    double collision_min_amount = 1000000000;
+
     float full_counts_max = 0;
     bool statistics_collected = false;
 
     std::vector<int> histogram_demo_counts(histogram_bins);
     std::vector<float> trajectory_lens(histogram_bins);
+    std::vector<float> collision_amounts(histogram_bins);
     std::vector<sf::RectangleShape> histogram_demo(histogram_bins);
 
     for (int i = 0; i < histogram_bins; i++) {
         histogram_demo_counts[i] = 0;
-        trajectory_lens[i] = i  * trajectory_max_len / histogram_bins;
-        histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const/histogram_bins, 0));
-        histogram_demo[i].setFillColor(sf::Color(100, 100, 100));
+        trajectory_lens[i] = (i + 1)  * fabs(trajectory_max_len - trajectory_min_len) / histogram_bins;
+        collision_amounts[i] = i + collision_min_amount;
+        histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
+        histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
         histogram_demo[i].setPosition(
                     i * histogram_demo[i].getSize().x,
                     sf::VideoMode::getDesktopMode().height);
-//        histogram_demo[i].
         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                      histogram_demo[i].getSize().y);
     }
@@ -373,31 +379,124 @@ int main() {
 
             //HISTOGRAM
 //            get_la
-            double last_len = molecule_box->get_last_len();
-            for (int i = 0; i < (histogram_bins-1); i++) {
-//                fprintf(stderr, "%d, %d\n", int(histogram_demo_counts[i] * 500.0 / full_counts_max), i);
-                if ((last_len >= trajectory_lens[i]) && (last_len < trajectory_lens[i+1])) {
-                    histogram_demo_counts[i] += 1;
-                    if (full_counts_max < histogram_demo_counts[i]) {
-                        full_counts_max = histogram_demo_counts[i];
+            if (mode_curr == 1) {
+                double last_amount = molecule_box->get_last_interactions_num();
+                if (last_amount != -1) {
+                    std::cout << last_amount << std::endl;
+                    fprintf(stderr, "Last amount max: %f\n", collision_max_amount);
+                    if (collision_max_amount < last_amount) {
+                        collision_max_amount = last_amount;
+                        for (int i = 0; i < histogram_bins; i++) {
+                            histogram_demo_counts[i] = 0;
+                            full_counts_max = 0;
+                            collision_amounts[i] = i + collision_min_amount;
+                            fprintf(stderr, "%d\n", collision_amounts[i]);
+                        }
                     }
-                            histogram_demo[i].setSize(
-                            sf::Vector2f(histogram_norm_const / histogram_bins, histogram_demo_counts[i] * 500.0 / full_counts_max)
-                    );
-                    histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
-                                                histogram_demo[i].getSize().y);
+                    if (collision_min_amount > last_amount) {
+                        collision_min_amount = last_amount;
+                        for (int i = 0; i < histogram_bins; i++) {
+                            histogram_demo_counts[i] = 0;
+                            full_counts_max = 0;
+                            collision_amounts[i] = i + collision_min_amount;
+                            //                    fprintf(stderr, "%d\n", collision_amounts[i]);
+                        }
+                    }
+                    fprintf(stderr, "Last_amount: %d\n", last_amount);
+                    for (int i = 0; i < (histogram_bins - 1); i++) {
+                        fprintf(stderr, "collision_%d - %f \n", i, collision_amounts[i]);
+                        if ((last_amount >= collision_amounts[i]) && (last_amount < collision_amounts[i + 1])) {
+                            histogram_demo_counts[i] += 1;
+                            if (full_counts_max < histogram_demo_counts[i]) {
+                                full_counts_max = histogram_demo_counts[i];
+                            }
+                        }
+                        histogram_demo[i].setSize(
+                                sf::Vector2f(histogram_norm_const / histogram_bins,
+                                             histogram_demo_counts[i] * 500.0 / full_counts_max)
+                        );
+                        histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
+                                                    histogram_demo[i].getSize().y);
+                        if (statistics_collected) {
+                            main_window.draw(histogram_demo[i]);
+                        }
 
-                }
-                if ((full_counts_max > 15000) && (!statistics_collected)) { // после набора статистики (чтобы узнать макс длину траектории)
-                    full_counts_max = 0;
-                    statistics_collected = true;
-                    for (int i = 0; i < histogram_bins; i++) {
-                        histogram_demo_counts[i] = 0;
-                        trajectory_lens[i] = i * trajectory_max_len / histogram_bins;
+                        if ((full_counts_max >= 1) &&
+                            (!statistics_collected)) { // после набора статистики (чтобы узнать макс длину траектории)
+                            full_counts_max = 0;
+                            statistics_collected = true;
+                            for (int j = 0; j < histogram_bins; j++) {
+                                histogram_demo_counts[j] = 0;
+                                collision_amounts[j] =
+                                        j / histogram_bins;
+                            }
+                        }
+                    }
+                } else {
+                    for (int i=0; i < histogram_bins; i++) {
+                        if (statistics_collected) {
+                            main_window.draw(histogram_demo[i]);
+                        }
                     }
                 }
-                if (statistics_collected) {
-                    main_window.draw(histogram_demo[i]);
+            }
+            else {
+                double last_len = molecule_box->get_last_len();
+                if (last_len != -1) {
+                    fprintf(stderr, "Trajectory max len: %f\n", trajectory_max_len);
+                    if (trajectory_max_len < last_len) {
+                        trajectory_max_len = last_len;
+                        for (int i = 0; i < histogram_bins; i++) {
+                            histogram_demo_counts[i] = 0;
+                            full_counts_max = 0;
+                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                            fprintf(stderr, "%d\n", trajectory_lens[i]);
+                        }
+                    }
+                    if (trajectory_min_len > last_len) {
+                        trajectory_min_len = last_len;
+                        for (int i = 0; i < histogram_bins; i++) {
+                            histogram_demo_counts[i] = 0;
+                            full_counts_max = 0;
+                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                            //                    fprintf(stderr, "%d\n", trajectory_lens[i]);
+                        }
+                    }
+                    fprintf(stderr, "Last_len: %f\n", last_len);
+                    for (int i = 0; i < (histogram_bins - 1); i++) {
+                        fprintf(stderr, "trajectory_%d - %f \n", i, trajectory_lens[i]);
+                        if ((last_len >= trajectory_lens[i]) && (last_len < trajectory_lens[i + 1])) {
+                            histogram_demo_counts[i] += 1;
+                            if (full_counts_max < histogram_demo_counts[i]) {
+                                full_counts_max = histogram_demo_counts[i];
+                            }
+                        }
+                        histogram_demo[i].setSize(
+                                sf::Vector2f(histogram_norm_const / histogram_bins,
+                                             histogram_demo_counts[i] * 500.0 / full_counts_max)
+                        );
+                        histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
+                                                    histogram_demo[i].getSize().y);
+                        if (statistics_collected) {
+                            main_window.draw(histogram_demo[i]);
+                        }
+
+                        if ((full_counts_max >= 1) &&
+                            (!statistics_collected)) { // после набора статистики (чтобы узнать макс длину траектории)
+                            full_counts_max = 0;
+                            statistics_collected = true;
+                            for (int j = 0; j < histogram_bins; j++) {
+                                histogram_demo_counts[j] = 0;
+                                trajectory_lens[j] = j * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                            }
+                        }
+                    }
+                } else {
+                    for (int i=0; i < histogram_bins; i++) {
+                        if (statistics_collected) {
+                            main_window.draw(histogram_demo[i]);
+                        }
+                    }
                 }
             }
         } else if (main_window_state == 2) {
@@ -609,12 +708,18 @@ int main() {
                         if (enter_press_amount == demo_parameters_amount) {
 //                            delete molecule_box;  // BUG! WHY DELETE DOES NOT WORK?????????
 
-
+                            //HISTOGRAM
                             for (int i = 0; i < histogram_bins; i++) {
                                 statistics_collected = false;
                                 full_counts_max = 0;
                                 histogram_demo_counts[i] = 0;
-                                trajectory_lens[i] = i * trajectory_max_len / histogram_bins;
+                                trajectory_max_len = 0;
+                                trajectory_min_len = 10000000;
+                                collision_max_amount  = 0;
+                                collision_min_amount = 10000000;
+                                trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                                collision_amounts[i] = i + collision_min_amount;
+                                main_window.draw(histogram_demo[i]);
                             }
 
                             molecule_box = NULL;
