@@ -35,10 +35,10 @@ int main() {
     float radius_molecule = def_radius;
     bool is_molecules_active = true;
 
-    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width/2, 5.0, sf::VideoMode::getDesktopMode().height/2};
-    fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width/2, sf::VideoMode::getDesktopMode().height/2);
+    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width, 5.0, sf::VideoMode::getDesktopMode().height/2};
+    fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
     sf::RenderWindow main_window(
-            sf::VideoMode(sf::VideoMode::getDesktopMode().width/2,sf::VideoMode::getDesktopMode().height),
+            sf::VideoMode(sf::VideoMode::getDesktopMode().width,sf::VideoMode::getDesktopMode().height),
             "StatPhys");
 
 
@@ -51,7 +51,7 @@ int main() {
     sf::RectangleShape border1;
     border1.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
     border1.setFillColor(sf::Color(100, 100, 100));
-    border1.setPosition(sf::VideoMode::getDesktopMode().width/2, 0.0);
+    border1.setPosition(sf::VideoMode::getDesktopMode().width, 0.0);
 
     sf::RectangleShape border2;
     border2.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
@@ -59,12 +59,12 @@ int main() {
     border2.setPosition(0.0, 0.0);
 
     sf::RectangleShape border3;
-    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2, 3));
+    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border3.setFillColor(sf::Color(100, 100, 100));
     border3.setPosition(0.0, 0.0);
 
     sf::RectangleShape border4;
-    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2, 3));
+    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border4.setFillColor(sf::Color(100, 100, 100));
     border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
 
@@ -79,26 +79,26 @@ int main() {
     demonstration_button_texture.loadFromFile("text/button.png");
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo("Demonstration", demonstration_button_texture,sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 - 50 * 0.5),sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_theory("Theory", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 100 * 0.5), sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_exit("Exit", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width/2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 250 * 0.5), sf::IntRect(0, 0, 350, 50));
 
     /* DEMONSTATION(1) */
     // BUTTONS
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
+    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     bool is_clear_box = false;
 
@@ -110,14 +110,14 @@ int main() {
     demo_regime_type_text.setFont(global_font);
     demo_regime_type_text.setString("Regime type: " + std::to_string(mode_curr));
     demo_regime_type_text.setFillColor(sf::Color::Black);
-    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
+    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
     demo_statistics_type_text.setFont(global_font);
     demo_statistics_type_text.setString("Statistics type: " + std::to_string(mode_curr));
     demo_statistics_type_text.setFillColor(sf::Color::Black);
-    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
+    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
     float demo_length_or_collisions = int(def_interactions_num);
     sf::Text demo_length_or_collisions_text;
@@ -129,7 +129,7 @@ int main() {
     demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
     demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
+    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
@@ -138,7 +138,7 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
     radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
+    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
@@ -146,7 +146,7 @@ int main() {
     std::string amount_molecules_string = std::to_string(amount_molecule);
     amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width/2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
+    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
     // INPUT VALUES END
 
     // VISUAL BORDERS for graphs
@@ -382,7 +382,7 @@ int main() {
             if (mode_curr == 1) {
                 double last_amount = molecule_box->get_last_interactions_num();
                 if (last_amount != -1) {
-                    std::cout << last_amount << std::endl;
+//                    std::cout << last_amount << std::endl;
                     fprintf(stderr, "Last amount max: %f\n", collision_max_amount);
                     if (collision_max_amount < last_amount) {
                         collision_max_amount = last_amount;
@@ -616,6 +616,7 @@ int main() {
                                     demo_length_or_collisions_text.setString(
                                             "Length of trajectory: " + demo_length_or_collisions_string);
                                 } else if (event.key.code == 13) {
+                                    demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
                                     was_first_key_press = false;
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
@@ -638,7 +639,7 @@ int main() {
                                     demo_length_or_collisions_text.setString(
                                             "Interactions amount: " + demo_length_or_collisions_string);
                                 } else if (event.key.code == 13) {
-                                    demo_length_or_collisions = std::stod(demo_length_or_collisions_string);
+                                    demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
                                     was_first_key_press = false;
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
@@ -723,8 +724,8 @@ int main() {
                             }
 
                             molecule_box = NULL;
-
-                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, demo_length_or_collisions, demo_length_or_collisions);
+                            std::cout << demo_length_or_collisions << std::endl;
+                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
                             molecule_box->unpause();
                             is_molecules_active = true;
                             molecules.clear();
