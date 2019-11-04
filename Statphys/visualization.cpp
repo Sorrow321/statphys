@@ -35,10 +35,10 @@ int main() {
     float radius_molecule = def_radius;
     bool is_molecules_active = true;
 
-    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width / 2, 5.0, sf::VideoMode::getDesktopMode().height/2};
-    //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width / 2, sf::VideoMode::getDesktopMode().height/2);
+    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width, 5.0, sf::VideoMode::getDesktopMode().height/2};
+    //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
     sf::RenderWindow main_window(
-            sf::VideoMode(sf::VideoMode::getDesktopMode().width / 2,sf::VideoMode::getDesktopMode().height),
+            sf::VideoMode(sf::VideoMode::getDesktopMode().width,sf::VideoMode::getDesktopMode().height),
             "StatPhys");
 
 
@@ -51,7 +51,7 @@ int main() {
     sf::RectangleShape border1;
     border1.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
     border1.setFillColor(sf::Color(100, 100, 100));
-    border1.setPosition(sf::VideoMode::getDesktopMode().width / 2, 0.0);
+    border1.setPosition(sf::VideoMode::getDesktopMode().width, 0.0);
 
     sf::RectangleShape border2;
     border2.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
@@ -59,12 +59,12 @@ int main() {
     border2.setPosition(0.0, 0.0);
 
     sf::RectangleShape border3;
-    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2, 3));
+    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border3.setFillColor(sf::Color(100, 100, 100));
     border3.setPosition(0.0, 0.0);
 
     sf::RectangleShape border4;
-    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2, 3));
+    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
     border4.setFillColor(sf::Color(100, 100, 100));
     border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
 
@@ -79,29 +79,29 @@ int main() {
     demonstration_button_texture.loadFromFile("text/button.png");
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo("Demonstration", demonstration_button_texture,sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width / 2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 - 50 * 0.5),sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_theory("Theory", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width / 2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 100 * 0.5), sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_authors("Authors", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width / 2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 250 * 0.5), sf::IntRect(0, 0, 350, 50));
     Button_menu main_menu_exit("Exit", demonstration_button_texture, sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width / 2 * 0.5 - 350 * 0.5,
+            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 400 * 0.5), sf::IntRect(0, 0, 350, 50));
 
     /* DEMONSTATION(1) */
     // BUTTONS
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
+    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     bool is_clear_box = false;
 
@@ -113,14 +113,14 @@ int main() {
     demo_regime_type_text.setFont(global_font);
     demo_regime_type_text.setString("Regime type: " + std::to_string(mode_curr));
     demo_regime_type_text.setFillColor(sf::Color::Black);
-    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
+    demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
     demo_statistics_type_text.setFont(global_font);
     demo_statistics_type_text.setString("Statistics type: " + std::to_string(mode_curr));
     demo_statistics_type_text.setFillColor(sf::Color::Black);
-    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
+    demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
     float demo_length_or_collisions = int(def_interactions_num);
     sf::Text demo_length_or_collisions_text;
@@ -132,7 +132,7 @@ int main() {
     demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
     demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
+    demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
@@ -141,7 +141,7 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
     radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
+    radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
@@ -149,18 +149,21 @@ int main() {
     std::string amount_molecules_string = std::to_string(amount_molecule);
     amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2 - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
+    amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
     // INPUT VALUES END
 
     // VISUAL BORDERS for graphs
     sf::RectangleShape border5;
-    border5.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
+    border5.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height / 2.0));
     border5.setFillColor(sf::Color(100, 100, 100));
-    border5.setPosition(amount_molecules_text.getPosition().x, sf::VideoMode::getDesktopMode().height/2);
+    border5.setPosition(amount_molecules_text.getPosition().x, sf::VideoMode::getDesktopMode().height / 2.0);
 
     //TRAJECTORY LINES:
     std::vector<std::vector<sf::Vertex>> trajectories(def_obs);
     std::vector<std::vector<sf::Color>> colors(def_obs);
+    // ТОЧКИ ИЗЛОМА
+    std::vector<std::vector<sf::CircleShape>> break_points(def_obs);
+
     for (int i = 0; i < def_obs; i++) {
         colors[i].emplace_back(sf::Color::Blue);
         colors[i].emplace_back(sf::Color::Red);
@@ -191,7 +194,7 @@ int main() {
     std::vector<float> trajectory_lens(histogram_bins);
     std::vector<float> collision_amounts(histogram_bins);
     std::vector<sf::RectangleShape> histogram_demo(histogram_bins);
-//    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width / 2, 3));
+//    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
 //    border4.setFillColor(sf::Color(100, 100, 100));
 //    border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
     std::vector<sf::RectangleShape> histogram_axes_ticks(histogram_bins);
@@ -204,8 +207,107 @@ int main() {
     cmc_logo_texture.loadFromFile("text/cmc_logo.png");
     cmc_logo_texture.setSmooth(true);
     cmc_logo_sprite.setTexture(cmc_logo_texture);
-    cmc_logo_sprite.setPosition(sf::Vector2f(50, 50));
+    cmc_logo_sprite.setPosition(sf::Vector2f(0, 50));
     cmc_logo_sprite.setScale(1, 1);
+    
+    sf::Texture fiz_logo_texture;
+    sf::Sprite fiz_logo_sprite;
+    fiz_logo_texture.loadFromFile("text/fiz_logo.jpg");
+    fiz_logo_texture.setSmooth(true);
+    fiz_logo_sprite.setTexture(fiz_logo_texture);
+    fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x,  50));
+    fiz_logo_sprite.setScale(1, 1);
+
+    sf::Text cmc_logo_text;
+    cmc_logo_text.setFont(global_font);
+    std::string cmc_logo_string = "Faculty of Computational mathematics and cybernetics";
+    cmc_logo_text.setString(cmc_logo_string);
+    cmc_logo_text.setFillColor(sf::Color::Black);
+    cmc_logo_text.setPosition(sf::Vector2f(cmc_logo_sprite.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 50));
+
+    sf::Text fiz_logo_text;
+    fiz_logo_text.setFont(global_font);
+    std::string fiz_logo_string = "Faculty of physics";
+    fiz_logo_text.setString(fiz_logo_string);
+    fiz_logo_text.setFillColor(sf::Color::Black);
+    fiz_logo_text.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - fiz_logo_text.getLocalBounds().width * 0.5,
+            fiz_logo_sprite.getGlobalBounds().height + 50));
+    
+    sf::Text teacher_text;
+    teacher_text.setFont(global_font);
+    std::string teacher_string = "Nauchniy ruk. : docent Chichigina Olga Aleksandrovna\n"
+                                 "Lector: professor ??????????????";
+    teacher_text.setString(teacher_string);
+    teacher_text.setFillColor(sf::Color::Black);
+    teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 125));
+    
+    sf::Texture nikita_photo_texture;
+    sf::Sprite nikita_photo_sprite;
+    nikita_photo_texture.loadFromFile("text/Nikita.jpg");
+    nikita_photo_texture.setSmooth(true);
+    nikita_photo_sprite.setTexture(nikita_photo_texture);
+    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 225));
+    nikita_photo_sprite.setScale(1, 1);
+
+    sf::Text nikita_text;
+    nikita_text.setFont(global_font);
+    std::string nikita_string = "Nikita Kuzmin";
+    nikita_text.setString(nikita_string);
+    nikita_text.setFillColor(sf::Color::Black);
+    nikita_text.setPosition(sf::Vector2f(nikita_photo_sprite.getGlobalBounds().left + nikita_photo_sprite.getGlobalBounds().width * 0.5 - nikita_text.getLocalBounds().width * 0.5,
+            nikita_photo_sprite.getPosition().y + nikita_photo_sprite.getLocalBounds().height + 5));
+
+    sf::Texture ilya_photo_texture;
+    sf::Sprite ilya_photo_sprite;
+    ilya_photo_texture.loadFromFile("text/Ilya.jpg");
+    ilya_photo_texture.setSmooth(true);
+    ilya_photo_sprite.setTexture(ilya_photo_texture);
+    ilya_photo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - ilya_photo_sprite.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 225));
+    ilya_photo_sprite.setScale(1, 1);
+
+    sf::Text ilya_text;
+    ilya_text.setFont(global_font);
+    std::string ilya_string = "Ilya Fedorov";
+    ilya_text.setString(ilya_string);
+    ilya_text.setFillColor(sf::Color::Black);
+    ilya_text.setPosition(sf::Vector2f(sf::Vector2f(ilya_photo_sprite.getGlobalBounds().left + ilya_photo_sprite.getGlobalBounds().width * 0.5 - ilya_text.getLocalBounds().width * 0.5,
+            ilya_photo_sprite.getPosition().y + ilya_photo_sprite.getLocalBounds().height + 5)));
+
+
+    sf::Texture dima_photo_texture;
+    sf::Sprite dima_photo_sprite;
+    dima_photo_texture.loadFromFile("text/Dima.jpg");
+    dima_photo_texture.setSmooth(true);
+    dima_photo_sprite.setTexture(dima_photo_texture);
+    dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - dima_photo_sprite.getLocalBounds().width * 0.5,
+            cmc_logo_sprite.getGlobalBounds().height + 225));
+    dima_photo_sprite.setScale(1, 1);
+
+    sf::Text dima_text;
+    dima_text.setFont(global_font);
+    std::string dima_string = "Dmitriy Poymanov";
+    dima_text.setString(dima_string);
+    dima_text.setFillColor(sf::Color::Black);
+    dima_text.setPosition(sf::Vector2f(dima_photo_sprite.getGlobalBounds().left + dima_photo_sprite.getGlobalBounds().width * 0.5 - dima_text.getLocalBounds().width * 0.5,
+            dima_photo_sprite.getPosition().y + dima_photo_sprite.getLocalBounds().height + 5));
+
+    sf::Text authors_title_text1;
+    authors_title_text1.setFont(global_font);
+    std::string authors_title_string1 = "Moscow state university\n ............\n........................\n...........";
+    authors_title_text1.setString(authors_title_string1);
+    authors_title_text1.setFillColor(sf::Color::Black);
+    authors_title_text1.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text1.getLocalBounds().width * 0.5,
+                                    authors_title_text1.getGlobalBounds().height * 0.5);
+
+    sf::Text authors_title_text2;
+    authors_title_text2.setFont(global_font);
+    std::string authors_title_string2 = "Authors:";
+    authors_title_text2.setString(authors_title_string2);
+    authors_title_text2.setFillColor(sf::Color::Black);
+    authors_title_text2.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text2.getLocalBounds().width * 0.5,
+                                    cmc_logo_sprite.getGlobalBounds().height + 190);
+    
+
 
 
     for (int i = 0; i < histogram_bins; i++) {
@@ -236,6 +338,8 @@ int main() {
 
 
 
+
+
     // DEMONSTRATION(1) END
 
     srand(100500);
@@ -248,7 +352,7 @@ int main() {
             molecules[i].setPosition(v[i].position.first, v[i].position.second);
             molecules[i].setOrigin(radius_molecule, radius_molecule);
             molecules[i].setPointCount(100);
-            molecules[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
+            molecules[i].setFillColor(sf::Color(rand() % 220, rand() % 220, rand() % 220));
         }
     }
     molecule_box->pause();
@@ -310,7 +414,15 @@ int main() {
                     if (mode_curr == 1) {
                         if (molecule_box->get_interacted(i)) {
 //                            molecule_box->set_interacted(i, false);
-                            std::swap(colors[i][0], colors[i][1]);
+                            float break_point_radius = 2.5;
+                            sf::CircleShape tmp_point;
+                            tmp_point.setRadius(break_point_radius);
+                            tmp_point.setPosition(molecules[i].getPosition());
+                            tmp_point.setOrigin(break_point_radius, break_point_radius);
+                            tmp_point.setPointCount(100);
+                            tmp_point.setFillColor(sf::Color(0, 0, 0));
+                            break_points[i].push_back(tmp_point);
+//                            std::swap(colors[i][0], colors[i][1]);
                         }
                     } else {
                         if (molecule_box->get_finished(i)) {
@@ -379,10 +491,6 @@ int main() {
                 }
             }
 //            molecule_box
-//          MOLECULE TRAJECTORY:
-            for (int i = 0; i < def_obs; i++) {
-                main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::PrimitiveType::LineStrip);
-            }
 
             //INTERACTIONS AMOUNT
 //            molecules_interactions_text.setString();
@@ -413,7 +521,17 @@ int main() {
             main_window.draw(border4);
             main_window.draw(border5);
 
-//            //fprintf(stderr, "\n");
+            //точки излома:
+            if (mode_curr == 1) {
+                for (int i = 0; i < def_obs; i++) {
+                    for (int j = 0; j < break_points[i].size(); j++) {
+                        main_window.draw(break_points[i][j]);
+                    }
+                }
+            }
+            for (int i = 0; i < def_obs; i++) {
+                main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::PrimitiveType::LineStrip);
+            }
 
             //HISTOGRAM
 //            get_la
@@ -812,11 +930,12 @@ int main() {
                                     molecules[i].setPosition(v[i].position.first, v[i].position.second);
                                     molecules[i].setOrigin(radius_molecule, radius_molecule);
                                     molecules[i].setPointCount(100);
-                                    molecules[i].setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
+                                    molecules[i].setFillColor(sf::Color(rand() % 220, rand() % 220, rand() % 220));
                                 }
                             }
                             for (int i = 0; i < def_obs; i++) {
                                 trajectories[i].clear();
+                                break_points[i].clear();
                             }
                             molecule_box->pause();
                             is_molecules_active = false;
@@ -862,18 +981,32 @@ int main() {
             main_window.draw(border3);
             main_window.draw(border4);
             main_window.draw(border5);
+
         } else if (main_window_state == 3) { // AUTHORS
             main_window.clear(sf::Color(255, 255, 255));
 //            main_window.draw(sf::CircleShape(50, 30));
-            main_window.draw(main_menu_demo.sprite);
-            main_window.draw(main_menu_theory.sprite);
-            main_window.draw(main_menu_authors.sprite);
+//            main_window.draw(main_menu_demo.sprite);
+//            main_window.draw(main_menu_theory.sprite);
+//            main_window.draw(main_menu_authors.sprite);
 //            main_window.draw(main_menu_exit.sprite);
-            main_window.draw(main_menu_demo.bText);
-            main_window.draw(main_menu_authors.bText);
-            main_window.draw(main_menu_theory.bText);
+//            main_window.draw(main_menu_demo.bText);
+//            main_window.draw(main_menu_authors.bText);
+//            main_window.draw(main_menu_theory.bText);
 //            main_window.draw(main_menu_exit.bText);
+            main_window.draw(authors_title_text1);
+            main_window.draw(authors_title_text2);
             main_window.draw(cmc_logo_sprite);
+            main_window.draw(fiz_logo_sprite);
+            main_window.draw(teacher_text);
+            main_window.draw(nikita_photo_sprite);
+            main_window.draw(ilya_photo_sprite);
+            main_window.draw(dima_photo_sprite);
+            main_window.draw(nikita_text);
+            main_window.draw(ilya_text);
+            main_window.draw(dima_text);
+            main_window.draw(cmc_logo_text);
+            main_window.draw(fiz_logo_text);
+
             sf::Event event;
             while (main_window.pollEvent(event)) {
                 switch (event.type) {
@@ -882,23 +1015,23 @@ int main() {
                         exit(0);
                     case sf::Event::MouseButtonPressed:
                         if (event.key.code == sf::Mouse::Left) {
-                            sf::Vector2f mouse = main_window.mapPixelToCoords(sf::Mouse::getPosition(main_window));
-                            sf::FloatRect bounds_start = main_menu_demo.sprite.getGlobalBounds();
-                            sf::FloatRect bounds_theory = main_menu_theory.sprite.getGlobalBounds();
-                            sf::FloatRect bounds_authors = main_menu_authors.sprite.getGlobalBounds();
-                            sf::FloatRect bounds_exit = main_menu_exit.sprite.getGlobalBounds();
-                            if (bounds_start.contains(mouse)) {
+//                            sf::Vector2f mouse = main_window.mapPixelToCoords(sf::Mouse::getPosition(main_window));
+//                            sf::FloatRect bounds_start = main_menu_demo.sprite.getGlobalBounds();
+//                            sf::FloatRect bounds_theory = main_menu_theory.sprite.getGlobalBounds();
+//                            sf::FloatRect bounds_authors = main_menu_authors.sprite.getGlobalBounds();
+//                            sf::FloatRect bounds_exit = main_menu_exit.sprite.getGlobalBounds();
+//                            if (bounds_start.contains(mouse)) {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
-                                main_window_state = 1;
-                            } else if (bounds_theory.contains(mouse)) {
-                                main_window_state = 1;
-                            } else if (bounds_authors.contains(mouse)) {
-                                main_window_state = 3; // Authors
-                            }
-                            else if (bounds_exit.contains(mouse)) {
-                                main_window.close();
-                                exit(0);
-                            }
+//                                main_window_state = 1;
+//                            } else if (bounds_theory.contains(mouse)) {
+//                                main_window_state = 1;
+//                            } else if (bounds_authors.contains(mouse)) {
+//                                main_window_state = 3; // Authors
+//                            }
+//                            else if (bounds_exit.contains(mouse)) {
+//                                main_window.close();
+//                                exit(0);
+//                        }
                         }
                         break;
                 }
