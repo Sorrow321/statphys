@@ -80,10 +80,12 @@ int main()
         }
 
         // stats
+        /*
         double last_len = b.get_last_interactions_num();
         if (last_len != -1) {
-            myfile << last_len << std::endl;
-        }
+            std::cout << last_len << std::endl;
+            //myfile << last_len << std::endl;
+        }*/
 
         sf::Event event;
 
