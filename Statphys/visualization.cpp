@@ -3,7 +3,7 @@
 #include "box.cpp"
 #include <cmath>
 
-int mode_curr = mode_curr;
+int mode_curr = def_mode;
 
 struct Button_menu
 {
@@ -11,13 +11,13 @@ struct Button_menu
     sf::IntRect bSprite;
     sf::Sprite sprite;
     sf::Font bFont;
-    std::string bString;
+    std::wstring bString;
     sf::Text bText;
 
-    Button_menu(std::string bString, sf::Texture &texture, sf::Vector2f bPosition, sf::IntRect bSprite)
+    Button_menu(std::wstring bString, sf::Texture &texture, sf::Vector2f bPosition, sf::IntRect bSprite)
     : bString{ bString }, bPosition{ bPosition }, bSprite{ bSprite }
     {
-        this->bFont.loadFromFile("text/Alice-Regular.ttf");
+        this->bFont.loadFromFile("text/rus.ttf");
         this->bText.setFont(bFont);
         this->bText.setString(bString);
         this->bText.setFillColor(sf::Color::White);
@@ -29,7 +29,16 @@ struct Button_menu
     }
 };
 
+template <typename object_type, typename second_type>
+void set_rus_string(object_type &object, const std::wstring &first_string, second_type param_value) {
+    std::wostringstream tmp;
+    tmp << first_string << param_value;
+    object.setString(tmp.str());
+}
+
+
 int main() {
+    setlocale(LC_ALL,"Rus");
     int main_window_state = 0;
     int amount_molecule = def_molnum;
     float radius_molecule = def_radius;
@@ -78,16 +87,16 @@ int main() {
 
     demonstration_button_texture.loadFromFile("text/button.png");
     /* MAIN MENU BUTTONS(0) */
-    Button_menu main_menu_demo("Demonstration", demonstration_button_texture,sf::Vector2f(
+    Button_menu main_menu_demo(L"Демонстрация", demonstration_button_texture,sf::Vector2f(
             sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 - 50 * 0.5),sf::IntRect(0, 0, 350, 50));
-    Button_menu main_menu_theory("Theory", demonstration_button_texture, sf::Vector2f(
+    Button_menu main_menu_theory(L"Теория", demonstration_button_texture, sf::Vector2f(
             sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 100 * 0.5), sf::IntRect(0, 0, 350, 50));
-    Button_menu main_menu_authors("Authors", demonstration_button_texture, sf::Vector2f(
+    Button_menu main_menu_authors(L"Авторы", demonstration_button_texture, sf::Vector2f(
             sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 250 * 0.5), sf::IntRect(0, 0, 350, 50));
-    Button_menu main_menu_exit("Exit", demonstration_button_texture, sf::Vector2f(
+    Button_menu main_menu_exit(L"Выход", demonstration_button_texture, sf::Vector2f(
             sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.5 + 400 * 0.5), sf::IntRect(0, 0, 350, 50));
 
@@ -95,51 +104,71 @@ int main() {
     // BUTTONS
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop("Start", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop(L"Старт", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_back("Back to menu", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
-            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_input("Input", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
-            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_clear("Check trajectories", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+    Button_menu demo_input(L"Ввод", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
+    Button_menu demo_clear(L"Убрать молекулы", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
+                           sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
+    Button_menu demo_back(L"Назад в меню", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+                          sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     bool is_clear_box = false;
 
     // INPUT VALUES
     sf::Font global_font;
-    global_font.loadFromFile("text/Alice-Regular.ttf");
+    global_font.loadFromFile("text/rus.ttf");
 
     sf::Text demo_regime_type_text;
+    int regime_type = 1;
     demo_regime_type_text.setFont(global_font);
-    demo_regime_type_text.setString("Regime type: " + std::to_string(mode_curr));
+    std::wostringstream regime_type_string;
+    if (regime_type == 1) {
+        regime_type_string << L"Режим: " << L"статистика";
+    } else {
+        regime_type_string << L"Режим: " << L"демонстрация";
+    }
+    demo_regime_type_text.setString(regime_type_string.str());
     demo_regime_type_text.setFillColor(sf::Color::Black);
     demo_regime_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
     demo_statistics_type_text.setFont(global_font);
-    demo_statistics_type_text.setString("Statistics type: " + std::to_string(mode_curr));
+    if (mode_curr == 1) {
+        set_rus_string(demo_statistics_type_text, L"Исследуется: ", L"столкновения");
+    } else {
+        set_rus_string(demo_statistics_type_text, L"Исследуется: ", L"длина");
+    }
     demo_statistics_type_text.setFillColor(sf::Color::Black);
     demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
     float demo_length_or_collisions = int(def_interactions_num);
     sf::Text demo_length_or_collisions_text;
     demo_length_or_collisions_text.setFont(global_font);
-    std::string demo_length_or_collisions_string = "Length of trajectory: " + std::to_string(demo_length_or_collisions);
+    std::wstring demo_length_or_collisions_string = L"Длина траектории: ";
+    set_rus_string(demo_length_or_collisions_text, demo_length_or_collisions_string, def_trajlength);
+//    demo_length_or_collisions_string = std::to_wstring(def_trajlength);
+//    std::cout << std::stof(demo_length_or_collisions_string);
     if (mode_curr == 2) {
-        demo_length_or_collisions_string = "Interactions amount: " + std::to_string(demo_length_or_collisions);
+        demo_length_or_collisions_string = L"Кол-во столкновений: ";
+        set_rus_string(demo_length_or_collisions_text, demo_length_or_collisions_string, def_interactions_num);
+//        demo_length_or_collisions_string = std::to_wstring(def_interactions_num);
     }
-    demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
-    demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
+
+//    demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
+//    demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
     demo_length_or_collisions_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 100));
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
     radius_molecule = def_radius;
-    std::string radius_size_string = "Radius size: " + std::to_string(radius_molecule);
+
+    std::string radius_size_string = std::to_string(radius_molecule);
+    set_rus_string(radius_size_text, L"Радиус: ", radius_molecule);
+
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
-    radius_size_text.setString(radius_size_string);
+//    radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
     radius_size_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 150));
 
@@ -147,7 +176,8 @@ int main() {
     amount_molecules_text.setFont(global_font);
     amount_molecule = def_molnum;
     std::string amount_molecules_string = std::to_string(amount_molecule);
-    amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
+    set_rus_string(amount_molecules_text, L"Кол-во молекул: ", amount_molecule);
+//    amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
     amount_molecules_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 200));
     // INPUT VALUES END
@@ -166,20 +196,21 @@ int main() {
 
     for (int i = 0; i < def_obs; i++) {
         colors[i].emplace_back(sf::Color::Blue);
-        colors[i].emplace_back(sf::Color::Red);
+        colors[i].emplace_back(sf::Color::Green);
     }
 
 
     // INTERACTIONS AMOUNT BLOCK(HISTOGRAM)
     sf::Text molecules_interactions_text;
     molecules_interactions_text.setFont(global_font);
-    molecules_interactions_text.setString("Molecules interactions amount: ");
+    set_rus_string(molecules_interactions_text, L"Кол-во столкновений: ",  L"");
+//    molecules_interactions_text.setString("Molecules interactions amount: ");
     molecules_interactions_text.setFillColor(sf::Color::Black);
     molecules_interactions_text.setPosition(sf::Vector2f(800, 450));
 
 
     // HISTOGRAM VISUALIZATION:
-    int histogram_bins = 40;
+    int histogram_bins = 25;
     constexpr int histogram_norm_const = 1000;
     double trajectory_max_len = 0;
     double trajectory_min_len = 100000000;
@@ -194,17 +225,49 @@ int main() {
     std::vector<float> trajectory_lens(histogram_bins);
     std::vector<float> collision_amounts(histogram_bins);
     std::vector<sf::RectangleShape> histogram_demo(histogram_bins);
-//    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
-//    border4.setFillColor(sf::Color(100, 100, 100));
-//    border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
     std::vector<sf::RectangleShape> histogram_axes_ticks(histogram_bins);
+    int histogram_ticks_frequency = 10;
     std::vector<sf::Text> histogram_axes_text(histogram_bins);
 
+    for (int i = 0; i < histogram_bins; i++) {
+        histogram_demo_counts[i] = 0;
+        trajectory_lens[i] = 0;//(i + 1)  * fabs(trajectory_max_len - trajectory_min_len) / histogram_bins;
+        collision_amounts[i] = 0;// i * fabs((collision_max_amount - collision_min_amount)) / histogram_bins;
+        histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
+        histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
+        histogram_demo[i].setPosition(
+                i * histogram_demo[i].getSize().x,
+                sf::VideoMode::getDesktopMode().height - 150);
+        histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
+                                    histogram_demo[i].getSize().y);
+        if ((i % histogram_ticks_frequency) == 0) {
+            histogram_axes_text[i].setFont(global_font);
+            if (mode_curr == 1) {
+                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+            } else {
+                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+            }
+            histogram_axes_text[i].setFillColor(sf::Color::Black);
+            histogram_axes_text[i].setPosition(i * histogram_demo[i].getSize().x,
+                                               sf::VideoMode::getDesktopMode().height - 155);
+            histogram_axes_text[i].setOrigin(histogram_demo[i].getLocalBounds().left,
+                                             histogram_demo[i].getSize().y);
+        }
+    }
+    
+    //THEORY
+    sf::Texture theory_first_page_texture;
+    sf::Sprite theory_first_page_sprite;
+    theory_first_page_texture.loadFromFile("text/theory_first_page.png");
+    theory_first_page_texture.setSmooth(true);
+    theory_first_page_sprite.setTexture(theory_first_page_texture);
+    theory_first_page_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - theory_first_page_sprite.getLocalBounds().width * 0.5, 0));
+    theory_first_page_sprite.setScale(1, 1);
 
     //AUTHORS
     sf::Texture cmc_logo_texture;
     sf::Sprite cmc_logo_sprite;
-    cmc_logo_texture.loadFromFile("text/cmc_logo.png");
+    cmc_logo_texture.loadFromFile("text/cmc_logo_small.png");
     cmc_logo_texture.setSmooth(true);
     cmc_logo_sprite.setTexture(cmc_logo_texture);
     cmc_logo_sprite.setPosition(sf::Vector2f(0, 50));
@@ -212,7 +275,7 @@ int main() {
     
     sf::Texture fiz_logo_texture;
     sf::Sprite fiz_logo_sprite;
-    fiz_logo_texture.loadFromFile("text/fiz_logo.jpg");
+    fiz_logo_texture.loadFromFile("text/fiz_logo_small.jpg");
     fiz_logo_texture.setSmooth(true);
     fiz_logo_sprite.setTexture(fiz_logo_texture);
     fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x,  50));
@@ -220,14 +283,15 @@ int main() {
 
     sf::Text cmc_logo_text;
     cmc_logo_text.setFont(global_font);
-    std::string cmc_logo_string = "Faculty of Computational mathematics and cybernetics";
-    cmc_logo_text.setString(cmc_logo_string);
+    std::wostringstream cmc_logo_string;
+    cmc_logo_string << L"      Факультет\nвычислительной математики\n            и\n     кибернетики";
+    cmc_logo_text.setString(cmc_logo_string.str());
     cmc_logo_text.setFillColor(sf::Color::Black);
     cmc_logo_text.setPosition(sf::Vector2f(cmc_logo_sprite.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 50));
 
     sf::Text fiz_logo_text;
     fiz_logo_text.setFont(global_font);
-    std::string fiz_logo_string = "Faculty of physics";
+    std::wstring fiz_logo_string = L"Физический\nфакультет";
     fiz_logo_text.setString(fiz_logo_string);
     fiz_logo_text.setFillColor(sf::Color::Black);
     fiz_logo_text.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - fiz_logo_text.getLocalBounds().width * 0.5,
@@ -235,8 +299,7 @@ int main() {
     
     sf::Text teacher_text;
     teacher_text.setFont(global_font);
-    std::string teacher_string = "Nauchniy ruk. : docent Chichigina Olga Aleksandrovna\n"
-                                 "Lector: professor ??????????????";
+    std::wstring teacher_string = L"Научный руководитель: доцент Чичигина Ольга Александровна\nЛектор: профессор Андреев Анатолий Васильевич";
     teacher_text.setString(teacher_string);
     teacher_text.setFillColor(sf::Color::Black);
     teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 125));
@@ -251,7 +314,7 @@ int main() {
 
     sf::Text nikita_text;
     nikita_text.setFont(global_font);
-    std::string nikita_string = "Nikita Kuzmin";
+    std::wstring nikita_string = L"Никита Кузьмин";
     nikita_text.setString(nikita_string);
     nikita_text.setFillColor(sf::Color::Black);
     nikita_text.setPosition(sf::Vector2f(nikita_photo_sprite.getGlobalBounds().left + nikita_photo_sprite.getGlobalBounds().width * 0.5 - nikita_text.getLocalBounds().width * 0.5,
@@ -267,7 +330,7 @@ int main() {
 
     sf::Text ilya_text;
     ilya_text.setFont(global_font);
-    std::string ilya_string = "Ilya Fedorov";
+    std::wstring ilya_string = L"Илья Федоров";
     ilya_text.setString(ilya_string);
     ilya_text.setFillColor(sf::Color::Black);
     ilya_text.setPosition(sf::Vector2f(sf::Vector2f(ilya_photo_sprite.getGlobalBounds().left + ilya_photo_sprite.getGlobalBounds().width * 0.5 - ilya_text.getLocalBounds().width * 0.5,
@@ -285,7 +348,7 @@ int main() {
 
     sf::Text dima_text;
     dima_text.setFont(global_font);
-    std::string dima_string = "Dmitriy Poymanov";
+    std::wstring dima_string = L"Дмитрий Пойманов";
     dima_text.setString(dima_string);
     dima_text.setFillColor(sf::Color::Black);
     dima_text.setPosition(sf::Vector2f(dima_photo_sprite.getGlobalBounds().left + dima_photo_sprite.getGlobalBounds().width * 0.5 - dima_text.getLocalBounds().width * 0.5,
@@ -293,7 +356,7 @@ int main() {
 
     sf::Text authors_title_text1;
     authors_title_text1.setFont(global_font);
-    std::string authors_title_string1 = "Moscow state university\n ............\n........................\n...........";
+    std::wstring authors_title_string1 = L"Московский государственный университет\n                имени М.В. Ломоносова";
     authors_title_text1.setString(authors_title_string1);
     authors_title_text1.setFillColor(sf::Color::Black);
     authors_title_text1.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text1.getLocalBounds().width * 0.5,
@@ -301,44 +364,14 @@ int main() {
 
     sf::Text authors_title_text2;
     authors_title_text2.setFont(global_font);
-    std::string authors_title_string2 = "Authors:";
+    std::wstring authors_title_string2 = L"Авторы:";
     authors_title_text2.setString(authors_title_string2);
     authors_title_text2.setFillColor(sf::Color::Black);
     authors_title_text2.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text2.getLocalBounds().width * 0.5,
                                     cmc_logo_sprite.getGlobalBounds().height + 190);
-    
 
-
-
-    for (int i = 0; i < histogram_bins; i++) {
-        histogram_demo_counts[i] = 0;
-        trajectory_lens[i] = (i + 1)  * fabs(trajectory_max_len - trajectory_min_len) / histogram_bins;
-        collision_amounts[i] = i * fabs((collision_max_amount - collision_min_amount)) / histogram_bins;
-        histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
-        histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
-        histogram_demo[i].setPosition(
-                    i * histogram_demo[i].getSize().x,
-                    sf::VideoMode::getDesktopMode().height - 150);
-        histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
-                                     histogram_demo[i].getSize().y);
-        if ((i % 10) == 0) {
-            histogram_axes_text[i].setFont(global_font);
-            if (mode_curr == 1) {
-                                    histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-                                } else {
-                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-                                }
-            histogram_axes_text[i].setFillColor(sf::Color::Black);
-            histogram_axes_text[i].setPosition(i * histogram_demo[i].getSize().x,
-                                               sf::VideoMode::getDesktopMode().height - 155);
-            histogram_axes_text[i].setOrigin(histogram_demo[i].getLocalBounds().left,
-                                             histogram_demo[i].getSize().y);
-        }
-    }
-
-
-
-
+    Button_menu authors_back(L"Назад в меню", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5, sf::VideoMode::getDesktopMode().height - 5*button_menu_demo_height),
+                                sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
 
     // DEMONSTRATION(1) END
 
@@ -390,7 +423,7 @@ int main() {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 main_window_state = 1;
                             } else if (bounds_theory.contains(mouse)) {
-                                main_window_state = 1;
+                                main_window_state = 4;
                             } else if (bounds_authors.contains(mouse)) {
                                 main_window_state = 3; // Authors
                             }
@@ -412,6 +445,9 @@ int main() {
                 }
                 for(int i=0; i < def_obs; i++) {
                     if (mode_curr == 1) {
+                        if (molecule_box->get_finished_length(i)) {
+                            std::swap(colors[i][0], colors[i][1]);
+                        }
                         if (molecule_box->get_interacted(i)) {
 //                            molecule_box->set_interacted(i, false);
                             float break_point_radius = 2.5;
@@ -420,12 +456,12 @@ int main() {
                             tmp_point.setPosition(molecules[i].getPosition());
                             tmp_point.setOrigin(break_point_radius, break_point_radius);
                             tmp_point.setPointCount(100);
-                            tmp_point.setFillColor(sf::Color(0, 0, 0));
+                            tmp_point.setFillColor(sf::Color(255, 0, 0));
                             break_points[i].push_back(tmp_point);
 //                            std::swap(colors[i][0], colors[i][1]);
                         }
                     } else {
-                        if (molecule_box->get_finished(i)) {
+                        if (molecule_box->get_finished_interactions(i)) {
 //                            molecule_box->set_finished(i, false);
                             std::swap(colors[i][0], colors[i][1]);
                         }
@@ -450,12 +486,13 @@ int main() {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 if (is_molecules_active) {
                                     molecule_box->pause();
-                                    demo_start_stop.bText.setString("Start");
+                                    set_rus_string(demo_start_stop.bText, L"Старт",
+                                                   L"");
                                     is_molecules_active = false;
                                 } else {
                                     molecule_box->unpause();
-                                    demo_start_stop.bText.setString("Stop");
-
+                                    set_rus_string(demo_start_stop.bText, L"Стоп",
+                                                   L"");
                                     is_molecules_active = true;
                                 }
                                 is_clear_box = false;
@@ -467,7 +504,8 @@ int main() {
                                 }
                             } else if (bounds_input.contains(mouse)) {
                                 if (is_molecules_active) {
-                                    demo_start_stop.bText.setString("Start");
+                                    set_rus_string(demo_start_stop.bText, L"Старт",
+                                                   L"");
                                     molecule_box->pause();
                                     is_molecules_active = false;
                                 }
@@ -477,7 +515,8 @@ int main() {
                                     molecule_box->pause();
                                     is_molecules_active = false;
                                 }
-                                demo_start_stop.bText.setString("Start");
+                                set_rus_string(demo_start_stop.bText, L"Старт",
+                                               L"");
                                 is_clear_box = true;
                             }
                         }
@@ -489,7 +528,15 @@ int main() {
                 for (int i = 0; i < molecules.size(); i++) {
                     main_window.draw(molecules[i]);
                 }
+            } else {
+                for (int i = 0; i < histogram_bins; i++) {
+                    main_window.draw(histogram_demo[i]);
+                    if ((i % histogram_ticks_frequency) == 0) {
+                        main_window.draw(histogram_axes_text[i]);
+                    }
+                }
             }
+
 //            molecule_box
 
             //INTERACTIONS AMOUNT
@@ -585,11 +632,13 @@ int main() {
                         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                                     histogram_demo[i].getSize().y);
                         if (statistics_collected) {
-                            main_window.draw(histogram_demo[i]);
-                            main_window.draw(histogram_axes_text[i]);
+                            if (regime_type == 1) {
+                                main_window.draw(histogram_demo[i]);
+                                main_window.draw(histogram_axes_text[i]);
+                            }
                         }
 
-                        if ((full_counts_max >= 1) &&
+                        if ((full_counts_max >= 5) &&
                             (!statistics_collected)) { // после набора статистики (чтобы узнать макс длину траектории)
                             full_counts_max = 0;
                             statistics_collected = true;
@@ -607,8 +656,10 @@ int main() {
                 } else {
                     for (int i=0; i < histogram_bins; i++) {
                         if (statistics_collected) {
-                            main_window.draw(histogram_demo[i]);
-                            main_window.draw(histogram_axes_text[i]);
+                            if (regime_type == 1) {
+                                main_window.draw(histogram_demo[i]);
+                                main_window.draw(histogram_axes_text[i]);
+                            }
                         }
                     }
                 }
@@ -661,8 +712,10 @@ int main() {
                         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                                     histogram_demo[i].getSize().y);
                         if (statistics_collected) {
-                            main_window.draw(histogram_demo[i]);
-                            main_window.draw(histogram_axes_text[i]);
+                            if (regime_type == 1) {
+                                main_window.draw(histogram_demo[i]);
+                                main_window.draw(histogram_axes_text[i]);
+                            }
                         }
 
                         if ((full_counts_max >= 1) &&
@@ -683,18 +736,20 @@ int main() {
                 } else {
                     for (int i=0; i < histogram_bins; i++) {
                         if (statistics_collected) {
-                            main_window.draw(histogram_demo[i]);
-                            main_window.draw(histogram_axes_text[i]);
+                            if (regime_type == 1) {
+                                main_window.draw(histogram_demo[i]);
+                                main_window.draw(histogram_axes_text[i]);
+                            }
                         }
                     }
                 }
             }
         } else if (main_window_state == 2) { // INPUT
-            std::vector<std::string>  input_button_strings = {"Enter regime type",
-                                                              "Enter statistics type: ",
-                                                              "Enter length of trajectory: ",
-                                                              "Enter radius size: ",
-                                                              "Enter molecules amount: "};
+            std::vector<std::wstring>  input_button_strings = {L"1 - статист., 2 - демонстр.",
+                                                              L"1 - столкновения, 2 - длина",
+                                                              L"Введите нужный параметр",
+                                                              L"Введите радиус",
+                                                              L"Введите кол-во молекул"};
 
             demo_input.bText.setString(input_button_strings[enter_press_amount]);
             bool is_all_params_were_passed = false;
@@ -718,7 +773,7 @@ int main() {
 //            //fprintf(stderr, "%d", was_first_key_press);
             if (!was_first_key_press) {
                 if (enter_press_amount < (demo_parameters_amount - 3)) {
-                    demo_length_or_collisions_string = std::to_string(demo_length_or_collisions);
+                    demo_length_or_collisions_string = std::to_wstring(demo_length_or_collisions);
                 }
                 if (enter_press_amount < (demo_parameters_amount - 2)) {
                     radius_size_string = std::to_string(radius_molecule);
@@ -742,13 +797,13 @@ int main() {
                                 }
                             }
                             if (event.key.code == 49) {
-                                demo_regime_type_text.setString(
-                                        "Regime type: " + std::to_string(event.text.unicode - 48));
-                                mode_curr = 1;
+                                set_rus_string(demo_regime_type_text, L"Режим: ",
+                                               L"статистика");
+                                regime_type = 1;
                             } else if (event.key.code == 50) {
-                                demo_regime_type_text.setString(
-                                        "Regime type: " + std::to_string(event.text.unicode - 48));
-                                mode_curr = 2;
+                                set_rus_string(demo_regime_type_text, L"Режим: ",
+                                               L"демонстрация");
+                                regime_type = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_regime_type_text.setFillColor(sf::Color::Black);
@@ -768,18 +823,22 @@ int main() {
                                 }
                             }
                             if (event.key.code == 49) {
-                                demo_statistics_type_text.setString("Statistics type: " + std::to_string(event.text.unicode - 48));
+                                set_rus_string(demo_statistics_type_text, L"Исследуется: ",
+                                               L"столкновения");
                                 mode_curr = 1;
                             } else if (event.key.code == 50) {
-                                demo_statistics_type_text.setString("Statistics type: " + std::to_string(event.text.unicode - 48));
+                                set_rus_string(demo_statistics_type_text, L"Исследуется: ",
+                                               L"длина");
                                 mode_curr = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_statistics_type_text.setFillColor(sf::Color::Black);
                                 if (mode_curr == 1) {
-                                    demo_length_or_collisions_text.setString("Length of trajectory: 1");
+                                    set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
+                                                   def_trajlength);
                                 } else if (mode_curr == 2) {
-                                    demo_length_or_collisions_text.setString("Interactions amount: 1");
+                                    set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
+                                                   def_interactions_num);
                                 }
                                 main_window.draw(demo_length_or_collisions_text);
                                 enter_press_amount += 1;
@@ -788,24 +847,36 @@ int main() {
                             if (event.key.code != 13) {
                                 if (!was_first_key_press) {
                                     was_first_key_press = true;
-                                    demo_length_or_collisions_string = "";
+                                    demo_length_or_collisions_string = L"";
                                 }
                             }
                             demo_length_or_collisions_text.setFillColor(sf::Color::Red);
                             if (mode_curr == 1) {
                                 if ((event.key.code >= 48) && (event.key.code < 58)) {
                                     if (demo_length_or_collisions_string.size() <= 3) {
-                                        demo_length_or_collisions_string += std::to_string(event.text.unicode - 48);
+                                        demo_length_or_collisions_string += std::to_wstring(event.text.unicode - 48);
                                     }
-                                    demo_length_or_collisions_text.setString(
-                                            "Length of trajectory: " + demo_length_or_collisions_string);
+                                    if (demo_length_or_collisions_string.length() <= 5) {
+                                        set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
+                                                       std::stof(demo_length_or_collisions_string));
+                                    } else {
+                                        demo_length_or_collisions_string.pop_back();
+                                        set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
+                                                       std::stof(demo_length_or_collisions_string));
+                                    }
                                 } else if (event.key.code == 8) {
                                     if (demo_length_or_collisions_string.length() != 0) {
                                         demo_length_or_collisions_string.pop_back();
                                     }
-                                    demo_length_or_collisions_text.setString(
-                                            "Length of trajectory: " + demo_length_or_collisions_string);
+                                    if (demo_length_or_collisions_string.length() >= 1) {
+                                        set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
+                                                       std::stof(demo_length_or_collisions_string));
+                                    } else {
+                                        set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
+                                                       L"");
+                                    }
                                 } else if (event.key.code == 13) {
+//                                    std::cout << demo_length_or_collisions;
                                     demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
                                     was_first_key_press = false;
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
@@ -815,20 +886,26 @@ int main() {
                                 if (event.key.code != 13) {
                                     if (!was_first_key_press) {
                                         was_first_key_press = true;
-                                        demo_length_or_collisions_string = "";
+                                        demo_length_or_collisions_string = L"";
                                     }
                                 }
                                 demo_length_or_collisions_text.setFillColor(sf::Color::Red);
                                 if (((event.key.code >= 48) && (event.key.code < 58)) || (event.key.code == 46)) {
                                     demo_length_or_collisions_string += static_cast<char>(event.text.unicode);
-                                    demo_length_or_collisions_text.setString("Interactions amount: " + demo_length_or_collisions_string);
+                                    set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ", std::stoi(demo_length_or_collisions_string));
                                 } else if (event.key.code == 8) {
                                     if (demo_length_or_collisions_string.length() != 0) {
                                         demo_length_or_collisions_string.pop_back();
                                     }
-                                    demo_length_or_collisions_text.setString(
-                                            "Interactions amount: " + demo_length_or_collisions_string);
+                                    if (demo_length_or_collisions_string.length() >= 1) {
+                                        set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
+                                                       std::stod(demo_length_or_collisions_string));
+                                    } else {
+                                        set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
+                                                       L"");
+                                    }
                                 } else if (event.key.code == 13) {
+//                                    std::cout << demo_length_or_collisions;
                                     demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
                                     was_first_key_press = false;
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
@@ -846,14 +923,16 @@ int main() {
                             if (((event.key.code >= 48) && (event.key.code < 58)) || (event.key.code == 46)) {
                                 radius_size_string += static_cast<char>(event.text.unicode);
                                 if (std::stod(radius_size_string) > 20) {
-                                    radius_size_string = "20.0";
+                                    radius_size_string = "20";
                                 } else if (std::stod(radius_size_string) < 1) {
                                     radius_size_string =  "1";
                                 }
                                 if (radius_size_string.size() > 4) {
                                     radius_size_string.pop_back();
                                 }
-                                radius_size_text.setString("Radius size: " + radius_size_string);
+                                set_rus_string(radius_size_text, L"Радиус: ",
+                                               std::stof(radius_size_string));
+//                                radius_size_text.setString("Radius size: " + radius_size_string);
                             } else if (event.key.code == 8) {
                                 if (radius_size_string.length() != 0) {
                                     radius_size_string.pop_back();
@@ -861,7 +940,7 @@ int main() {
                                 radius_size_text.setString(
                                         "Radius size: " + radius_size_string);
                             } else if (event.key.code == 13) {
-                                radius_molecule = std::stod(radius_size_string);
+                                radius_molecule = std::stof(radius_size_string);
                                 was_first_key_press = false;
                                 radius_size_text.setFillColor(sf::Color::Black);
                                 enter_press_amount += 1;
@@ -881,14 +960,21 @@ int main() {
                                 if (amount_molecules_string == "0") {
                                     amount_molecules_string = "1";
                                 }
-                                amount_molecules_text.setString(
-                                        "Molecules amount: " + amount_molecules_string);
+                                if (amount_molecules_string.size() <= 3) {
+                                    set_rus_string(amount_molecules_text, L"Кол-во молекул: ",
+                                                   std::stoi(amount_molecules_string));
+                                }
                             } else if (event.key.code == 8) {
                                 if (amount_molecules_string.length() != 0) {
                                     amount_molecules_string.pop_back();
                                 }
-                                amount_molecules_text.setString(
-                                        "Molecules amount: " + amount_molecules_string);
+                                if (amount_molecules_string.length() >= 1) {
+                                    set_rus_string(amount_molecules_text, L"Кол-во молекул: ",
+                                                   std::stoi(amount_molecules_string));
+                                } else {
+                                    set_rus_string(amount_molecules_text, L"Кол-во молекул: ",
+                                                   L"");
+                            }
                             } else if (event.key.code == 13) {
                                 amount_molecule = std::stoi(amount_molecules_string);
                                 was_first_key_press = false;
@@ -906,16 +992,24 @@ int main() {
                                 histogram_demo_counts[i] = 0;
                                 trajectory_max_len = 0;
                                 trajectory_min_len = 10000000;
-                                collision_max_amount  = 0;
+                                collision_max_amount = 0;
                                 collision_min_amount = 10000000;
-                                trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-                                collision_amounts[i] = i * (collision_max_amount - collision_min_amount) / histogram_bins;
-                                main_window.draw(histogram_demo[i]);
-                                main_window.draw(histogram_axes_text[i]);
+                                trajectory_lens[i] =
+                                        (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                                collision_amounts[i] =
+                                        i * (collision_max_amount - collision_min_amount) / histogram_bins;
+                                for (int i = 0; i < histogram_bins; i++) {
+                                    histogram_demo[i].setSize(sf::Vector2f(0, 0));
+                                }
+                                if (regime_type == 1) {
+                                    main_window.draw(histogram_demo[i]);
+                                    main_window.draw(histogram_axes_text[i]);
+                                }
                             }
 
                             molecule_box = NULL;
-                            std::cout << demo_length_or_collisions << std::endl;
+//                            std::cout << demo_length_or_collisions << std::endl;
+//                            std::cout << demo_length_or_collisions << std::endl;
                             molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
                             molecule_box->unpause();
                             is_molecules_active = true;
@@ -941,7 +1035,8 @@ int main() {
                             is_molecules_active = false;
                             enter_press_amount = 0;
                             is_all_params_were_passed = true;
-                            demo_input.bText.setString("Input");
+                            set_rus_string(demo_input.bText, L"Ввод: ",
+                                          L"");
                             main_window_state = 1;
                         }
                         break;
@@ -983,7 +1078,12 @@ int main() {
             main_window.draw(border5);
 
         } else if (main_window_state == 3) { // AUTHORS
+
             main_window.clear(sf::Color(255, 255, 255));
+//            sf::Sprite background(fiz_logo_texture);
+//            background.setScale((float) main_window.getSize().x / fiz_logo_texture.getSize().x,
+//                                (float) main_window.getSize().y / fiz_logo_texture.getSize().y);
+//            main_window.draw(background);
 //            main_window.draw(sf::CircleShape(50, 30));
 //            main_window.draw(main_menu_demo.sprite);
 //            main_window.draw(main_menu_theory.sprite);
@@ -1006,6 +1106,8 @@ int main() {
             main_window.draw(dima_text);
             main_window.draw(cmc_logo_text);
             main_window.draw(fiz_logo_text);
+            main_window.draw(authors_back.sprite);
+            main_window.draw(authors_back.bText);
 
             sf::Event event;
             while (main_window.pollEvent(event)) {
@@ -1015,15 +1117,15 @@ int main() {
                         exit(0);
                     case sf::Event::MouseButtonPressed:
                         if (event.key.code == sf::Mouse::Left) {
-//                            sf::Vector2f mouse = main_window.mapPixelToCoords(sf::Mouse::getPosition(main_window));
-//                            sf::FloatRect bounds_start = main_menu_demo.sprite.getGlobalBounds();
+                            sf::Vector2f mouse = main_window.mapPixelToCoords(sf::Mouse::getPosition(main_window));
+                            sf::FloatRect bounds_back = authors_back.sprite.getGlobalBounds();
 //                            sf::FloatRect bounds_theory = main_menu_theory.sprite.getGlobalBounds();
 //                            sf::FloatRect bounds_authors = main_menu_authors.sprite.getGlobalBounds();
 //                            sf::FloatRect bounds_exit = main_menu_exit.sprite.getGlobalBounds();
-//                            if (bounds_start.contains(mouse)) {
+                            if (bounds_back.contains(mouse)) {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
-//                                main_window_state = 1;
-//                            } else if (bounds_theory.contains(mouse)) {
+                                main_window_state = 0;
+                            } //else if (bounds_theory.contains(mouse)) {
 //                                main_window_state = 1;
 //                            } else if (bounds_authors.contains(mouse)) {
 //                                main_window_state = 3; // Authors
@@ -1036,7 +1138,33 @@ int main() {
                         break;
                 }
             }
+        } else if (main_window_state == 4) {
+            main_window.clear(sf::Color(255, 255, 255));
+            main_window.draw(cmc_logo_sprite);
+            main_window.draw(cmc_logo_text);
+            main_window.draw(fiz_logo_sprite);
+            main_window.draw(fiz_logo_text);
+            main_window.draw(theory_first_page_sprite);
+            main_window.draw(authors_back.sprite);
+            main_window.draw(authors_back.bText);
 
+            sf::Event event;
+            while (main_window.pollEvent(event)) {
+                switch (event.type) {
+                    case sf::Event::Closed:
+                        main_window.close();
+                        exit(0);
+                    case sf::Event::MouseButtonPressed:
+                        if (event.key.code == sf::Mouse::Left) {
+                            sf::Vector2f mouse = main_window.mapPixelToCoords(sf::Mouse::getPosition(main_window));
+                            sf::FloatRect bounds_back = authors_back.sprite.getGlobalBounds();
+                            if (bounds_back.contains(mouse)) {
+                                main_window_state = 0;
+                            }
+                        }
+                        break;
+                }
+            }
         }
         main_window.display();
     }
