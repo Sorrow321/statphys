@@ -9,13 +9,14 @@
 
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
-constexpr size_t def_molnum = 50;
+constexpr size_t def_molnum = 500;
 constexpr size_t def_trajnum = 1;
 constexpr double def_radius = 1.0;
 constexpr int def_interactions_num = 10;
 constexpr int def_mode = 1;
-constexpr double def_trajlength = 50.0;
+constexpr double def_trajlength = 5000.0;
 constexpr double def_obs = 1;
+constexpr int queue_limit = 50000;
 
 template<typename T>
 class MutexWrapper
@@ -86,26 +87,34 @@ private:
 
             if (lengths[id] >= trajectory_length) {
                 sem_int_stats.lock();
-                interaction_stats.push(interactions[id] - 1);
+                if (interaction_stats.size() <= queue_limit) {
+                    interaction_stats.push(interactions[id] - 1);
+                }
                 sem_int_stats.unlock();
 
                 lengths[id] = 0.0;
                 interactions[id] = 0;
+
+                sem_finished_lengths.lock();
+                finished_lengths[id] = true;
+                sem_finished_lengths.unlock();
             }
         }else if (mode == 2) {
             lengths[id] += sqrt(dx * dx + dy * dy);
 
             if (interactions[id] == interactions_num) {
                 sem_len_stats.lock();
-                len_stats.push(lengths[id]);
+                if (len_stats.size() <= queue_limit) {
+                    len_stats.push(lengths[id]);
+                }
                 sem_len_stats.unlock();
 
                 lengths[id] = 0.0;
                 interactions[id] = 0;
 
-                sem_finished.lock();
-                finished[id] = true;
-                sem_finished.unlock();
+                sem_finished_interactions.lock();
+                finished_interactions[id] = true;
+                sem_finished_interactions.unlock();
             }
         }
     }
@@ -253,7 +262,8 @@ private:
     std::mutex sem_int_stats;
     std::mutex sem_molecules;
     std::mutex sem_interacted;
-    std::mutex sem_finished;
+    std::mutex sem_finished_interactions;
+    std::mutex sem_finished_lengths;
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
@@ -268,13 +278,12 @@ private:
     std::vector<double> lengths;
     std::queue<double> len_stats;
     std::queue<double> interaction_stats;
-    std::vector<bool> finished;
+    std::vector<bool> finished_interactions;
+    std::vector<bool> finished_lengths;
     std::vector<bool> interacted;
     PoissonEstimator p_est;
 public:
     /*
-    new parameters:
-
     mode (1 or 2): if 1, then the number of collisions per length is examined
                    if 2, then the trajectory length for the desired number of collisions is examined
 
@@ -302,7 +311,8 @@ public:
               current_interactions(molecules_num, -1),
               trajectory(molecules_num),
               lengths(molecules_num),
-              finished(molecules_num),
+              finished_interactions(molecules_num),
+              finished_lengths(molecules_num),
               interacted(molecules_num)
     {
         for (size_t i = 0; i < molecules_num; i++) {
@@ -380,12 +390,21 @@ public:
         return value;
     }
 
-    bool get_finished(size_t id)
+    bool get_finished_interactions(size_t id)
     {
-        sem_finished.lock();
-        bool value = finished[id];
-        finished[id] = false;
-        sem_finished.unlock();
+        sem_finished_interactions.lock();
+        bool value = finished_interactions[id];
+        finished_interactions[id] = false;
+        sem_finished_interactions.unlock();
+        return value;
+    }
+
+    bool get_finished_length(size_t id)
+    {
+        sem_finished_lengths.lock();
+        bool value = finished_lengths[id];
+        finished_lengths[id] = false;
+        sem_finished_lengths.unlock();
         return value;
     }
 };
