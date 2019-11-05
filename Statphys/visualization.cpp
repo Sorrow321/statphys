@@ -2,6 +2,9 @@
 #include <iostream>
 #include "box.cpp"
 #include <cmath>
+#include <sstream>
+#include "distributions.cpp"
+
 
 int mode_curr = def_mode;
 
@@ -44,10 +47,21 @@ int main() {
     float radius_molecule = def_radius;
     bool is_molecules_active = true;
 
-    std::tuple<double, double, double, double> bounds = {5.0, sf::VideoMode::getDesktopMode().width, 5.0, sf::VideoMode::getDesktopMode().height/2};
+    sf::Texture box_field_texture;
+    box_field_texture.loadFromFile("text/box_field.jpg");
+    sf::Sprite box_field_sprite;
+    box_field_texture.setSmooth(true);
+    box_field_sprite.setTexture(box_field_texture);
+    box_field_sprite.setPosition(23.0, 23.0);
+//    box_field_sprite.setScale((float) sf::VideoMode::getDesktopMode().width / box_field_texture.getSize().x,
+//                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
+
+
+    std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x + 5, box_field_sprite.getLocalBounds().width + 16,
+                                                         box_field_sprite.getPosition().y + 5, box_field_sprite.getLocalBounds().height + 16};
     //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
     sf::RenderWindow main_window(
-            sf::VideoMode(sf::VideoMode::getDesktopMode().width,sf::VideoMode::getDesktopMode().height),
+            sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height),
             L"Презентация по статистической физике",
             sf::Style::Fullscreen);
 
@@ -216,23 +230,16 @@ int main() {
     border5.setFillColor(sf::Color(0, 0, 0));
     border5.setPosition(amount_molecules_text.getPosition().x - 5, sf::VideoMode::getDesktopMode().height / 2.0 + 3);
 
-    sf::Texture box_field_texture;
-    box_field_texture.loadFromFile("text/box_field.jpg");
-    sf::Sprite box_field_sprite;
-    box_field_texture.setSmooth(true);
-    box_field_sprite.setTexture(box_field_texture);
-    box_field_sprite.setPosition(0, 0);
-    box_field_sprite.setScale((float) sf::VideoMode::getDesktopMode().width / box_field_texture.getSize().x,
-                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
+
 
     sf::Texture hist_field_texture;
     hist_field_texture.loadFromFile("text/hist_field.jpg");
     sf::Sprite hist_field_sprite;
     hist_field_texture.setSmooth(true);
     hist_field_sprite.setTexture(hist_field_texture);
-    hist_field_sprite.setPosition(0, (float) sf::VideoMode::getDesktopMode().height / 2 + 1);
-    hist_field_sprite.setScale(border5.getPosition().x / hist_field_texture.getSize().x,
-                               (float) sf::VideoMode::getDesktopMode().height / 2 / hist_field_texture.getSize().y);
+    hist_field_sprite.setPosition(23, (float) sf::VideoMode::getDesktopMode().height / 2 + 40);
+//    hist_field_sprite.setScale(border5.getPosition().x / hist_field_texture.getSize().x,
+//                               (float) sf::VideoMode::getDesktopMode().height / 2 / hist_field_texture.getSize().y);
 
     //TRAJECTORY LINES:
     std::vector<std::vector<sf::Vertex>> trajectories(def_obs);
@@ -246,7 +253,7 @@ int main() {
     }
 
 
-    // INTERACTIONS AMOUNT BLOCK(HISTOGRAM)
+    // INTERACTIONS AMOUNT BLOCK(HISTOGRAM)uy
     sf::Text molecules_interactions_text;
     molecules_interactions_text.setFont(global_font);
     set_rus_string(molecules_interactions_text, L"Кол-во столкновений: ",  L"");
@@ -256,13 +263,19 @@ int main() {
 
 
     // HISTOGRAM VISUALIZATION:
-    int histogram_bins = 20;
+    int histogram_bins = 60;
     constexpr int histogram_norm_const = 1000;
     double trajectory_max_len = 0;
     double trajectory_min_len = 100000000;
-
     double collision_max_amount = 0;
     double collision_min_amount = 1000000000;
+    if (mode_curr == 1) {
+        std::vector<std::vector<double>> tmp_collisions = distribution_1(def_interactions_num, radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+        collision_min_amount = tmp_collisions[0][0];
+        collision_max_amount = tmp_collisions[tmp_collisions.size() - 1][0];
+    } else {
+//        std::vector<std::vector<double>> tmp_collisions = distribution_1(std::stoi(demo_length_or_collisions_string), radius_molecule, (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+    }
 
     float full_counts_max = 0;
     bool statistics_collected = false;
@@ -283,8 +296,8 @@ int main() {
         histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
         histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
         histogram_demo[i].setPosition(
-                i * histogram_demo[i].getSize().x,
-                sf::VideoMode::getDesktopMode().height - 50);
+                28 + i * histogram_demo[i].getSize().x,
+                sf::VideoMode::getDesktopMode().height - 53);
         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                     histogram_demo[i].getSize().y);
         if ((i % histogram_ticks_frequency) == 0) {
@@ -295,8 +308,8 @@ int main() {
                 histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
             }
             histogram_axes_text[i].setFillColor(sf::Color::Black);
-            histogram_axes_text[i].setPosition(i * histogram_demo[i].getSize().x,
-                                               sf::VideoMode::getDesktopMode().height - 55);
+            histogram_axes_text[i].setPosition(28 + i * histogram_demo[i].getSize().x,
+                                               sf::VideoMode::getDesktopMode().height - 58);
             histogram_axes_text[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                              histogram_demo[i].getSize().y);
         }
@@ -650,7 +663,6 @@ int main() {
             if (mode_curr == 1) {
                 double last_amount = molecule_box->get_last_interactions_num();
                 if (last_amount != -1) {
-                    std::cout << "LAST AMOUNT " << last_amount << " ";
 //                    std::cout << last_amount << std::endl;
                     //fprintf(stderr, "Last amount max: %f\n", collision_max_amount);
                     if (collision_max_amount < last_amount) {
@@ -661,7 +673,6 @@ int main() {
                             collision_max_amount = histogram_bins;
                             collision_min_amount = 0;
                         }
-                        std::cout << "MAX AMOUNT " << collision_max_amount << "\n";
                         for (int i = 0; i < histogram_bins; i++) {
                             histogram_demo_counts[i] = 0;
                             full_counts_max = 0;
@@ -746,7 +757,7 @@ int main() {
                         for (int i = 0; i < histogram_bins; i++) {
                             histogram_demo_counts[i] = 0;
                             full_counts_max = 0;
-                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                            trajectory_lens[i] = (i) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
                             if (mode_curr == 1) {
                                 histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                             } else {
@@ -755,20 +766,20 @@ int main() {
                             //fprintf(stderr, "%d\n", trajectory_lens[i]);
                         }
                     }
-                    if (trajectory_min_len > last_len) {
-                        trajectory_min_len = last_len;
-                        for (int i = 0; i < histogram_bins; i++) {
-                            histogram_demo_counts[i] = 0;
-                            full_counts_max = 0;
-                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-                            if (mode_curr == 1) {
-                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-                            } else {
-                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-                            }
-                            //                    //fprintf(stderr, "%d\n", trajectory_lens[i]);
-                        }
-                    }
+//                    if (trajectory_min_len > last_len) {
+//                        trajectory_min_len = last_len;
+//                        for (int i = 0; i < histogram_bins; i++) {
+//                            histogram_demo_counts[i] = 0;
+//                            full_counts_max = 0;
+//                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+//                            if (mode_curr == 1) {
+//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+//                            } else {
+//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+//                            }
+//                            //                    //fprintf(stderr, "%d\n", trajectory_lens[i]);
+//                        }
+//                    }
                     //fprintf(stderr, "Last_len: %f\n", last_len);
                     for (int i = 0; i < (histogram_bins - 1); i++) {
                         //fprintf(stderr, "trajectory_%d - %f \n", i, trajectory_lens[i]);
@@ -1059,29 +1070,46 @@ int main() {
 //                            delete molecule_box;  // BUG! WHY DELETE DOES NOT WORK?????????
 
                             //HISTOGRAM
+                            trajectory_max_len = 0;
+                            trajectory_min_len = 10000000;
+                            collision_max_amount = 0;
+                            collision_min_amount = 10000000;
+                            if (mode_curr == 1) {
+                                std::vector<std::vector<double>> tmp_collisions = distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+                                collision_max_amount = tmp_collisions[tmp_collisions.size() - 1][0];
+                                if ((collision_max_amount - histogram_bins) > 0) {
+                                    collision_min_amount = collision_max_amount - histogram_bins;
+                                } else {
+                                    collision_min_amount = 0;
+                                }
+                                fprintf(stderr, "%f\n", collision_max_amount);
+                            } else {
+                                std::vector<std::vector<double>> tmp_trajectories = distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+                                trajectory_max_len = tmp_trajectories[tmp_trajectories.size() - 1][0];
+                                trajectory_min_len = 0;//tmp_trajectories[0][0];
+                                fprintf(stderr, "%f\n", trajectory_max_len);
+                            }
                             for (int i = 0; i < histogram_bins; i++) {
                                 statistics_collected = false;
                                 full_counts_max = 0;
                                 histogram_demo_counts[i] = 0;
-                                trajectory_max_len = 0;
-                                trajectory_min_len = 10000000;
-                                collision_max_amount = 0;
-                                collision_min_amount = 10000000;
                                 trajectory_lens[i] =
-                                        (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                                        i  * (trajectory_max_len - trajectory_min_len) / histogram_bins;
                                 collision_amounts[i] = i + 1 + collision_min_amount;
-                                for (int i = 0; i < histogram_bins; i++) {
-                                    histogram_demo[i].setSize(sf::Vector2f(0, 0));
+                                if (mode_curr == 1) {
+                                    histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+                                } else {
+                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                                }
+                                for (int j = 0; j < histogram_bins; j++) {
+                                    histogram_demo[j].setSize(sf::Vector2f(0, 0));
                                 }
                                 if (regime_type == 1) {
                                     main_window.draw(histogram_demo[i]);
                                     main_window.draw(histogram_axes_text[i]);
                                 }
                             }
-
                             molecule_box = NULL;
-//                            std::cout << demo_length_or_collisions << std::endl;
-//                            std::cout << demo_length_or_collisions << std::endl;
                             molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
                             molecule_box->unpause();
                             is_molecules_active = true;
