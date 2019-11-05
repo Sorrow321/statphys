@@ -254,6 +254,7 @@ private:
         }
     }
 
+    bool started;
     int mode;
     int interactions_num;
     double trajectory_length;
@@ -297,7 +298,8 @@ public:
         int mode = def_mode,
         int interactions_num = def_interactions_num,
         double trajectory_length = def_trajlength)
-        : mode {mode},
+        : started{false},
+          mode {mode},
           interactions_num{ interactions_num },
           trajectory_length { trajectory_length },
           radius{ radius },
@@ -325,7 +327,6 @@ public:
             
             grid[grid_pos[i].first][grid_pos[i].second].insert(i);
         }
-        calculate_thread = std::async(std::launch::async, &Box::box_think, this);
     }
 
 
@@ -379,6 +380,10 @@ public:
     void unpause()
     {
         sem_molecules.unlock();
+        if (!started) {
+            started = true;
+            calculate_thread = std::async(std::launch::async, &Box::box_think, this);
+        }  
     }
 
     bool get_interacted(size_t id)
