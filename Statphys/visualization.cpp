@@ -138,14 +138,6 @@ int main() {
 //            sf::VideoMode::getDesktopMode().height * 0.5 + 400 * 0.5), sf::IntRect(0, 0, 350, 50));
 
 
-    sf::Texture background_main_menu_texture;
-    sf::Sprite background_main_menu_sprite;
-    background_main_menu_texture.loadFromFile("text/background_main_menu.jpg");
-    background_main_menu_texture.setSmooth(true);
-    background_main_menu_sprite.setTexture(background_main_menu_texture);
-    background_main_menu_sprite.setScale((float) main_window.getSize().x / background_main_menu_texture.getSize().x,
-                                         (float) main_window.getSize().y / background_main_menu_texture.getSize().y);
-
     sf::Texture background_main_menu_mini_texture;
     sf::Sprite background_main_menu_mini_sprite;
     background_main_menu_mini_texture.loadFromFile("text/title_lom.png");
@@ -153,6 +145,26 @@ int main() {
     background_main_menu_mini_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_mini_texture.getSize().x * 0.5, 15);
     background_main_menu_mini_sprite.setTexture(background_main_menu_mini_texture);
     background_main_menu_mini_sprite.setScale(1, 1);
+
+    sf::Texture background_main_menu_title2_texture;
+    sf::Sprite background_main_menu_title2_sprite;
+    background_main_menu_title2_texture.loadFromFile("text/title2.png");
+    background_main_menu_title2_texture.setSmooth(true);
+    background_main_menu_title2_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title2_texture.getSize().x * 0.5, 25 + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title2_sprite.setTexture(background_main_menu_title2_texture);
+//    background_main_menu_title2_sprite.setScale((float) main_window.getSize().x / background_main_menu_title2_texture.getSize().x,
+//                                         (float) main_window.getSize().y / background_main_menu_title2_texture.getSize().y);
+
+    sf::Texture background_main_menu_title3_texture;
+    sf::Sprite background_main_menu_title3_sprite;
+    background_main_menu_title3_texture.loadFromFile("text/title3.png");
+    background_main_menu_title3_texture.setSmooth(true);
+    background_main_menu_title3_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title3_texture.getSize().x * 0.5,   35 + background_main_menu_title2_texture.getSize().y + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title3_sprite.setTexture(background_main_menu_title3_texture);
+//    background_main_menu_title3_sprite.setScale((float) main_window.getSize().x / background_main_menu_title3_texture.getSize().x,
+//                                                (float) main_window.getSize().y / background_main_menu_title3_texture.getSize().y);
+
+
 
 
     /* DEMONSTATION(1) */
@@ -534,7 +546,10 @@ int main() {
     while (main_window.isOpen()) {
         if (main_window_state == 0) {
             main_window.clear(sf::Color(255, 255, 255));
-            main_window.draw(background_main_menu_sprite);
+            main_window.draw(background_sprite);
+            main_window.draw(background_main_menu_mini_sprite);
+            main_window.draw(background_main_menu_title2_sprite);
+            main_window.draw(background_main_menu_title3_sprite);
 
 //            main_window.draw(sf::CircleShape(50, 30));
             main_window.draw(main_menu_demo.sprite);
@@ -1029,8 +1044,11 @@ int main() {
                                     }
                                 } else if (event.key.code == 13) {
                                     demo_length_or_collisions = std::stoi(demo_length_or_collisions_string);
+                                    if (demo_length_or_collisions < 100) {
+                                        demo_length_or_collisions = 100;
+                                    }
                                     was_first_key_press = false;
-                                    set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ", std::stoi(demo_length_or_collisions_string));
+                                    set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ", demo_length_or_collisions);
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
                                 }
@@ -1058,8 +1076,11 @@ int main() {
                                     }
                                 } else if (event.key.code == 13) {
                                     demo_length_or_collisions = std::stoi(demo_length_or_collisions_string);
+                                    if (demo_length_or_collisions > 100) {
+                                        demo_length_or_collisions = 100;
+                                    }
                                     was_first_key_press = false;
-                                    set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ", std::stoi(demo_length_or_collisions_string));
+                                    set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ", demo_length_or_collisions);
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
                                 }
@@ -1165,11 +1186,11 @@ int main() {
                                 } else {
                                     collision_min_amount = 0;
                                 }
-                                fprintf(stderr, "%f\n", collision_max_amount);
+//                                fprintf(stderr, "%f\n", collision_max_amount);
                             } else {
                                 trajectory_max_len = theory_distribution[theory_distribution.size() - 1][0];
                                 trajectory_min_len = 0;//theory_distribution[0][0];
-                                fprintf(stderr, "%f\n", trajectory_max_len);
+//                                fprintf(stderr, "%f\n", trajectory_max_len);
                             }
                             for (int i = 0; i < histogram_bins; i++) {
                                 statistics_collected = false;
@@ -1273,6 +1294,8 @@ int main() {
             main_window.clear(sf::Color(255, 255, 255));
             main_window.draw(background_sprite);
             main_window.draw(background_main_menu_mini_sprite);
+            main_window.draw(background_main_menu_title2_sprite);
+//            main_window.draw(background_main_menu_title3_sprite);
 //            main_window.draw(sf::CircleShape(50, 30));
 //            main_window.draw(main_menu_demo.sprite);
 //            main_window.draw(main_menu_theory.sprite);
