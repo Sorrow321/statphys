@@ -533,12 +533,12 @@ int main() {
             molecules[i].setPosition(v[i].position.first, v[i].position.second);
             molecules[i].setOrigin(radius_molecule, radius_molecule);
             molecules[i].setPointCount(100);
-            molecules[i].setFillColor(sf::Color(0, 0, 0));//sf::Color(rand() % 220, rand() % 220, rand() % 220));
+            if (i < def_obs) {
+                molecules[i].setFillColor(sf::Color(255, 0, 0));
+            } else {
+                molecules[i].setFillColor(sf::Color(rand() % 180, rand() % 180, rand() % 180));
+            }
         }
-    }
-    for (int i = 0; i < def_obs; i++) {
-        molecules[i].setFillColor(sf::Color(255, 0, 0));//sf::Color(rand() % 220, rand() % 220, rand() % 220));
-
     }
     molecule_box->pause();
     is_molecules_active = false;
@@ -728,14 +728,18 @@ int main() {
 //            main_window.draw(border5);
             //точки излома:
             if (mode_curr == 1) {
-                for (int i = 0; i < def_obs; i++) {
-                    for (int j = 0; j < break_points[i].size(); j++) {
-                        main_window.draw(break_points[i][j]);
+                if (regime_type == 2) {
+                    for (int i = 0; i < def_obs; i++) {
+                        for (int j = 0; j < break_points[i].size(); j++) {
+                            main_window.draw(break_points[i][j]);
+                        }
                     }
                 }
             }
-            for (int i = 0; i < def_obs; i++) {
-                main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::LinesStrip);
+            if (regime_type == 2) {
+                for (int i = 0; i < def_obs; i++) {
+                    main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::LinesStrip);
+                }
             }
 //            for (int i = 0; i < int(theory_distribution.size()); i++) {
 //                fprintf(stderr, "%f %f %d\n", theory_distribution_graph[i].data()->position.x, theory_distribution_graph[i].data()->position.y, int(theory_distribution.size()));
@@ -1229,13 +1233,14 @@ int main() {
                                     molecules[i].setPosition(v[i].position.first, v[i].position.second);
                                     molecules[i].setOrigin(radius_molecule, radius_molecule);
                                     molecules[i].setPointCount(100);
-                                    molecules[i].setFillColor(sf::Color(0, 0, 0));//sf::Color(rand() % 220, rand() % 220, rand() % 220));
+                                    if (i < def_obs) {
+                                        molecules[i].setFillColor(sf::Color(255, 0, 0));
+                                    } else {
+                                        molecules[i].setFillColor(sf::Color(rand() % 180, rand() % 180, rand() % 180));
+                                    }
                                 }
                             }
-                            for (int i = 0; i < def_obs; i++)
-                            {
-                                molecules[i].setFillColor(sf::Color(rand() % 255, 0, 0));
-
+                            for (int i = 0; i < def_obs; i++) {
                                 trajectories[i].clear();
                                 break_points[i].clear();
                             }
@@ -1260,8 +1265,10 @@ int main() {
                     main_window.draw(molecules[i]);
                 }
             }
-            for (int i = 0; i < def_obs; i++) {
-                main_window.draw(trajectories[i].data(), trajectories[i].size(), sf::PrimitiveType::LineStrip);
+            if (regime_type == 2) {
+                for (int i = 0; i < def_obs; i++) {
+                    main_window.draw(trajectories[i].data(), trajectories[i].size(), sf::PrimitiveType::LineStrip);
+                }
             }
 //            for (int i = theory_distribution_graph.size(); i < theory_distribution_graph.size(); i++) {
 //                main_window.draw(theory_distribution_graph[i].data(), theory_distribution[0].size(), sf::PrimitiveType::LinesStrip);
