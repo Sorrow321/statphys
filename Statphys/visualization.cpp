@@ -184,13 +184,18 @@ int main() {
     demo_statistics_type_text.setFillColor(sf::Color::Black);
     demo_statistics_type_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - 2*button_menu_demo_width, demo_start_stop.bPosition.y + 50));
 
-    float demo_length_or_collisions = int(def_interactions_num);
+    int demo_length_or_collisions;
+    if (mode_curr == 1) {
+        demo_length_or_collisions = int(def_trajlength);
+    } else {
+        demo_length_or_collisions = int(def_interactions_num);
+    }
     sf::Text demo_length_or_collisions_text;
     demo_length_or_collisions_text.setFont(global_font);
     std::wstring demo_length_or_collisions_string = L"Длина траектории: ";
     set_rus_string(demo_length_or_collisions_text, demo_length_or_collisions_string, def_trajlength);
 //    demo_length_or_collisions_string = std::to_wstring(def_trajlength);
-//    std::cout << std::stof(demo_length_or_collisions_string);
+//    std::cout << std::stoi(demo_length_or_collisions_string);
     if (mode_curr == 2) {
         demo_length_or_collisions_string = L"Кол-во столкновений: ";
         set_rus_string(demo_length_or_collisions_text, demo_length_or_collisions_string, def_interactions_num);
@@ -271,6 +276,7 @@ int main() {
     double collision_min_amount = 1000000000;
     if (mode_curr == 1) {
         std::vector<std::vector<double>> tmp_collisions = distribution_1(def_interactions_num, radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+//        fprintf(stderr, "%f", tmp_collisions.size());
         collision_min_amount = tmp_collisions[0][0];
         collision_max_amount = tmp_collisions[tmp_collisions.size() - 1][0];
     } else {
@@ -919,10 +925,10 @@ int main() {
                                 demo_statistics_type_text.setFillColor(sf::Color::Black);
                                 if (mode_curr == 1) {
                                     set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
-                                                   def_trajlength);
+                                                   std::stoi(demo_length_or_collisions_string));
                                 } else if (mode_curr == 2) {
                                     set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
-                                                   def_interactions_num);
+                                                   std::stoi(demo_length_or_collisions_string));
                                 }
                                 main_window.draw(demo_length_or_collisions_text);
                                 enter_press_amount += 1;
@@ -942,11 +948,11 @@ int main() {
                                     }
                                     if (demo_length_or_collisions_string.length() <= 5) {
                                         set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
-                                                       std::stof(demo_length_or_collisions_string));
+                                                       std::stoi(demo_length_or_collisions_string));
                                     } else {
                                         demo_length_or_collisions_string.pop_back();
                                         set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
-                                                       std::stof(demo_length_or_collisions_string));
+                                                       std::stoi(demo_length_or_collisions_string));
                                     }
                                 } else if (event.key.code == 8) {
                                     if (demo_length_or_collisions_string.length() != 0) {
@@ -954,15 +960,15 @@ int main() {
                                     }
                                     if (demo_length_or_collisions_string.length() >= 1) {
                                         set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
-                                                       std::stof(demo_length_or_collisions_string));
+                                                       std::stoi(demo_length_or_collisions_string));
                                     } else {
                                         set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
                                                        L"");
                                     }
                                 } else if (event.key.code == 13) {
-//                                    std::cout << demo_length_or_collisions;
-                                    demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
+                                    demo_length_or_collisions = std::stoi(demo_length_or_collisions_string);
                                     was_first_key_press = false;
+                                    set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ", std::stoi(demo_length_or_collisions_string));
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
                                 }
@@ -983,15 +989,15 @@ int main() {
                                     }
                                     if (demo_length_or_collisions_string.length() >= 1) {
                                         set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
-                                                       std::stod(demo_length_or_collisions_string));
+                                                       std::stoi(demo_length_or_collisions_string));
                                     } else {
                                         set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ",
                                                        L"");
                                     }
                                 } else if (event.key.code == 13) {
-//                                    std::cout << demo_length_or_collisions;
-                                    demo_length_or_collisions = std::stof(demo_length_or_collisions_string);
+                                    demo_length_or_collisions = std::stoi(demo_length_or_collisions_string);
                                     was_first_key_press = false;
+                                    set_rus_string(demo_length_or_collisions_text, L"Кол-во столкновений: ", std::stoi(demo_length_or_collisions_string));
                                     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
                                     enter_press_amount += 1;
                                 }
@@ -1109,9 +1115,8 @@ int main() {
                                     main_window.draw(histogram_axes_text[i]);
                                 }
                             }
-                            molecule_box = NULL;
+                            delete molecule_box;
                             molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
-                            molecule_box->unpause();
                             is_molecules_active = true;
                             molecules.clear();
                             molecules = std::vector<sf::CircleShape>(amount_molecule, sf::CircleShape(radius_molecule));
