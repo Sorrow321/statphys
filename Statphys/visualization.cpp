@@ -274,14 +274,32 @@ int main() {
     double trajectory_min_len = 100000000;
     double collision_max_amount = 0;
     double collision_min_amount = 1000000000;
+
+    std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+                            : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
     if (mode_curr == 1) {
-        std::vector<std::vector<double>> tmp_collisions = distribution_1(def_interactions_num, radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
-//        fprintf(stderr, "%f", tmp_collisions.size());
-        collision_min_amount = tmp_collisions[0][0];
-        collision_max_amount = tmp_collisions[tmp_collisions.size() - 1][0];
+        collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
+        if ((collision_max_amount - histogram_bins) > 0) {
+            collision_min_amount = collision_max_amount - histogram_bins;
+        } else {
+            collision_min_amount = 0;
+        }
+        fprintf(stderr, "%f\n", collision_max_amount);
     } else {
-//        std::vector<std::vector<double>> tmp_collisions = distribution_1(std::stoi(demo_length_or_collisions_string), radius_molecule, (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+        trajectory_max_len = theory_distribution[theory_distribution.size() - 1][0];
+        trajectory_min_len = 0;//theory_distribution[0][0];
+        fprintf(stderr, "%f\n", trajectory_max_len);
     }
+//    st d::vector<std::vector<sf::Vertex>> theory_distribution_graph(theory_distribution.size());
+//    for (int i = 0; i < int(theory_distribution.size()); i++) {
+//        theory_distribution_graph[i].clear();
+//        theory_distribution_graph[i].emplace_back(sf::Vector2<float>(theory_distribution[i][0] + hist_field_sprite.getPosition().x, -theory_distribution[i][1]*500 + hist_field_sprite.getPosition().y + hist_field_sprite.getLocalBounds().height),
+//                                                  sf::Color::Red);
+//        fprintf(stderr, "%f", theory_distribution[i][0]);
+//    }
+
+
+
 
     float full_counts_max = 0;
     bool statistics_collected = false;
@@ -297,8 +315,8 @@ int main() {
     for (int i = 0; i < histogram_bins; i++) {
 //        std::cout << "YES2";
         histogram_demo_counts[i] = 0;
-        trajectory_lens[i] = 0;//(i + 1)  * fabs(trajectory_max_len - trajectory_min_len) / histogram_bins;
-        collision_amounts[i] = 0;// i * fabs((collision_max_amount - collision_min_amount)) / histogram_bins;
+        trajectory_lens[i] = (i)  * fabs(trajectory_max_len - trajectory_min_len) / histogram_bins;
+        collision_amounts[i] = i * fabs((collision_max_amount - collision_min_amount)) / histogram_bins;
         histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
         histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
         histogram_demo[i].setPosition(
@@ -663,6 +681,12 @@ int main() {
             for (int i = 0; i < def_obs; i++) {
                 main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::LinesStrip);
             }
+//            for (int i = 0; i < int(theory_distribution.size()); i++) {
+//                fprintf(stderr, "%f %f %d\n", theory_distribution_graph[i].data()->position.x, theory_distribution_graph[i].data()->position.y, int(theory_distribution.size()));
+//                main_window.draw(theory_distribution_graph[i].data(),
+//                        theory_distribution[0].size(),
+//                        sf::PrimitiveType::LinesStrip);
+//            }
 
             //HISTOGRAM
 //            get_la
@@ -1080,9 +1104,19 @@ int main() {
                             trajectory_min_len = 10000000;
                             collision_max_amount = 0;
                             collision_min_amount = 10000000;
+                            // МОЖНО ОПТИМИЗИРОВАТЬ: если 
+                            std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+                            : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+
+//                            for (int i = 0; i < int(theory_distribution.size()); i++) {
+//                                theory_distribution_graph[i].clear();
+//                                theory_distribution_graph[i].emplace_back(sf::Vector2f(theory_distribution[i][0] - theory_distribution[0][0] + hist_field_sprite.getPosition().x,
+//                                        - theory_distribution[i][1] + hist_field_sprite.getPosition().y + hist_field_sprite.getLocalBounds().height),
+//                                                                          sf::Color::Red);
+//                                fprintf(stderr, "%f", theory_distribution[i][0]);
+//                            }
                             if (mode_curr == 1) {
-                                std::vector<std::vector<double>> tmp_collisions = distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
-                                collision_max_amount = tmp_collisions[tmp_collisions.size() - 1][0];
+                                collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
                                 if ((collision_max_amount - histogram_bins) > 0) {
                                     collision_min_amount = collision_max_amount - histogram_bins;
                                 } else {
@@ -1090,9 +1124,8 @@ int main() {
                                 }
                                 fprintf(stderr, "%f\n", collision_max_amount);
                             } else {
-                                std::vector<std::vector<double>> tmp_trajectories = distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
-                                trajectory_max_len = tmp_trajectories[tmp_trajectories.size() - 1][0];
-                                trajectory_min_len = 0;//tmp_trajectories[0][0];
+                                trajectory_max_len = theory_distribution[theory_distribution.size() - 1][0];
+                                trajectory_min_len = 0;//theory_distribution[0][0];
                                 fprintf(stderr, "%f\n", trajectory_max_len);
                             }
                             for (int i = 0; i < histogram_bins; i++) {
@@ -1160,7 +1193,9 @@ int main() {
             for (int i = 0; i < def_obs; i++) {
                 main_window.draw(trajectories[i].data(), trajectories[i].size(), sf::PrimitiveType::LineStrip);
             }
-
+//            for (int i = theory_distribution_graph.size(); i < theory_distribution_graph.size(); i++) {
+//                main_window.draw(theory_distribution_graph[i].data(), theory_distribution[0].size(), sf::PrimitiveType::LinesStrip);
+//            }
             main_window.draw(demo_start_stop.sprite);
             main_window.draw(demo_start_stop.bText);
 
