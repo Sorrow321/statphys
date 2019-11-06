@@ -115,6 +115,9 @@ int main() {
     sf::Texture back_to_menu_authors_texture;
     back_to_menu_authors_texture.loadFromFile("text/b_back.jpg");
 
+    sf::Texture main_menu_exit_texture;
+    main_menu_exit_texture.loadFromFile("text/exit.png");
+
 //    sf::Texture demonstration_button_main_menu_texture;
 //    demonstration_button_main_menu_texture.loadFromFile("text/demonstation.jpg");
 
@@ -133,9 +136,9 @@ int main() {
             main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, authors_button_main_menu_texture.getSize().x,
                                                                                                                            authors_button_main_menu_texture.getSize().y));
-//    Button_menu main_menu_exit(L"Выход", demonstration_button_texture, sf::Vector2f(
-//            sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
-//            sf::VideoMode::getDesktopMode().height * 0.5 + 400 * 0.5), sf::IntRect(0, 0, 350, 50));
+    Button_menu main_menu_exit(L"", main_menu_exit_texture, sf::Vector2f(
+            main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5,
+            sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30), sf::IntRect(0, 0, main_menu_exit_texture.getSize().x, main_menu_exit_texture.getSize().y));
 
 
     sf::Texture background_main_menu_mini_texture;
@@ -555,7 +558,7 @@ int main() {
             main_window.draw(main_menu_demo.sprite);
             main_window.draw(main_menu_theory.sprite);
             main_window.draw(main_menu_authors.sprite);
-//            main_window.draw(main_menu_exit.sprite);
+            main_window.draw(main_menu_exit.sprite);
 //            main_window.draw(main_menu_demo.bText);
 //            main_window.draw(main_menu_authors.bText);
 //            main_window.draw(main_menu_theory.bText);
@@ -572,7 +575,7 @@ int main() {
                             sf::FloatRect bounds_start = main_menu_demo.sprite.getGlobalBounds();
                             sf::FloatRect bounds_theory = main_menu_theory.sprite.getGlobalBounds();
                             sf::FloatRect bounds_authors = main_menu_authors.sprite.getGlobalBounds();
-//                            sf::FloatRect bounds_exit = main_menu_exit.sprite.getGlobalBounds();
+                            sf::FloatRect bounds_exit = main_menu_exit.sprite.getGlobalBounds();
                             if (bounds_start.contains(mouse)) {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 main_window_state = 1;
@@ -581,10 +584,10 @@ int main() {
                             } else if (bounds_authors.contains(mouse)) {
                                 main_window_state = 3; // Authors
                             }
-//                            else if (bounds_exit.contains(mouse)) {
-//                                main_window.close();
-//                                exit(0);
-//                            }
+                            else if (bounds_exit.contains(mouse)) {
+                                main_window.close();
+                                exit(0);
+                            }
                         }
                         break;
                 }
