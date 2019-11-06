@@ -153,7 +153,7 @@ int main() {
     sf::Sprite background_main_menu_title2_sprite;
     background_main_menu_title2_texture.loadFromFile("text/title2.png");
     background_main_menu_title2_texture.setSmooth(true);
-    background_main_menu_title2_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title2_texture.getSize().x * 0.5, 25 + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title2_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title2_texture.getSize().x * 0.5, 105 + background_main_menu_mini_texture.getSize().y);
     background_main_menu_title2_sprite.setTexture(background_main_menu_title2_texture);
 //    background_main_menu_title2_sprite.setScale((float) main_window.getSize().x / background_main_menu_title2_texture.getSize().x,
 //                                         (float) main_window.getSize().y / background_main_menu_title2_texture.getSize().y);
@@ -162,7 +162,7 @@ int main() {
     sf::Sprite background_main_menu_title3_sprite;
     background_main_menu_title3_texture.loadFromFile("text/title3.png");
     background_main_menu_title3_texture.setSmooth(true);
-    background_main_menu_title3_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title3_texture.getSize().x * 0.5,   35 + background_main_menu_title2_texture.getSize().y + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title3_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title3_texture.getSize().x * 0.5,   195 + background_main_menu_title2_texture.getSize().y + background_main_menu_mini_texture.getSize().y);
     background_main_menu_title3_sprite.setTexture(background_main_menu_title3_texture);
 //    background_main_menu_title3_sprite.setScale((float) main_window.getSize().x / background_main_menu_title3_texture.getSize().x,
 //                                                (float) main_window.getSize().y / background_main_menu_title3_texture.getSize().y);
@@ -334,11 +334,11 @@ int main() {
         } else {
             collision_min_amount = 0;
         }
-        fprintf(stderr, "%f\n", collision_max_amount);
+//        fprintf(stderr, "%f\n", collision_max_amount);
     } else {
         trajectory_max_len = theory_distribution[theory_distribution.size() - 1][0];
         trajectory_min_len = 0;//theory_distribution[0][0];
-        fprintf(stderr, "%f\n", trajectory_max_len);
+//        fprintf(stderr, "%f\n", trajectory_max_len);
     }
 //    st d::vector<std::vector<sf::Vertex>> theory_distribution_graph(theory_distribution.size());
 //    for (int i = 0; i < int(theory_distribution.size()); i++) {
@@ -452,14 +452,14 @@ int main() {
     std::wstring teacher_string = L"Научный руководитель: доцент Чичигина Ольга Александровна\nЛектор: профессор Андреев Анатолий Васильевич";
     teacher_text.setString(teacher_string);
     teacher_text.setFillColor(sf::Color::Black);
-    teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 125));
+    teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 125 + 80));
 
     sf::Texture nikita_photo_texture;
     sf::Sprite nikita_photo_sprite;
     nikita_photo_texture.loadFromFile("text/Nikita.jpg");
     nikita_photo_texture.setSmooth(true);
     nikita_photo_sprite.setTexture(nikita_photo_texture);
-    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 300));
+    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
     nikita_photo_sprite.setScale(1, 1);
 
     sf::Text nikita_text;
@@ -475,7 +475,7 @@ int main() {
     ilya_photo_texture.loadFromFile("text/Ilya.jpg");
     ilya_photo_texture.setSmooth(true);
     ilya_photo_sprite.setTexture(ilya_photo_texture);
-    ilya_photo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - ilya_photo_sprite.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 300));
+    ilya_photo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - ilya_photo_sprite.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
     ilya_photo_sprite.setScale(1, 1);
 
     sf::Text ilya_text;
@@ -493,7 +493,7 @@ int main() {
     dima_photo_texture.setSmooth(true);
     dima_photo_sprite.setTexture(dima_photo_texture);
     dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - dima_photo_sprite.getLocalBounds().width * 0.5,
-                                               cmc_logo_sprite.getGlobalBounds().height + 300));
+                                               cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
     dima_photo_sprite.setScale(1, 1);
 
     sf::Text dima_text;
@@ -518,7 +518,7 @@ int main() {
     authors_title_text2.setString(authors_title_string2);
     authors_title_text2.setFillColor(sf::Color::Black);
     authors_title_text2.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text2.getLocalBounds().width * 0.5,
-                                    cmc_logo_sprite.getGlobalBounds().height + 250);
+                                    cmc_logo_sprite.getGlobalBounds().height + 250 + 80);
 
 
     // DEMONSTRATION(1) END
