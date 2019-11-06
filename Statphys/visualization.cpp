@@ -44,7 +44,7 @@ int main() {
     setlocale(LC_ALL,"Rus");
     int main_window_state = 0;
     int amount_molecule = def_molnum;
-    float radius_molecule = def_radius;
+    int radius_molecule = int(def_radius);
     bool is_molecules_active = true;
 
     sf::Texture box_field_texture;
@@ -671,26 +671,26 @@ int main() {
                 if (last_amount != -1) {
 //                    std::cout << last_amount << std::endl;
                     //fprintf(stderr, "Last amount max: %f\n", collision_max_amount);
-                    if (collision_max_amount < last_amount) {
-                        if (last_amount > histogram_bins) {
-                            collision_max_amount = last_amount;
-                            collision_min_amount = (collision_max_amount - histogram_bins);
-                        } else {
-                            collision_max_amount = histogram_bins;
-                            collision_min_amount = 0;
-                        }
-                        for (int i = 0; i < histogram_bins; i++) {
-                            histogram_demo_counts[i] = 0;
-                            full_counts_max = 0;
-                            collision_amounts[i] = i + 1 + collision_min_amount;
-                            if (mode_curr == 1) {
-                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-                            } else {
-                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-                            }
-                            //fprintf(stderr, "%d\n", collision_amounts[i]);
-                        }
-                    }
+//                    if (collision_max_amount < last_amount) {
+//                        if (last_amount > histogram_bins) {
+//                            collision_max_amount = last_amount;
+//                            collision_min_amount = (collision_max_amount - histogram_bins);
+//                        } else {
+//                            collision_max_amount = histogram_bins;
+//                            collision_min_amount = 0;
+//                        }
+//                        for (int i = 0; i < histogram_bins; i++) {
+//                            histogram_demo_counts[i] = 0;
+//                            full_counts_max = 0;
+//                            collision_amounts[i] = i + 1 + collision_min_amount;
+//                            if (mode_curr == 1) {
+//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+//                            } else {
+//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+//                            }
+//                            //fprintf(stderr, "%d\n", collision_amounts[i]);
+//                        }
+//                    }
 //                    if (collision_min_amount > last_amount) {
 //                        collision_min_amount = last_amount;
 //                        for (int i = 0; i < histogram_bins; i++) {
@@ -758,20 +758,20 @@ int main() {
                 double last_len = molecule_box->get_last_len();
                 if (last_len != -1) {
                     //fprintf(stderr, "Trajectory max len: %f\n", trajectory_max_len);
-                    if (trajectory_max_len < last_len) {
-                        trajectory_max_len = last_len;
-                        for (int i = 0; i < histogram_bins; i++) {
-                            histogram_demo_counts[i] = 0;
-                            full_counts_max = 0;
-                            trajectory_lens[i] = (i) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-                            if (mode_curr == 1) {
-                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-                            } else {
-                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-                            }
-                            //fprintf(stderr, "%d\n", trajectory_lens[i]);
-                        }
-                    }
+//                    if (trajectory_max_len < last_len) {
+//                        trajectory_max_len = last_len;
+//                        for (int i = 0; i < histogram_bins; i++) {
+//                            histogram_demo_counts[i] = 0;
+//                            full_counts_max = 0;
+//                            trajectory_lens[i] = (i) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+//                            if (mode_curr == 1) {
+//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+//                            } else {
+//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+//                            }
+//                            //fprintf(stderr, "%d\n", trajectory_lens[i]);
+//                        }
+//                    }
 //                    if (trajectory_min_len > last_len) {
 //                        trajectory_min_len = last_len;
 //                        for (int i = 0; i < histogram_bins; i++) {
@@ -1012,8 +1012,8 @@ int main() {
                             radius_size_text.setFillColor(sf::Color::Red);
                             if (((event.key.code >= 48) && (event.key.code < 58)) || (event.key.code == 46)) {
                                 radius_size_string += static_cast<char>(event.text.unicode);
-                                if (std::stod(radius_size_string) > 20) {
-                                    radius_size_string = "20";
+                                if (std::stod(radius_size_string) > 10) {
+                                    radius_size_string = "10";
                                 } else if (std::stod(radius_size_string) < 1) {
                                     radius_size_string =  "1";
                                 }
@@ -1021,16 +1021,16 @@ int main() {
                                     radius_size_string.pop_back();
                                 }
                                 set_rus_string(radius_size_text, L"Радиус: ",
-                                               std::stof(radius_size_string));
+                                               std::stoi(radius_size_string));
 //                                radius_size_text.setString("Radius size: " + radius_size_string);
                             } else if (event.key.code == 8) {
                                 if (radius_size_string.length() != 0) {
                                     radius_size_string.pop_back();
                                 }
-                                radius_size_text.setString(
-                                        "Radius size: " + radius_size_string);
+                                 set_rus_string(radius_size_text, L"Радиус: ",
+                                        std::stoi(radius_size_string));
                             } else if (event.key.code == 13) {
-                                radius_molecule = std::stof(radius_size_string);
+                                radius_molecule = std::stoi(radius_size_string);
                                 was_first_key_press = false;
                                 radius_size_text.setFillColor(sf::Color::Black);
                                 enter_press_amount += 1;
