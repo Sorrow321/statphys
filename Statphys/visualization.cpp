@@ -4,6 +4,7 @@
 #include <cmath>
 #include <sstream>
 #include "distributions.cpp"
+#include <stdio.h>
 
 
 int mode_curr = def_mode;
@@ -111,11 +112,15 @@ int main() {
     sf::Texture authors_button_main_menu_texture;
     authors_button_main_menu_texture.loadFromFile("text/authors.jpg");
 
+    sf::Texture back_to_menu_authors_texture;
+    back_to_menu_authors_texture.loadFromFile("text/b_back.jpg");
+
 //    sf::Texture demonstration_button_main_menu_texture;
 //    demonstration_button_main_menu_texture.loadFromFile("text/demonstation.jpg");
 
     /* MAIN MENU BUTTONS(0) */
-    Button_menu main_menu_demo(L"", demonstration_button_main_menu_texture,sf::Vector2f(
+    Button_menu main_menu_demo(L"", demonstration_button_main_menu_texture,
+            sf::Vector2f(
             sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5,
             sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y));
 
@@ -144,15 +149,19 @@ int main() {
 
     /* DEMONSTATION(1) */
     // BUTTONS
+
+    sf::Texture start_stop_button_texture;
+    start_stop_button_texture.loadFromFile("text/b_start.jpg");
+
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop(L"Старт", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop(L"", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
                                 sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     Button_menu demo_input(L"Ввод", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     Button_menu demo_clear(L"Убрать молекулы", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 200),
                            sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-    Button_menu demo_back(L"Назад в меню", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
+    Button_menu demo_back(L"", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - button_menu_demo_width, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 300),
                           sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
     bool is_clear_box = false;
 
@@ -349,10 +358,11 @@ int main() {
                                                       sf::VideoMode::getDesktopMode().height * 0.5 - theory_first_page_sprite.getLocalBounds().height * 0.5));
     theory_first_page_sprite.setScale(1, 1);
 
-    Button_menu authors_back(L"Назад в меню", demonstration_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - 350 * 0.5,
-                                                                                         theory_first_page_sprite.getPosition().y + theory_first_page_sprite.getLocalBounds().height  + 20),
-                             sf::IntRect(0, 0, button_menu_demo_width, button_menu_demo_height));
-
+    Button_menu authors_back(L"", back_to_menu_authors_texture,
+                             sf::Vector2f(
+                                     sf::VideoMode::getDesktopMode().width * 0.5 - back_to_menu_authors_texture.getSize().x * 0.5,
+                                     sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 2),
+                                     sf::IntRect(0, 0, back_to_menu_authors_texture.getSize().x, back_to_menu_authors_texture.getSize().y));
     //AUTHORS
     sf::Texture cmc_logo_texture;
     sf::Sprite cmc_logo_sprite;
@@ -522,7 +532,7 @@ int main() {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 main_window_state = 1;
                             } else if (bounds_theory.contains(mouse)) {
-                                main_window_state = 4;
+                                system("text/theory.pdf");
                             } else if (bounds_authors.contains(mouse)) {
                                 main_window_state = 3; // Authors
                             }
