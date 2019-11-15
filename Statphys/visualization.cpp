@@ -1,4 +1,4 @@
-#include "SFML/Graphics.hpp"
+﻿#include "SFML/Graphics.hpp"
 #include <iostream>
 #include "box.cpp"
 #include <cmath>
