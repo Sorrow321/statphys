@@ -12,9 +12,9 @@ constexpr int calc_ms = 5;
 constexpr size_t def_molnum = 250;
 constexpr size_t def_trajnum = 1;
 constexpr double def_radius = 5.0;
-constexpr int def_interactions_num = 10;
+constexpr int def_interactions_num = 5;
 constexpr int def_mode = 1;
-constexpr double def_trajlength = 50.0;
+constexpr double def_trajlength = 500.0;
 constexpr double def_obs = 1;
 constexpr int queue_limit = 50000;
 
@@ -249,11 +249,15 @@ private:
         {
             std::this_thread::sleep_for(dt);
             sem_molecules.lock();
+            if (stop_thread) {
+                return;
+            }
             calculate_positions();
             sem_molecules.unlock();
         }
     }
 
+    std::atomic<bool> stop_thread;
     bool started;
     int mode;
     int interactions_num;
@@ -268,7 +272,6 @@ private:
     double radius;
     std::tuple<double, double, double, double> bounds;
     std::vector<Molecule> molecules;
-    std::future<void> calculate_thread;
     unsigned int calculate_ms;
     std::vector<std::pair<int, int>> grid_pos;
     std::vector<int> interactions;
@@ -283,6 +286,7 @@ private:
     std::vector<bool> finished_lengths;
     std::vector<bool> interacted;
     PoissonEstimator p_est;
+    std::thread* calculate_thread;
 public:
     /*
     mode (1 or 2): if 1, then the number of collisions per length is examined
@@ -298,7 +302,8 @@ public:
         int mode = def_mode,
         int interactions_num = def_interactions_num,
         double trajectory_length = def_trajlength)
-            : started{false},
+            : stop_thread{false},
+              started{false},
               mode {mode},
               interactions_num{ interactions_num },
               trajectory_length { trajectory_length },
@@ -315,7 +320,8 @@ public:
               lengths(molecules_num),
               finished_interactions(molecules_num),
               finished_lengths(molecules_num),
-              interacted(molecules_num)
+              interacted(molecules_num),
+              calculate_thread{nullptr}
     {
         for (size_t i = 0; i < molecules_num; i++) {
             trajectory[i] = molecules[i].position;
@@ -329,6 +335,14 @@ public:
         }
     }
 
+    ~Box()
+    {
+        stop_thread = true;
+        sem_molecules.unlock();
+        if (calculate_thread) {
+            calculate_thread->join();
+        }
+    }
 
     const MutexWrapper<std::vector<Molecule>> get_molecules()
     {
@@ -382,7 +396,7 @@ public:
         sem_molecules.unlock();
         if (!started) {
             started = true;
-            calculate_thread = std::async(std::launch::async, &Box::box_think, this);
+            calculate_thread = new std::thread(&Box::box_think, this);
         }
     }
 
