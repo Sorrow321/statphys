@@ -66,16 +66,12 @@ private:
 struct Molecule
 {
 private:
-    double angle_by_coords(double x, double y)
-    {
-        return atan(y / x);
-    }
-
     SingletonWrapper<NormalHandler>& normal;
-    SingletonWrapper<UniformHandler>& uniform_x;
-    SingletonWrapper<UniformHandler, 2>& uniform_y;
+
 
 public:
+    SingletonWrapper<UniformHandler>& uniform_x;
+    SingletonWrapper<UniformHandler, 2>& uniform_y;
     std::pair<double, double> position, velocity;
 
     Molecule(double left, double right, double down, double up)
@@ -94,10 +90,5 @@ public:
               position{ uniform_x, uniform_y },
               velocity{ normal, normal }
     {
-    }
-
-    double get_angle()
-    {
-        return angle_by_coords(velocity.first, velocity.second);
     }
 };
