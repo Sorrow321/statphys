@@ -17,7 +17,6 @@ constexpr int def_mode = 1;
 constexpr double def_trajlength = 500.0;
 constexpr double def_obs = 1;
 constexpr int queue_limit = 50000;
-constexpr int number_of_attempts = 1000;
 
 template<typename T>
 class MutexWrapper
@@ -326,14 +325,12 @@ public:
     {
 
         // collisions in initial state isn't allowed
-        int tries_cnt = 0;
-        while (tries_cnt < number_of_attempts) {
+        while (true) {
             bool good = true;
             for (size_t i = 0; i < molecules_num; i++) {
                 for (size_t j = i + 1; j < molecules_num; j++) {
                     if (distance(molecules[i].position, molecules[j].position) < 4 * radius * radius) {
                         molecules[j].position = { molecules[j].uniform_x, molecules[j].uniform_y };
-                        tries_cnt++;
                         good = false;
                         break;
                     }
@@ -345,10 +342,6 @@ public:
             if (good) {
                 break;
             }
-        }
-        if (tries_cnt == number_of_attempts) {
-            // crash, i think this would be extremely rare event
-            exit(0);
         }
 
 
