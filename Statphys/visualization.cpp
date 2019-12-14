@@ -288,7 +288,7 @@ int main() {
 
 
     sf::Texture hist_field_texture;
-    hist_field_texture.loadFromFile("text/hist_field.jpg");
+    hist_field_texture.loadFromFile("text/hist_field_new.jpg");
     sf::Sprite hist_field_sprite;
     hist_field_texture.setSmooth(true);
     hist_field_sprite.setTexture(hist_field_texture);
