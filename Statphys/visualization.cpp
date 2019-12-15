@@ -48,6 +48,9 @@ int main() {
     int radius_molecule = int(def_radius);
     bool is_molecules_active = true;
 
+    double coefficient_super_frontend_x = 1;//(float) sf::VideoMode::getDesktopMode().width / 1920;
+    double coefficient_super_frontend_y = 1;//(float) sf::VideoMode::getDesktopMode().height / 1080;
+
     sf::Texture box_field_texture;
     box_field_texture.loadFromFile("text/box_field.jpg");
     sf::Sprite box_field_sprite;
@@ -58,14 +61,14 @@ int main() {
 //                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
 
 
-    std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x + 5, box_field_sprite.getLocalBounds().width + 16,
-                                                         box_field_sprite.getPosition().y + 5, box_field_sprite.getLocalBounds().height + 16};
+    std::tuple<double, double, double, double> bounds = {(int) (box_field_sprite.getPosition().x + 5) * coefficient_super_frontend_x, (int) (box_field_sprite.getLocalBounds().width + 16) * coefficient_super_frontend_x,
+                                                         ((int) box_field_sprite.getPosition().y + 5) * coefficient_super_frontend_y, (int) (box_field_sprite.getLocalBounds().height + 16) * coefficient_super_frontend_y};
     //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
+
     sf::RenderWindow main_window(
             sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height),
             L"Презентация по статистической физике",
             sf::Style::Fullscreen);
-
 
     main_window.clear(sf::Color(255, 255, 255));
     Box *molecule_box = new Box(radius_molecule, bounds, amount_molecule);
@@ -124,21 +127,25 @@ int main() {
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo(L"", demonstration_button_main_menu_texture,
             sf::Vector2f(
-            sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y));
+                    (int) (sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
+                    (int) (sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
+                    sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
 
     Button_menu main_menu_theory(L"", theory_button_main_menu_texture,sf::Vector2f(
-            main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 - theory_button_main_menu_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, theory_button_main_menu_texture.getSize().x,
-                                                                                                                          theory_button_main_menu_texture.getSize().y));
+            (int) (main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 - theory_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
+            (int) (sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
+                    sf::IntRect(0, 0, (int) theory_button_main_menu_texture.getSize().x * coefficient_super_frontend_x,
+                                (int) theory_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
 
-    Button_menu main_menu_authors(L"", authors_button_main_menu_texture,sf::Vector2f(
-            main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, authors_button_main_menu_texture.getSize().x,
-                                                                                                                           authors_button_main_menu_texture.getSize().y));
+    Button_menu main_menu_authors(L"", authors_button_main_menu_texture, sf::Vector2f(
+            (int) (main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
+            (int) (sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
+            sf::IntRect(0, 0, (int) authors_button_main_menu_texture.getSize().x * coefficient_super_frontend_x,
+                        (int) authors_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
     Button_menu main_menu_exit(L"", main_menu_exit_texture, sf::Vector2f(
-            main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30), sf::IntRect(0, 0, main_menu_exit_texture.getSize().x, main_menu_exit_texture.getSize().y));
+            (int) (main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
+            (int) (sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30) * coefficient_super_frontend_y),
+                    sf::IntRect(0, 0, (int) main_menu_exit_texture.getSize().x * coefficient_super_frontend_x, (int) main_menu_exit_texture.getSize().y * coefficient_super_frontend_y));
 
 
     sf::Texture background_main_menu_mini_texture;
