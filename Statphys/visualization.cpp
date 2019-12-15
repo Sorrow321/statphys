@@ -379,7 +379,7 @@ int main() {
     }
     histogram_axis_x_text.setString(histogram_axis_x_string.str());
     histogram_axis_x_text.setFillColor(sf::Color::Black);
-    histogram_axis_x_text.setPosition(250,
+    histogram_axis_x_text.setPosition(350,
                                       sf::VideoMode::getDesktopMode().height - 35);
     histogram_axis_x_text.setOrigin(histogram_demo[0].getLocalBounds().left,
                                     histogram_demo[0].getSize().y);
