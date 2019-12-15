@@ -48,9 +48,6 @@ int main() {
     int radius_molecule = int(def_radius);
     bool is_molecules_active = true;
 
-    double coefficient_super_frontend_x = 1;//(float) sf::VideoMode::getDesktopMode().width / 1920;
-    double coefficient_super_frontend_y = 1;//(float) sf::VideoMode::getDesktopMode().height / 1080;
-
     sf::Texture box_field_texture;
     box_field_texture.loadFromFile("text/box_field.jpg");
     sf::Sprite box_field_sprite;
@@ -61,14 +58,14 @@ int main() {
 //                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
 
 
-    std::tuple<double, double, double, double> bounds = {(int) (box_field_sprite.getPosition().x + 5) * coefficient_super_frontend_x, (int) (box_field_sprite.getLocalBounds().width + 16) * coefficient_super_frontend_x,
-                                                         ((int) box_field_sprite.getPosition().y + 5) * coefficient_super_frontend_y, (int) (box_field_sprite.getLocalBounds().height + 16) * coefficient_super_frontend_y};
+    std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x + 5, box_field_sprite.getLocalBounds().width + 16,
+                                                         box_field_sprite.getPosition().y + 5, box_field_sprite.getLocalBounds().height + 16};
     //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
-
     sf::RenderWindow main_window(
             sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height),
             L"Презентация по статистической физике",
             sf::Style::Fullscreen);
+
 
     main_window.clear(sf::Color(255, 255, 255));
     Box *molecule_box = new Box(radius_molecule, bounds, amount_molecule);
@@ -126,26 +123,22 @@ int main() {
 
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo(L"", demonstration_button_main_menu_texture,
-            sf::Vector2f(
-                    (int) (sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
-                    (int) (sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
-                    sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
+                               sf::Vector2f(
+                                       sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5,
+                                       sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y));
 
     Button_menu main_menu_theory(L"", theory_button_main_menu_texture,sf::Vector2f(
-            (int) (main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 - theory_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
-            (int) (sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
-                    sf::IntRect(0, 0, (int) theory_button_main_menu_texture.getSize().x * coefficient_super_frontend_x,
-                                (int) theory_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
+            main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 - theory_button_main_menu_texture.getSize().x * 0.5,
+            sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, theory_button_main_menu_texture.getSize().x,
+                                                                                                                          theory_button_main_menu_texture.getSize().y));
 
-    Button_menu main_menu_authors(L"", authors_button_main_menu_texture, sf::Vector2f(
-            (int) (main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
-            (int) (sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5) * coefficient_super_frontend_y),
-            sf::IntRect(0, 0, (int) authors_button_main_menu_texture.getSize().x * coefficient_super_frontend_x,
-                        (int) authors_button_main_menu_texture.getSize().y * coefficient_super_frontend_y));
+    Button_menu main_menu_authors(L"", authors_button_main_menu_texture,sf::Vector2f(
+            main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5,
+            sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, authors_button_main_menu_texture.getSize().x,
+                                                                                                                           authors_button_main_menu_texture.getSize().y));
     Button_menu main_menu_exit(L"", main_menu_exit_texture, sf::Vector2f(
-            (int) (main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5) * coefficient_super_frontend_x,
-            (int) (sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30) * coefficient_super_frontend_y),
-                    sf::IntRect(0, 0, (int) main_menu_exit_texture.getSize().x * coefficient_super_frontend_x, (int) main_menu_exit_texture.getSize().y * coefficient_super_frontend_y));
+            main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5,
+            sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30), sf::IntRect(0, 0, main_menu_exit_texture.getSize().x, main_menu_exit_texture.getSize().y));
 
 
     sf::Texture background_main_menu_mini_texture;
@@ -191,13 +184,13 @@ int main() {
 
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop(L"", start_stop_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - start_stop_button_texture.getSize().x * 2 - 40, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop(L"", start_stop_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - start_stop_button_texture.getSize().x * 2 - 240, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
                                 sf::IntRect(0, 0, start_stop_button_texture.getSize().x, start_stop_button_texture.getSize().y));
-    Button_menu demo_input(L"", input_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - input_button_texture.getSize().x * 2 - 40, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_input(L"", input_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - input_button_texture.getSize().x * 2 - 240, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                            sf::IntRect(0, 0, input_button_texture.getSize().x, input_button_texture.getSize().y));
-    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - clear_button_texture.getSize().x - 20 , sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - clear_button_texture.getSize().x - 220, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
                            sf::IntRect(0, 0, clear_button_texture.getSize().x, clear_button_texture.getSize().y));
-    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - demo_back_button_texture.getSize().x - 20, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - demo_back_button_texture.getSize().x - 220, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                           sf::IntRect(0, 0, demo_back_button_texture.getSize().x, demo_back_button_texture.getSize().y));
     bool is_clear_box = false;
 
@@ -224,7 +217,7 @@ int main() {
     demo_regime_type_text.setString(regime_type_string.str());
     demo_regime_type_text.setFillColor(sf::Color::Black);
     demo_regime_type_text.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5 ,
-            demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 50));
+                                                    demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 50));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
@@ -236,7 +229,7 @@ int main() {
     }
     demo_statistics_type_text.setFillColor(sf::Color::Black);
     demo_statistics_type_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
-                                          demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 100));
+                                                       demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 100));
 
     int demo_length_or_collisions;
     if (mode_curr == 1) {
@@ -308,7 +301,7 @@ int main() {
 
     std::vector<sf::Vertex> additional_trajectories[3][3];
     std::vector<std::vector<sf::Color>> colors(def_obs);
-    
+
     // ТОЧКИ ИЗЛОМА
     std::vector<std::vector<sf::CircleShape>> break_points(def_obs);
 
@@ -413,7 +406,7 @@ int main() {
                              sf::Vector2f(
                                      sf::VideoMode::getDesktopMode().width * 0.5 - back_to_menu_authors_texture.getSize().x * 0.5,
                                      sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 2),
-                                     sf::IntRect(0, 0, back_to_menu_authors_texture.getSize().x, back_to_menu_authors_texture.getSize().y));
+                             sf::IntRect(0, 0, back_to_menu_authors_texture.getSize().x, back_to_menu_authors_texture.getSize().y));
     //AUTHORS
     sf::Texture cmc_logo_texture;
     sf::Sprite cmc_logo_sprite;
@@ -959,7 +952,6 @@ int main() {
                                                                L"Введите нужный параметр:",
                                                                L"Введите радиус:",
                                                                L"Введите кол-во молекул:"};
-
             input_text_show.setString(input_button_strings[enter_press_amount]);
             bool is_all_params_were_passed = false;
             switch (enter_press_amount) {
@@ -1010,8 +1002,10 @@ int main() {
                                                L"статистика");
                                 regime_type = 1;
                             } else if (event.key.code == 50) {
+                                fprintf(stderr, "AA");
                                 set_rus_string(demo_regime_type_text, L"Режим: ",
                                                L"демонстрация");
+                                fprintf(stderr, "BB");
                                 regime_type = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
@@ -1210,7 +1204,7 @@ int main() {
                             trajectory_min_len = 10000000;
                             collision_max_amount = 0;
                             collision_min_amount = 10000000;
-                            // МОЖНО ОПТИМИЗИРОВАТЬ: если 
+                            // МОЖНО ОПТИМИЗИРОВАТЬ: если
                             std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
                             : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
 
@@ -1295,7 +1289,7 @@ int main() {
                                            L"");
                             main_window_state = 1;
                         }
-                        break;
+//                    break;
                 }
             }
             main_window.clear(sf::Color(255, 255, 255));
