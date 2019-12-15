@@ -879,7 +879,7 @@ int main() {
                             if (!i1 && !i2) {
                                 continue;
                             }
-                            main_window.draw(additional_trajectories[i1][i2].data(), additional_trajectories[i1][i2].size(), sf::LinesStrip);
+                            main_window.draw(additional_trajectories[i1 + 1][i2 + 1].data(), additional_trajectories[i1 + 1][i2 + 1].size(), sf::LinesStrip);
                         }
                     }
                 }
@@ -1425,7 +1425,7 @@ int main() {
                             if (!i1 && !i2) {
                                 continue;
                             }
-                            main_window.draw(additional_trajectories[i1][i2].data(), additional_trajectories[i1][i2].size(), sf::PrimitiveType::LineStrip);
+                            main_window.draw(additional_trajectories[i1 + 1][i2 + 1].data(), additional_trajectories[i1 + 1][i2 + 1].size(), sf::PrimitiveType::LineStrip);
                         }
                     }
                 }
