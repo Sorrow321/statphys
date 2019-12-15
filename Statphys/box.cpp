@@ -323,10 +323,12 @@ public:
               interacted(molecules_num),
               calculate_thread{nullptr}
     {
-
+        double mid_x = (std::get<1>(bounds) - std::get<0>(bounds)) / 2;
+        double mid_y = (std::get<3>(bounds) - std::get<2>(bounds)) / 2;
         // collisions in initial state isn't allowed
         while (true) {
             bool good = true;
+            molecules[0].position = { mid_x, mid_y };
             for (size_t i = 0; i < molecules_num; i++) {
                 for (size_t j = i + 1; j < molecules_num; j++) {
                     if (distance(molecules[i].position, molecules[j].position) < 4 * radius * radius) {

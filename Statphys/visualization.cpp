@@ -298,7 +298,10 @@ int main() {
 
     //TRAJECTORY LINES:
     std::vector<std::vector<sf::Vertex>> trajectories(def_obs);
+
+    std::vector<sf::Vertex> additional_trajectories[3][3];
     std::vector<std::vector<sf::Color>> colors(def_obs);
+    
     // ТОЧКИ ИЗЛОМА
     std::vector<std::vector<sf::CircleShape>> break_points(def_obs);
 
@@ -623,7 +626,23 @@ int main() {
                             std::swap(colors[i][0], colors[i][1]);
                         }
                     }
+
                     trajectories[i].emplace_back(molecules[i].getPosition(), colors[i][0]);
+
+                    size_t llen = trajectories[i].size();
+                    auto src = trajectories[i].back().position;
+
+                    for (int i1 = -1; i1 < 2; i1++) {
+                        for (int i2 = -1; i2 < 2; i2++) {
+                            if (!i1 && !i2) {
+                                continue;
+                            }
+                            auto new_coord = src;
+                            new_coord.x += i1 * 0.9;
+                            new_coord.y += i2 * 0.9;
+                            additional_trajectories[i1 + 1][i2 + 1].emplace_back(new_coord, colors[i][0]);
+                        }
+                    }
                 }
             }
             sf::Event event;
@@ -739,12 +758,21 @@ int main() {
             if (regime_type == 2) {
                 for (int i = 0; i < def_obs; i++) {
                     main_window.draw(trajectories[i].data(), trajectories[0].size(), sf::LinesStrip);
+
+                    for (int i1 = -1; i1 < 2; i1++) {
+                        for (int i2 = -1; i2 < 2; i2++) {
+                            if (!i1 && !i2) {
+                                continue;
+                            }
+                            main_window.draw(additional_trajectories[i1][i2].data(), additional_trajectories[i1][i2].size(), sf::LinesStrip);
+                        }
+                    }
                 }
             }
 //            for (int i = 0; i < int(theory_distribution.size()); i++) {
 //                fprintf(stderr, "%f %f %d\n", theory_distribution_graph[i].data()->position.x, theory_distribution_graph[i].data()->position.y, int(theory_distribution.size()));
 //                main_window.draw(theory_distribution_graph[i].data(),
-//                        theory_distribution[0].size(),
+//                        theory_distribution[0].size(),2
 //                        sf::PrimitiveType::LinesStrip);
 //            }
 
@@ -1242,6 +1270,14 @@ int main() {
                             }
                             for (int i = 0; i < def_obs; i++) {
                                 trajectories[i].clear();
+                                for (int i1 = -1; i1 < 2; i1++) {
+                                    for (int i2 = -1; i2 < 2; i2++) {
+                                        if (!i1 && !i2) {
+                                            continue;
+                                        }
+                                        additional_trajectories[i1 + 1][i2 + 1].clear();
+                                    }
+                                }
                                 break_points[i].clear();
                             }
                             molecule_box->pause();
@@ -1268,6 +1304,15 @@ int main() {
             if (regime_type == 2) {
                 for (int i = 0; i < def_obs; i++) {
                     main_window.draw(trajectories[i].data(), trajectories[i].size(), sf::PrimitiveType::LineStrip);
+
+                    for (int i1 = -1; i1 < 2; i1++) {
+                        for (int i2 = -1; i2 < 2; i2++) {
+                            if (!i1 && !i2) {
+                                continue;
+                            }
+                            main_window.draw(additional_trajectories[i1][i2].data(), additional_trajectories[i1][i2].size(), sf::PrimitiveType::LineStrip);
+                        }
+                    }
                 }
             }
 //            for (int i = theory_distribution_graph.size(); i < theory_distribution_graph.size(); i++) {
