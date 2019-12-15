@@ -8,6 +8,7 @@
 
 
 int mode_curr = def_mode;
+bool back_to_menu_was_pressed = false;
 
 struct Button_menu
 {
@@ -364,6 +365,26 @@ int main() {
     std::vector<sf::RectangleShape> histogram_axes_ticks(histogram_bins);
     int histogram_ticks_frequency = 10;
     std::vector<sf::Text> histogram_axes_text(histogram_bins);
+    sf::Text histogram_axis_x_text;
+
+
+    std::wostringstream histogram_axis_x_string;
+
+
+
+    if (mode_curr == 1) {
+        histogram_axis_x_string << L"Количество столкновений";
+    } else {
+        histogram_axis_x_string << L"Длина траектории";
+    }
+    histogram_axis_x_text.setString(histogram_axis_x_string.str());
+    histogram_axis_x_text.setFillColor(sf::Color::Black);
+    histogram_axis_x_text.setPosition(250,
+                                      sf::VideoMode::getDesktopMode().height - 30);
+    histogram_axis_x_text.setOrigin(histogram_demo[0].getLocalBounds().left,
+                                    histogram_demo[0].getSize().y);
+    histogram_axis_x_text.setFont(global_font);
+
 
     for (int i = 0; i < histogram_bins; i++) {
 //        std::cout << "YES2";
@@ -377,6 +398,7 @@ int main() {
                 sf::VideoMode::getDesktopMode().height - 53);
         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                     histogram_demo[i].getSize().y);
+
         if ((i % histogram_ticks_frequency) == 0) {
             histogram_axes_text[i].setFont(global_font);
             if (mode_curr == 1) {
@@ -597,6 +619,95 @@ int main() {
             }
 
         } else if (main_window_state == 1) {  // DEMONSTATION WINDOW with molecules
+            if (back_to_menu_was_pressed) {
+                back_to_menu_was_pressed = false;
+                //HISTOGRAM
+                trajectory_max_len = 0;
+                trajectory_min_len = 10000000;
+                collision_max_amount = 0;
+                collision_min_amount = 10000000;
+                // МОЖНО ОПТИМИЗИРОВАТЬ: если
+                std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+                            : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
+
+//                            for (int i = 0; i < int(theory_distribution.size()); i++) {
+//                                theory_distribution_graph[i].clear();
+//                                theory_distribution_graph[i].emplace_back(sf::Vector2f(theory_distribution[i][0] - theory_distribution[0][0] + hist_field_sprite.getPosition().x,
+//                                        - theory_distribution[i][1] + hist_field_sprite.getPosition().y + hist_field_sprite.getLocalBounds().height),
+//                                                                          sf::Color::Red);
+//                                fprintf(stderr, "%f", theory_distribution[i][0]);
+//                            }
+                if (mode_curr == 1) {
+                    collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
+                    if ((collision_max_amount - histogram_bins) > 0) {
+                        collision_min_amount = collision_max_amount - histogram_bins;
+                    } else {
+                        collision_min_amount = 0;
+                    }
+//                                fprintf(stderr, "%f\n", collision_max_amount);
+                } else {
+                    trajectory_max_len = theory_distribution[theory_distribution.size() - 1][0];
+                    trajectory_min_len = 0;//theory_distribution[0][0];
+//                                fprintf(stderr, "%f\n", trajectory_max_len);
+                }
+                for (int i = 0; i < histogram_bins; i++) {
+                    statistics_collected = false;
+                    full_counts_max = 0;
+                    histogram_demo_counts[i] = 0;
+                    trajectory_lens[i] =
+                            i  * (trajectory_max_len - trajectory_min_len) / histogram_bins;
+                    collision_amounts[i] = i + collision_min_amount;
+                    if (mode_curr == 1) {
+                        histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
+                    } else {
+                        histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                    }
+                    for (int j = 0; j < histogram_bins; j++) {
+                        histogram_demo[j].setSize(sf::Vector2f(0, 0));
+                    }
+                    if (regime_type == 1) {
+                        main_window.draw(histogram_demo[i]);
+                        main_window.draw(histogram_axes_text[i]);
+                    }
+                }
+                delete molecule_box;
+                molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
+                is_molecules_active = true;
+                molecules.clear();
+                molecules = std::vector<sf::CircleShape>(amount_molecule, sf::CircleShape(radius_molecule));
+                {
+                    auto m = molecule_box->get_molecules();
+                    //srand(1723210);
+                    const std::vector<Molecule> &v = m.get();
+                    for (int i = 0; i < v.size(); i++) {
+                        molecules[i].setRadius(radius_molecule);
+                        molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                        molecules[i].setOrigin(radius_molecule, radius_molecule);
+                        molecules[i].setPointCount(100);
+                        if (i < def_obs) {
+                            molecules[i].setFillColor(sf::Color(255, 0, 0));
+                        } else {
+                            molecules[i].setFillColor(sf::Color(rand() % 180, rand() % 180, rand() % 180));
+                        }
+                    }
+                }
+                for (int i = 0; i < def_obs; i++) {
+                    trajectories[i].clear();
+                    for (int i1 = -1; i1 < 2; i1++) {
+                        for (int i2 = -1; i2 < 2; i2++) {
+                            if (!i1 && !i2) {
+                                continue;
+                            }
+                            additional_trajectories[i1 + 1][i2 + 1].clear();
+                        }
+                    }
+                    break_points[i].clear();
+                }
+                molecule_box->pause();
+                is_molecules_active = false;
+            }
+
+
             if (is_molecules_active) {
                 auto m = molecule_box->get_molecules();
                 const std::vector<Molecule> &v = m.get();
@@ -673,7 +784,9 @@ int main() {
                                 }
                                 is_clear_box = false;
                             } else if (bounds_back_to_menu.contains(mouse)) {
+                                back_to_menu_was_pressed = true;
                                 main_window_state = 0;
+                                start_stop_button_texture.loadFromFile("text/b_start.jpg");
                                 if (is_molecules_active) {
                                     molecule_box->pause();
                                     is_molecules_active = false;
@@ -745,6 +858,8 @@ int main() {
 //            main_window.draw(border3);
 //            main_window.draw(border4);
 //            main_window.draw(border5);
+
+            main_window.draw(histogram_axis_x_text);
             //точки излома:
             if (mode_curr == 1) {
                 if (regime_type == 2) {
@@ -1002,10 +1117,10 @@ int main() {
                                                L"статистика");
                                 regime_type = 1;
                             } else if (event.key.code == 50) {
-                                fprintf(stderr, "AA");
+//                                fprintf(stderr, "AA");
                                 set_rus_string(demo_regime_type_text, L"Режим: ",
                                                L"демонстрация");
-                                fprintf(stderr, "BB");
+//                                fprintf(stderr, "BB");
                                 regime_type = 2;
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
@@ -1197,7 +1312,6 @@ int main() {
                             }
                         }
                         if (enter_press_amount == demo_parameters_amount) {
-//                            delete molecule_box;  // BUG! WHY DELETE DOES NOT WORK?????????
 
                             //HISTOGRAM
                             trajectory_max_len = 0;
@@ -1234,7 +1348,7 @@ int main() {
                                 histogram_demo_counts[i] = 0;
                                 trajectory_lens[i] =
                                         i  * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-                                collision_amounts[i] = i + 1 + collision_min_amount;
+                                collision_amounts[i] = i + collision_min_amount;
                                 if (mode_curr == 1) {
                                     histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                                 } else {
@@ -1289,7 +1403,7 @@ int main() {
                                            L"");
                             main_window_state = 1;
                         }
-//                    break;
+                    break;
                 }
             }
             main_window.clear(sf::Color(255, 255, 255));
@@ -1343,6 +1457,7 @@ int main() {
 //            main_window.draw(border3);
 //            main_window.draw(border4);
 //            main_window.draw(border5);
+            main_window.draw(histogram_axis_x_text);
 
 
         } else if (main_window_state == 3) { // AUTHORS
