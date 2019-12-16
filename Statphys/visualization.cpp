@@ -189,9 +189,9 @@ int main() {
                                 sf::IntRect(0, 0, start_stop_button_texture.getSize().x, start_stop_button_texture.getSize().y));
     Button_menu demo_input(L"", input_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - input_button_texture.getSize().x * 2 - 240, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                            sf::IntRect(0, 0, input_button_texture.getSize().x, input_button_texture.getSize().y));
-    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - clear_button_texture.getSize().x - 220, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - clear_button_texture.getSize().x - 20, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
                            sf::IntRect(0, 0, clear_button_texture.getSize().x, clear_button_texture.getSize().y));
-    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - demo_back_button_texture.getSize().x - 220, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - demo_back_button_texture.getSize().x - 20, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
                           sf::IntRect(0, 0, demo_back_button_texture.getSize().x, demo_back_button_texture.getSize().y));
     bool is_clear_box = false;
 
@@ -203,7 +203,7 @@ int main() {
     sf::Text input_text_show;
     input_text_show.setFont(global_font);
     input_text_show.setFillColor(sf::Color::Black);
-    input_text_show.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x) / 2 - input_text_show.getLocalBounds().width * 0.5 ,
+    input_text_show.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - input_text_show.getLocalBounds().width * 0.5 ,
                                               demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 25));
 
     sf::Text demo_regime_type_text;
@@ -217,7 +217,7 @@ int main() {
     }
     demo_regime_type_text.setString(regime_type_string.str());
     demo_regime_type_text.setFillColor(sf::Color::Black);
-    demo_regime_type_text.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5 ,
+    demo_regime_type_text.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5 ,
                                                     demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 50));
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
@@ -229,7 +229,7 @@ int main() {
         set_rus_string(demo_statistics_type_text, L"Исследуется: ", L"длина");
     }
     demo_statistics_type_text.setFillColor(sf::Color::Black);
-    demo_statistics_type_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+    demo_statistics_type_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
                                                        demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 100));
 
     int demo_length_or_collisions;
@@ -253,7 +253,7 @@ int main() {
 //    demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
 //    demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+    demo_length_or_collisions_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
                                                             demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 150));
 
     sf::Text radius_size_text;
@@ -266,7 +266,7 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
 //    radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+    radius_size_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
                                               demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 200));;
 
     sf::Text amount_molecules_text;
@@ -276,7 +276,7 @@ int main() {
     set_rus_string(amount_molecules_text, L"Кол-во молекул: ", amount_molecule);
 //    amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+    amount_molecules_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
                                                    demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 250));
     // INPUT VALUES END
 
@@ -1144,10 +1144,16 @@ int main() {
                                 set_rus_string(demo_statistics_type_text, L"Исследуется: ",
                                                L"столкновения");
                                 mode_curr = 1;
+                                histogram_axis_x_string.seekp(0);
+                                histogram_axis_x_string << L"количество столкновений";
+                                histogram_axis_x_text.setString(histogram_axis_x_string.str());
                             } else if (event.key.code == 50) {
                                 set_rus_string(demo_statistics_type_text, L"Исследуется: ",
                                                L"длина");
                                 mode_curr = 2;
+                                histogram_axis_x_string.seekp(0);
+                                histogram_axis_x_string << L"длина траектории           ";
+                                histogram_axis_x_text.setString(histogram_axis_x_string.str());
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_statistics_type_text.setFillColor(sf::Color::Black);
@@ -1312,6 +1318,7 @@ int main() {
                             }
                         }
                         if (enter_press_amount == demo_parameters_amount) {
+
 
                             //HISTOGRAM
                             trajectory_max_len = 0;
