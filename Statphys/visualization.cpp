@@ -9,6 +9,8 @@
 
 int mode_curr = def_mode;
 bool back_to_menu_was_pressed = false;
+constexpr int length_coef = 10;
+
 
 struct Button_menu
 {
@@ -329,7 +331,7 @@ int main() {
     double collision_max_amount = 0;
     double collision_min_amount = 1000000000;
 
-    std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+    std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions * length_coef), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
                             : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
     if (mode_curr == 1) {
         collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
@@ -395,7 +397,7 @@ int main() {
             if (mode_curr == 1) {
                 histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
             } else {
-                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
             }
             histogram_axes_text[i].setFillColor(sf::Color::Black);
             histogram_axes_text[i].setPosition(28 + i * histogram_demo[i].getSize().x,
@@ -606,7 +608,7 @@ int main() {
                 collision_max_amount = 0;
                 collision_min_amount = 10000000;
                 // МОЖНО ОПТИМИЗИРОВАТЬ: если
-                std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+                std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions * length_coef), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
                             : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
 
 //                            for (int i = 0; i < int(theory_distribution.size()); i++) {
@@ -639,7 +641,7 @@ int main() {
                     if (mode_curr == 1) {
                         histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                     } else {
-                        histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                        histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
                     }
                     for (int j = 0; j < histogram_bins; j++) {
                         histogram_demo[j].setSize(sf::Vector2f(0, 0));
@@ -650,7 +652,7 @@ int main() {
                     }
                 }
                 delete molecule_box;
-                molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
+                molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions * length_coef);
                 is_molecules_active = true;
                 molecules.clear();
                 molecules = std::vector<sf::CircleShape>(amount_molecule, sf::CircleShape(radius_molecule));
@@ -895,7 +897,7 @@ int main() {
                                 if (mode_curr == 1) {
                                     histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                                 } else {
-                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
                                 }
                             }
                         }
@@ -944,7 +946,7 @@ int main() {
                                 if (mode_curr == 1) {
                                     histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                                 } else {
-                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
                                 }
                             }
                         }
@@ -1073,7 +1075,7 @@ int main() {
                                     if (demo_length_or_collisions_string.size() <= 3) {
                                         demo_length_or_collisions_string += std::to_wstring(event.text.unicode - 48);
                                     }
-                                    if (demo_length_or_collisions_string.length() <= 5) {
+                                    if (demo_length_or_collisions_string.length() <= 4) {
                                         set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ",
                                                        std::stoi(demo_length_or_collisions_string));
                                     } else {
@@ -1094,8 +1096,8 @@ int main() {
                                     }
                                 } else if (event.key.code == 13) {
                                     demo_length_or_collisions = std::stoi(demo_length_or_collisions_string);
-                                    if (demo_length_or_collisions < 100) {
-                                        demo_length_or_collisions = 100;
+                                    if (demo_length_or_collisions < 100 / length_coef) {
+                                        demo_length_or_collisions = 100 / length_coef;
                                     }
                                     was_first_key_press = false;
                                     set_rus_string(demo_length_or_collisions_text, L"Длина траектории: ", demo_length_or_collisions);
@@ -1219,7 +1221,7 @@ int main() {
                             collision_max_amount = 0;
                             collision_min_amount = 10000000;
                             // МОЖНО ОПТИМИЗИРОВАТЬ: если
-                            std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
+                            std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions * length_coef), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
                             : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
                             if (mode_curr == 1) {
                                 collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
@@ -1244,7 +1246,7 @@ int main() {
                                 if (mode_curr == 1) {
                                     histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
                                 } else {
-                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
+                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
                                 }
                                 for (int j = 0; j < histogram_bins; j++) {
                                     histogram_demo[j].setSize(sf::Vector2f(0, 0));
@@ -1255,7 +1257,7 @@ int main() {
                                 }
                             }
                             delete molecule_box;
-                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions);
+                            molecule_box = new Box(radius_molecule, bounds, amount_molecule, calc_ms, mode_curr, int(demo_length_or_collisions), demo_length_or_collisions * length_coef);
                             is_molecules_active = true;
                             molecules.clear();
                             molecules = std::vector<sf::CircleShape>(amount_molecule, sf::CircleShape(radius_molecule));
