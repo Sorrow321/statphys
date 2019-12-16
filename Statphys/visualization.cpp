@@ -307,8 +307,8 @@ int main() {
     std::vector<std::vector<sf::CircleShape>> break_points(def_obs);
 
     for (int i = 0; i < def_obs; i++) {
+        colors[i].emplace_back(sf::Color::Red);
         colors[i].emplace_back(sf::Color::Blue);
-        colors[i].emplace_back(sf::Color(0, 154, 0));
     }
 
 
@@ -344,15 +344,6 @@ int main() {
         trajectory_min_len = 0;//theory_distribution[0][0];
 //        fprintf(stderr, "%f\n", trajectory_max_len);
     }
-//    st d::vector<std::vector<sf::Vertex>> theory_distribution_graph(theory_distribution.size());
-//    for (int i = 0; i < int(theory_distribution.size()); i++) {
-//        theory_distribution_graph[i].clear();
-//        theory_distribution_graph[i].emplace_back(sf::Vector2<float>(theory_distribution[i][0] + hist_field_sprite.getPosition().x, -theory_distribution[i][1]*500 + hist_field_sprite.getPosition().y + hist_field_sprite.getLocalBounds().height),
-//                                                  sf::Color::Red);
-//        fprintf(stderr, "%f", theory_distribution[i][0]);
-//    }
-
-
 
 
     float full_counts_max = 0;
@@ -373,14 +364,14 @@ int main() {
 
 
     if (mode_curr == 1) {
-        histogram_axis_x_string << L"количество столкновений";
+        histogram_axis_x_string << L"КОЛИЧЕСТВО СТОЛКНОВЕНИЙ";
     } else {
-        histogram_axis_x_string << L"длина траектории";
+        histogram_axis_x_string << L"    ДЛИНА ТРАЕКТОРИИ   ";
     }
     histogram_axis_x_text.setString(histogram_axis_x_string.str());
     histogram_axis_x_text.setFillColor(sf::Color::Black);
-    histogram_axis_x_text.setPosition(350,
-                                      sf::VideoMode::getDesktopMode().height - 35);
+    histogram_axis_x_text.setPosition(308,
+                                      sf::VideoMode::getDesktopMode().height / 2);
     histogram_axis_x_text.setOrigin(histogram_demo[0].getLocalBounds().left,
                                     histogram_demo[0].getSize().y);
     histogram_axis_x_text.setFont(global_font);
@@ -529,14 +520,6 @@ int main() {
     dima_text.setPosition(sf::Vector2f(dima_photo_sprite.getGlobalBounds().left + dima_photo_sprite.getGlobalBounds().width * 0.5 - dima_text.getLocalBounds().width * 0.5,
                                        dima_photo_sprite.getPosition().y + dima_photo_sprite.getLocalBounds().height + 5));
 
-//    sf::Text authors_title_text1;
-//    authors_title_text1.setFont(global_font);
-//    std::wstring authors_title_string1 = L"Московский государственный университет\n             имени М.В. Ломоносова";
-//    authors_title_text1.setString(authors_title_string1);
-//    authors_title_text1.setFillColor(sf::Color::Black);
-//    authors_title_text1.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text1.getLocalBounds().width * 0.5,
-//                                    authors_title_text1.getGlobalBounds().height * 0.5);
-
     sf::Text authors_title_text2;
     authors_title_text2.setFont(global_font);
     std::wstring authors_title_string2 = L"Авторы:";
@@ -584,10 +567,6 @@ int main() {
             main_window.draw(main_menu_theory.sprite);
             main_window.draw(main_menu_authors.sprite);
             main_window.draw(main_menu_exit.sprite);
-//            main_window.draw(main_menu_demo.bText);
-//            main_window.draw(main_menu_authors.bText);
-//            main_window.draw(main_menu_theory.bText);
-//            main_window.draw(main_menu_exit.bText);
             sf::Event event;
             while (main_window.pollEvent(event)) {
                 switch (event.type) {
@@ -852,13 +831,6 @@ int main() {
             main_window.draw(radius_size_text);
             main_window.draw(amount_molecules_text);
 
-            //BORDERS
-//            main_window.draw(border1);
-//            main_window.draw(border2);
-//            main_window.draw(border3);
-//            main_window.draw(border4);
-//            main_window.draw(border5);
-
             main_window.draw(histogram_axis_x_text);
             //точки излома:
             if (mode_curr == 1) {
@@ -884,55 +856,12 @@ int main() {
                     }
                 }
             }
-//            for (int i = 0; i < int(theory_distribution.size()); i++) {
-//                fprintf(stderr, "%f %f %d\n", theory_distribution_graph[i].data()->position.x, theory_distribution_graph[i].data()->position.y, int(theory_distribution.size()));
-//                main_window.draw(theory_distribution_graph[i].data(),
-//                        theory_distribution[0].size(),2
-//                        sf::PrimitiveType::LinesStrip);
-//            }
 
             //HISTOGRAM
 //            get_la
             if (mode_curr == 1) {
                 double last_amount = molecule_box->get_last_interactions_num();
                 if (last_amount != -1) {
-//                    std::cout << last_amount << std::endl;
-                    //fprintf(stderr, "Last amount max: %f\n", collision_max_amount);
-//                    if (collision_max_amount < last_amount) {
-//                        if (last_amount > histogram_bins) {
-//                            collision_max_amount = last_amount;
-//                            collision_min_amount = (collision_max_amount - histogram_bins);
-//                        } else {
-//                            collision_max_amount = histogram_bins;
-//                            collision_min_amount = 0;
-//                        }
-//                        for (int i = 0; i < histogram_bins; i++) {
-//                            histogram_demo_counts[i] = 0;
-//                            full_counts_max = 0;
-//                            collision_amounts[i] = i + 1 + collision_min_amount;
-//                            if (mode_curr == 1) {
-//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-//                            } else {
-//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-//                            }
-//                            //fprintf(stderr, "%d\n", collision_amounts[i]);
-//                        }
-//                    }
-//                    if (collision_min_amount > last_amount) {
-//                        collision_min_amount = last_amount;
-//                        for (int i = 0; i < histogram_bins; i++) {
-//                            histogram_demo_counts[i] = 0;
-//                            full_counts_max = 0;
-//                            collision_amounts[i] = i * (collision_max_amount - collision_min_amount) / histogram_bins;
-//                            //                    //fprintf(stderr, "%d\n", collision_amounts[i]);
-//                            if (mode_curr == 1) {
-//                                    histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-//                                } else {
-//                                    histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-//                                }
-//                        }
-//                    }
-                    //fprintf(stderr, "Last_amount: %d\n", last_amount);
                     for (int i = 0; i < (histogram_bins - 1); i++) {
 //                        std::cout << histogram_demo_counts[i] << "\n";
 
@@ -984,36 +913,6 @@ int main() {
             } else {
                 double last_len = molecule_box->get_last_len();
                 if (last_len != -1) {
-                    //fprintf(stderr, "Trajectory max len: %f\n", trajectory_max_len);
-//                    if (trajectory_max_len < last_len) {
-//                        trajectory_max_len = last_len;
-//                        for (int i = 0; i < histogram_bins; i++) {
-//                            histogram_demo_counts[i] = 0;
-//                            full_counts_max = 0;
-//                            trajectory_lens[i] = (i) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-//                            if (mode_curr == 1) {
-//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-//                            } else {
-//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-//                            }
-//                            //fprintf(stderr, "%d\n", trajectory_lens[i]);
-//                        }
-//                    }
-//                    if (trajectory_min_len > last_len) {
-//                        trajectory_min_len = last_len;
-//                        for (int i = 0; i < histogram_bins; i++) {
-//                            histogram_demo_counts[i] = 0;
-//                            full_counts_max = 0;
-//                            trajectory_lens[i] = (i + 1) * (trajectory_max_len - trajectory_min_len) / histogram_bins;
-//                            if (mode_curr == 1) {
-//                                histogram_axes_text[i].setString(std::to_string(int(collision_amounts[i])));
-//                            } else {
-//                                histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i])));
-//                            }
-//                            //                    //fprintf(stderr, "%d\n", trajectory_lens[i]);
-//                        }
-//                    }
-                    //fprintf(stderr, "Last_len: %f\n", last_len);
                     for (int i = 0; i < (histogram_bins - 1); i++) {
                         //fprintf(stderr, "trajectory_%d - %f \n", i, trajectory_lens[i]);
                         if ((last_len >= trajectory_lens[i]) && (last_len < trajectory_lens[i + 1])) {
@@ -1125,12 +1024,6 @@ int main() {
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
                                 demo_regime_type_text.setFillColor(sf::Color::Black);
-//                                if (mode_curr == 1) {
-//                                    demo_length_or_collisions_text.setString("Length of trajectory: 1");
-//                                } else if (mode_curr == 2) {
-//                                    demo_length_or_collisions_text.setString("Interactions amount: 1");
-//                                }
-//                                main_window.draw(demo_length_or_collisions_text);
                                 enter_press_amount += 1;
                             }
                         } else if (enter_press_amount == 1) {
@@ -1145,14 +1038,14 @@ int main() {
                                                L"столкновения");
                                 mode_curr = 1;
                                 histogram_axis_x_string.seekp(0);
-                                histogram_axis_x_string << L"количество столкновений";
+                                histogram_axis_x_string << L"КОЛИЧЕСТВО СТОЛКНОВЕНИЙ";
                                 histogram_axis_x_text.setString(histogram_axis_x_string.str());
                             } else if (event.key.code == 50) {
                                 set_rus_string(demo_statistics_type_text, L"Исследуется: ",
                                                L"длина");
                                 mode_curr = 2;
                                 histogram_axis_x_string.seekp(0);
-                                histogram_axis_x_string << L"длина траектории           ";
+                                histogram_axis_x_string << L"    ДЛИНА ТРАЕКТОРИИ   ";
                                 histogram_axis_x_text.setString(histogram_axis_x_string.str());
                             } else if (event.key.code == 13) {
                                 was_first_key_press = false;
@@ -1328,14 +1221,6 @@ int main() {
                             // МОЖНО ОПТИМИЗИРОВАТЬ: если
                             std::vector<std::vector<double>> theory_distribution = (mode_curr == 1) ? distribution_1(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule)  \
                             : distribution_2(int(demo_length_or_collisions), radius_molecule, (float) (box_field_texture.getSize().x * box_field_texture.getSize().y), amount_molecule);
-
-//                            for (int i = 0; i < int(theory_distribution.size()); i++) {
-//                                theory_distribution_graph[i].clear();
-//                                theory_distribution_graph[i].emplace_back(sf::Vector2f(theory_distribution[i][0] - theory_distribution[0][0] + hist_field_sprite.getPosition().x,
-//                                        - theory_distribution[i][1] + hist_field_sprite.getPosition().y + hist_field_sprite.getLocalBounds().height),
-//                                                                          sf::Color::Red);
-//                                fprintf(stderr, "%f", theory_distribution[i][0]);
-//                            }
                             if (mode_curr == 1) {
                                 collision_max_amount = theory_distribution[theory_distribution.size() - 1][0];
                                 if ((collision_max_amount - histogram_bins) > 0) {
@@ -1384,7 +1269,7 @@ int main() {
                                     molecules[i].setOrigin(radius_molecule, radius_molecule);
                                     molecules[i].setPointCount(100);
                                     if (i < def_obs) {
-                                        molecules[i].setFillColor(sf::Color(255, 0, 0));
+                                        molecules[i].setFillColor(sf::Color(0, 255, 0));
                                     } else {
                                         molecules[i].setFillColor(sf::Color(rand() % 180, rand() % 180, rand() % 180));
                                     }
