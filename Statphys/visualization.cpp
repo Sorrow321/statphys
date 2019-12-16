@@ -749,8 +749,8 @@ int main() {
                                 continue;
                             }
                             auto new_coord = src;
-                            new_coord.x += i1 * 0.9;
-                            new_coord.y += i2 * 0.9;
+                            new_coord.x += i1;
+                            new_coord.y += i2;
                             additional_trajectories[i1 + 1][i2 + 1].emplace_back(new_coord, colors[i][0]);
                         }
                     }
