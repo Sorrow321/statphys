@@ -9,12 +9,12 @@
 
 constexpr int ms_in_s = 1000;
 constexpr int calc_ms = 5;
-constexpr size_t def_molnum = 250;
+constexpr size_t def_molnum = 800;
 constexpr size_t def_trajnum = 1;
 constexpr double def_radius = 5.0;
-constexpr int def_interactions_num = 5;
-constexpr int def_mode = 1;
-constexpr double def_trajlength = 500.0;
+constexpr int def_interactions_num =10;
+constexpr int def_mode = 2;
+constexpr double def_trajlength = 80.0;
 constexpr double def_obs = 1;
 constexpr int queue_limit = 50000;
 
