@@ -94,10 +94,6 @@ private:
 
                 lengths[id] = 0.0;
                 interactions[id] = 0;
-
-                sem_finished_lengths.lock();
-                finished_lengths[id] = true;
-                sem_finished_lengths.unlock();
             }
         }else if (mode == 2) {
             lengths[id] += sqrt(dx * dx + dy * dy);
@@ -236,6 +232,24 @@ private:
                     break;
                 }
             }
+
+            // observing trajectory
+            double dx = molecules[0].position.first - obj_x_last;
+            double dy = molecules[0].position.second - obj_y_last;
+
+            obj_traj_len += sqrt(dx * dx + dy * dy);
+
+            if (obj_traj_len >= trajectory_length) {
+                obj_traj_len = 0;
+                sem_finished_lengths.lock();
+                finished_lengths[0] = true;
+                sem_finished_lengths.unlock();
+            }
+
+            obj_x_last = molecules[0].position.first;
+            obj_y_last = molecules[0].position.second;
+
+
         }
 
         std::swap(current_interactions, prev_interactions);
@@ -287,6 +301,8 @@ private:
     std::vector<bool> interacted;
     PoissonEstimator p_est;
     std::thread* calculate_thread;
+    double obj_traj_len;
+    double obj_x_last, obj_y_last;
 public:
     /*
     mode (1 or 2): if 1, then the number of collisions per length is examined
@@ -321,7 +337,8 @@ public:
               finished_interactions(molecules_num),
               finished_lengths(molecules_num),
               interacted(molecules_num),
-              calculate_thread{nullptr}
+              calculate_thread{nullptr},
+              obj_traj_len(0)
     {
         double mid_x = (std::get<1>(bounds) - std::get<0>(bounds)) / 2;
         double mid_y = (std::get<3>(bounds) - std::get<2>(bounds)) / 2;
@@ -357,6 +374,9 @@ public:
 
             grid[grid_pos[i].first][grid_pos[i].second].insert(i);
         }
+
+        obj_x_last = molecules[0].position.first;
+        obj_y_last = molecules[0].position.second;
     }
 
     ~Box()
