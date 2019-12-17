@@ -1,4 +1,4 @@
-﻿#include "SFML/Graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include <iostream>
 #include "box.cpp"
 #include <cmath>
@@ -454,17 +454,19 @@ int main() {
 
     Button_menu authors_back(L"", back_to_menu_authors_texture,
                              sf::Vector2f(
-                                     sf::VideoMode::getDesktopMode().width * 0.5 - back_to_menu_authors_texture.getSize().x * 0.5,
-                                     sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 1.2),
+                                     sf::VideoMode::getDesktopMode().width * 0.5 - back_to_menu_authors_texture.getSize().x * 0.5 * coef_x_scale,
+                                     sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 1.2 * coef_y_scale),
                              sf::IntRect(0, 0, back_to_menu_authors_texture.getSize().x, back_to_menu_authors_texture.getSize().y));
+    authors_back.sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
+    authors_back.bText.setScale(1 * coef_x_scale, 1 * coef_y_scale);
     //AUTHORS
     sf::Texture cmc_logo_texture;
     sf::Sprite cmc_logo_sprite;
     cmc_logo_texture.loadFromFile("text/cmc_logo_small.png");
     cmc_logo_texture.setSmooth(true);
     cmc_logo_sprite.setTexture(cmc_logo_texture);
-    cmc_logo_sprite.setPosition(sf::Vector2f(0, 50));
-    cmc_logo_sprite.setScale(1, 1);
+    cmc_logo_sprite.setPosition(sf::Vector2f(0 * coef_x_scale, 50 * coef_y_scale));
+    cmc_logo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Texture background_texture;
     sf::Sprite background_sprite;
@@ -481,8 +483,8 @@ int main() {
     fiz_logo_texture.loadFromFile("text/fiz_logo_wout_back.gif");
     fiz_logo_texture.setSmooth(true);
     fiz_logo_sprite.setTexture(fiz_logo_texture);
-    fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x,  50));
-    fiz_logo_sprite.setScale(1, 1);
+    fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x,  50 * coef_y_scale));
+    fiz_logo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text cmc_logo_text;
     cmc_logo_text.setFont(global_font);
@@ -490,80 +492,86 @@ int main() {
     cmc_logo_string << L"      Факультет\nвычислительной математики\n            и\n     кибернетики";
     cmc_logo_text.setString(cmc_logo_string.str());
     cmc_logo_text.setFillColor(sf::Color::Black);
-    cmc_logo_text.setPosition(sf::Vector2f(cmc_logo_sprite.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 50));
+    cmc_logo_text.setPosition(sf::Vector2f(cmc_logo_sprite.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 50 * coef_y_scale));
 
     sf::Text fiz_logo_text;
     fiz_logo_text.setFont(global_font);
     std::wstring fiz_logo_string = L"Физический\nфакультет";
     fiz_logo_text.setString(fiz_logo_string);
     fiz_logo_text.setFillColor(sf::Color::Black);
-    fiz_logo_text.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - fiz_logo_text.getLocalBounds().width * 0.5,
-                                           fiz_logo_sprite.getGlobalBounds().height + 50));
+    fiz_logo_text.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 * coef_x_scale - fiz_logo_text.getLocalBounds().width * 0.5 * coef_x_scale,
+                                           fiz_logo_sprite.getGlobalBounds().height + 50 * coef_y_scale));
 
     sf::Text teacher_text;
     teacher_text.setFont(global_font);
     std::wstring teacher_string = L"Научный руководитель: доцент Чичигина Ольга Александровна\nЛектор: профессор Андреев Анатолий Васильевич";
     teacher_text.setString(teacher_string);
     teacher_text.setFillColor(sf::Color::Black);
-    teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 125 + 80));
+    teacher_text.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - teacher_text.getLocalBounds().width * 0.5 * coef_x_scale,   cmc_logo_sprite.getGlobalBounds().height + 125 * coef_y_scale + 80 * coef_y_scale));
+    teacher_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Texture nikita_photo_texture;
     sf::Sprite nikita_photo_sprite;
     nikita_photo_texture.loadFromFile("text/Nikita.jpg");
     nikita_photo_texture.setSmooth(true);
     nikita_photo_sprite.setTexture(nikita_photo_texture);
-    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left + 5,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
-    nikita_photo_sprite.setScale(1, 1);
+    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left + 5 * coef_x_scale,  cmc_logo_sprite.getGlobalBounds().height + 300 * coef_y_scale + 80 * coef_y_scale));
+    nikita_photo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text nikita_text;
     nikita_text.setFont(global_font);
     std::wstring nikita_string = L"Никита Кузьмин";
     nikita_text.setString(nikita_string);
     nikita_text.setFillColor(sf::Color::Black);
-    nikita_text.setPosition(sf::Vector2f(nikita_photo_sprite.getGlobalBounds().left + nikita_photo_sprite.getGlobalBounds().width * 0.5 - nikita_text.getLocalBounds().width * 0.5,
-                                         nikita_photo_sprite.getPosition().y + nikita_photo_sprite.getLocalBounds().height + 5));
+    nikita_text.setPosition(sf::Vector2f(nikita_photo_sprite.getGlobalBounds().left + nikita_photo_sprite.getGlobalBounds().width * 0.5 - nikita_text.getLocalBounds().width * 0.5 * coef_x_scale,
+                                         nikita_photo_sprite.getPosition().y + nikita_photo_sprite.getLocalBounds().height * coef_y_scale + 5 * coef_y_scale));
+    nikita_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
+
+
 
     sf::Texture ilya_photo_texture;
     sf::Sprite ilya_photo_sprite;
     ilya_photo_texture.loadFromFile("text/Ilya.jpg");
     ilya_photo_texture.setSmooth(true);
     ilya_photo_sprite.setTexture(ilya_photo_texture);
-    ilya_photo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - ilya_photo_sprite.getLocalBounds().width * 0.5,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
-    ilya_photo_sprite.setScale(1, 1);
+    ilya_photo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width * 0.5 - ilya_photo_sprite.getLocalBounds().width * 0.5 * coef_x_scale,  cmc_logo_sprite.getGlobalBounds().height + 300 * coef_y_scale + 80 * coef_y_scale));
+    ilya_photo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text ilya_text;
     ilya_text.setFont(global_font);
     std::wstring ilya_string = L"Илья Федоров";
     ilya_text.setString(ilya_string);
     ilya_text.setFillColor(sf::Color::Black);
-    ilya_text.setPosition(sf::Vector2f(sf::Vector2f(ilya_photo_sprite.getGlobalBounds().left + ilya_photo_sprite.getGlobalBounds().width * 0.5 - ilya_text.getLocalBounds().width * 0.5,
-                                                    ilya_photo_sprite.getPosition().y + ilya_photo_sprite.getLocalBounds().height + 5)));
-
+    ilya_text.setPosition(sf::Vector2f(sf::Vector2f(ilya_photo_sprite.getGlobalBounds().left + ilya_photo_sprite.getGlobalBounds().width * 0.5 - ilya_text.getLocalBounds().width * 0.5 * coef_x_scale,
+                                                    ilya_photo_sprite.getPosition().y + ilya_photo_sprite.getLocalBounds().height * coef_y_scale + 5 * coef_y_scale)));
+    ilya_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Texture dima_photo_texture;
     sf::Sprite dima_photo_sprite;
     dima_photo_texture.loadFromFile("text/Dima.jpg");
     dima_photo_texture.setSmooth(true);
     dima_photo_sprite.setTexture(dima_photo_texture);
-    dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - dima_photo_sprite.getLocalBounds().width * 0.55,
-                                               cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
-    dima_photo_sprite.setScale(1, 1);
+    dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getGlobalBounds().width * 0.5  - dima_photo_sprite.getLocalBounds().width * 0.55 * coef_x_scale,
+                                               cmc_logo_sprite.getGlobalBounds().height + 300 * coef_y_scale + 80 * coef_y_scale));
+    dima_photo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text dima_text;
     dima_text.setFont(global_font);
     std::wstring dima_string = L"Дмитрий Пойманов";
     dima_text.setString(dima_string);
     dima_text.setFillColor(sf::Color::Black);
-    dima_text.setPosition(sf::Vector2f(dima_photo_sprite.getGlobalBounds().left + dima_photo_sprite.getGlobalBounds().width * 0.5 - dima_text.getLocalBounds().width * 0.5,
-                                       dima_photo_sprite.getPosition().y + dima_photo_sprite.getLocalBounds().height + 5));
+    dima_text.setPosition(sf::Vector2f(dima_photo_sprite.getGlobalBounds().left + dima_photo_sprite.getGlobalBounds().width * 0.5 - dima_text.getLocalBounds().width * 0.5 * coef_x_scale,
+                                       dima_photo_sprite.getPosition().y + dima_photo_sprite.getLocalBounds().height * coef_y_scale + 5 * coef_y_scale));
+    dima_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text authors_title_text2;
     authors_title_text2.setFont(global_font);
     std::wstring authors_title_string2 = L"Авторы:";
     authors_title_text2.setString(authors_title_string2);
     authors_title_text2.setFillColor(sf::Color::Black);
-    authors_title_text2.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text2.getLocalBounds().width * 0.5,
-                                    cmc_logo_sprite.getGlobalBounds().height + 250 + 80);
+    authors_title_text2.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - authors_title_text2.getLocalBounds().width * 0.5 * coef_x_scale,
+                                    cmc_logo_sprite.getGlobalBounds().height + 250 * coef_y_scale + 80 * coef_y_scale);
+    authors_title_text2.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
 
     // DEMONSTRATION(1) END
