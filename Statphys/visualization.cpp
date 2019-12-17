@@ -420,7 +420,7 @@ int main() {
     Button_menu authors_back(L"", back_to_menu_authors_texture,
                              sf::Vector2f(
                                      sf::VideoMode::getDesktopMode().width * 0.5 - back_to_menu_authors_texture.getSize().x * 0.5,
-                                     sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 2),
+                                     sf::VideoMode::getDesktopMode().height - back_to_menu_authors_texture.getSize().y * 1.2),
                              sf::IntRect(0, 0, back_to_menu_authors_texture.getSize().x, back_to_menu_authors_texture.getSize().y));
     //AUTHORS
     sf::Texture cmc_logo_texture;
@@ -477,7 +477,7 @@ int main() {
     nikita_photo_texture.loadFromFile("text/Nikita.jpg");
     nikita_photo_texture.setSmooth(true);
     nikita_photo_sprite.setTexture(nikita_photo_texture);
-    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
+    nikita_photo_sprite.setPosition(sf::Vector2f(cmc_logo_text.getGlobalBounds().left + 5,  cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
     nikita_photo_sprite.setScale(1, 1);
 
     sf::Text nikita_text;
@@ -510,7 +510,7 @@ int main() {
     dima_photo_texture.loadFromFile("text/Dima.jpg");
     dima_photo_texture.setSmooth(true);
     dima_photo_sprite.setTexture(dima_photo_texture);
-    dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - dima_photo_sprite.getLocalBounds().width * 0.5,
+    dima_photo_sprite.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 - dima_photo_sprite.getLocalBounds().width * 0.55,
                                                cmc_logo_sprite.getGlobalBounds().height + 300 + 80));
     dima_photo_sprite.setScale(1, 1);
 
