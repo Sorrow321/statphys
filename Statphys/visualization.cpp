@@ -68,8 +68,8 @@ int main() {
 //                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
 
 
-    std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x + 5, box_field_sprite.getLocalBounds().width + 16,
-                                                         box_field_sprite.getPosition().y + 5, box_field_sprite.getLocalBounds().height + 16};
+    std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x / coef_x_scale + 5 * coef_x_scale, box_field_sprite.getLocalBounds().width + 16,
+                                                         box_field_sprite.getPosition().y / coef_y_scale + 5 * coef_y_scale, box_field_sprite.getLocalBounds().height + 16};
     //fprintf(stderr, "%d, %d", sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height/2);
     sf::RenderWindow main_window(
             sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height),
