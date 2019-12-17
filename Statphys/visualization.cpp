@@ -586,7 +586,9 @@ int main() {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 main_window_state = 1;
                             } else if (bounds_theory.contains(mouse)) {
-                                system("theory.pdf");
+                                std::thread t(system, "theory.pdf");
+                                t.detach();
+                                //system("theory.pdf");
                             } else if (bounds_authors.contains(mouse)) {
                                 main_window_state = 3; // Authors
                             }
