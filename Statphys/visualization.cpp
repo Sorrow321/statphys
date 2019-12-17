@@ -483,7 +483,7 @@ int main() {
     fiz_logo_texture.loadFromFile("text/fiz_logo_wout_back.gif");
     fiz_logo_texture.setSmooth(true);
     fiz_logo_sprite.setTexture(fiz_logo_texture);
-    fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x,  50 * coef_y_scale));
+    fiz_logo_sprite.setPosition(sf::Vector2f(sf::VideoMode::getDesktopMode().width - fiz_logo_texture.getSize().x * coef_x_scale,  50 * coef_y_scale));
     fiz_logo_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text cmc_logo_text;
@@ -493,6 +493,7 @@ int main() {
     cmc_logo_text.setString(cmc_logo_string.str());
     cmc_logo_text.setFillColor(sf::Color::Black);
     cmc_logo_text.setPosition(sf::Vector2f(cmc_logo_sprite.getGlobalBounds().left,  cmc_logo_sprite.getGlobalBounds().height + 50 * coef_y_scale));
+    cmc_logo_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Text fiz_logo_text;
     fiz_logo_text.setFont(global_font);
@@ -501,6 +502,8 @@ int main() {
     fiz_logo_text.setFillColor(sf::Color::Black);
     fiz_logo_text.setPosition(sf::Vector2f(fiz_logo_sprite.getGlobalBounds().left + fiz_logo_sprite.getLocalBounds().width * 0.5 * coef_x_scale - fiz_logo_text.getLocalBounds().width * 0.5 * coef_x_scale,
                                            fiz_logo_sprite.getGlobalBounds().height + 50 * coef_y_scale));
+    fiz_logo_text.setScale(1 * coef_x_scale, 1 * coef_y_scale);
+
 
     sf::Text teacher_text;
     teacher_text.setFont(global_font);
