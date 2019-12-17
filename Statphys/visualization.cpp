@@ -62,7 +62,8 @@ int main() {
     sf::Sprite box_field_sprite;
     box_field_texture.setSmooth(true);
     box_field_sprite.setTexture(box_field_texture);
-    box_field_sprite.setPosition(23.0, 23.0);
+    box_field_sprite.setPosition(23.0 * coef_x_scale, 23.0 * coef_y_scale);
+    box_field_sprite.setScale(coef_x_scale, coef_y_scale);
 //    box_field_sprite.setScale((float) sf::VideoMode::getDesktopMode().width / box_field_texture.getSize().x,
 //                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
 
@@ -227,8 +228,9 @@ int main() {
     sf::Text input_text_show;
     input_text_show.setFont(global_font);
     input_text_show.setFillColor(sf::Color::Black);
-    input_text_show.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - input_text_show.getLocalBounds().width * 0.5 ,
-                                              demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 25));
+    input_text_show.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - input_text_show.getLocalBounds().width * 0.5 ,
+                                              demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 25 * coef_y_scale));
+    input_text_show.setScale(coef_x_scale, coef_y_scale);
 
     sf::Text demo_regime_type_text;
     int regime_type = 1;
@@ -241,8 +243,9 @@ int main() {
     }
     demo_regime_type_text.setString(regime_type_string.str());
     demo_regime_type_text.setFillColor(sf::Color::Black);
-    demo_regime_type_text.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5 ,
-                                                    demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 50));
+    demo_regime_type_text.setPosition(sf::Vector2f( (demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5 ,
+                                                    demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 50 * coef_y_scale));
+    demo_regime_type_text.setScale(coef_x_scale, coef_y_scale);
 
     //    int mode_curr = 1; //choose length - 1; choose amount of collisions - 2
     sf::Text demo_statistics_type_text;
@@ -253,8 +256,10 @@ int main() {
         set_rus_string(demo_statistics_type_text, L"Исследуется: ", L"длина");
     }
     demo_statistics_type_text.setFillColor(sf::Color::Black);
-    demo_statistics_type_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
-                                                       demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 100));
+    demo_statistics_type_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+                                                       demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 100 * coef_y_scale));
+    demo_statistics_type_text.setScale(coef_x_scale, coef_y_scale);
+
 
     int demo_length_or_collisions;
     if (mode_curr == 1) {
@@ -277,8 +282,9 @@ int main() {
 //    demo_length_or_collisions_string = demo_length_or_collisions_string.erase(demo_length_or_collisions_string.find_last_not_of('0') + 1, std::string::npos);
 //    demo_length_or_collisions_text.setString(demo_length_or_collisions_string);
     demo_length_or_collisions_text.setFillColor(sf::Color::Black);
-    demo_length_or_collisions_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
-                                                            demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 150));
+    demo_length_or_collisions_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+                                                            demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 150 * coef_y_scale));
+    demo_length_or_collisions_text.setScale(coef_x_scale, coef_y_scale);
 
     sf::Text radius_size_text;
     radius_size_text.setFont(global_font);
@@ -290,8 +296,9 @@ int main() {
     radius_size_string = radius_size_string.erase(radius_size_string.find_last_not_of('0') + 1, std::string::npos);
 //    radius_size_text.setString(radius_size_string);
     radius_size_text.setFillColor(sf::Color::Black);
-    radius_size_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
-                                              demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 200));;
+    radius_size_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+                                              demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 200 * coef_y_scale));;
+    radius_size_text.setScale(coef_x_scale, coef_y_scale);
 
     sf::Text amount_molecules_text;
     amount_molecules_text.setFont(global_font);
@@ -300,9 +307,11 @@ int main() {
     set_rus_string(amount_molecules_text, L"Кол-во молекул: ", amount_molecule);
 //    amount_molecules_text.setString("Molecules amount: " + std::to_string(amount_molecule));
     amount_molecules_text.setFillColor(sf::Color::Black);
-    amount_molecules_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
-                                                   demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 250));
+    amount_molecules_text.setPosition(sf::Vector2f((demo_input.bPosition.x + demo_back.bPosition.x + 250 * coef_x_scale) / 2 - demo_regime_type_text.getLocalBounds().width * 0.5,
+                                                   demo_input.bPosition.y + demo_input.sprite.getLocalBounds().height + 250 * coef_y_scale));
+    amount_molecules_text.setScale(coef_x_scale, coef_y_scale);
     // INPUT VALUES END
+
 
     // VISUAL BORDERS for graphs
     sf::RectangleShape border5;
@@ -317,7 +326,8 @@ int main() {
     sf::Sprite hist_field_sprite;
     hist_field_texture.setSmooth(true);
     hist_field_sprite.setTexture(hist_field_texture);
-    hist_field_sprite.setPosition(23, (float) sf::VideoMode::getDesktopMode().height / 2 + 40);
+    hist_field_sprite.setPosition(23 * coef_x_scale, (float) sf::VideoMode::getDesktopMode().height / 2 + 40 * coef_y_scale);
+    hist_field_sprite.setScale(coef_x_scale, coef_y_scale);
 //    hist_field_sprite.setScale(border5.getPosition().x / hist_field_texture.getSize().x,
 //                               (float) sf::VideoMode::getDesktopMode().height / 2 / hist_field_texture.getSize().y);
 
@@ -394,11 +404,12 @@ int main() {
     }
     histogram_axis_x_text.setString(histogram_axis_x_string.str());
     histogram_axis_x_text.setFillColor(sf::Color::Black);
-    histogram_axis_x_text.setPosition(308,
+    histogram_axis_x_text.setPosition(308 * coef_x_scale,
                                       sf::VideoMode::getDesktopMode().height / 2);
     histogram_axis_x_text.setOrigin(histogram_demo[0].getLocalBounds().left,
                                     histogram_demo[0].getSize().y);
     histogram_axis_x_text.setFont(global_font);
+    histogram_axis_x_text.setScale(coef_x_scale, coef_y_scale);
 
 
     for (int i = 0; i < histogram_bins; i++) {
@@ -409,10 +420,11 @@ int main() {
         histogram_demo[i].setSize(sf::Vector2f(histogram_norm_const / histogram_bins, 0));
         histogram_demo[i].setFillColor(sf::Color(rand() % 200, rand() % 200, rand() % 200));
         histogram_demo[i].setPosition(
-                28 + i * histogram_demo[i].getSize().x,
-                sf::VideoMode::getDesktopMode().height - 53);
+                28 * coef_x_scale + i * histogram_demo[i].getSize().x * coef_x_scale,
+                sf::VideoMode::getDesktopMode().height - 53 * coef_y_scale);
         histogram_demo[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                     histogram_demo[i].getSize().y);
+        histogram_demo[i].setScale(coef_x_scale, coef_y_scale);
 
         if ((i % histogram_ticks_frequency) == 0) {
             histogram_axes_text[i].setFont(global_font);
@@ -422,10 +434,11 @@ int main() {
                 histogram_axes_text[i].setString(std::to_string(int(trajectory_lens[i] / length_coef)));
             }
             histogram_axes_text[i].setFillColor(sf::Color::Black);
-            histogram_axes_text[i].setPosition(28 + i * histogram_demo[i].getSize().x,
-                                               sf::VideoMode::getDesktopMode().height - 58);
+            histogram_axes_text[i].setPosition(28 * coef_x_scale + i * histogram_demo[i].getSize().x * coef_x_scale,
+                                               sf::VideoMode::getDesktopMode().height - 58 * coef_y_scale);
             histogram_axes_text[i].setOrigin(histogram_demo[i].getLocalBounds().left,
                                              histogram_demo[i].getSize().y);
+            histogram_axes_text[i].setScale(coef_x_scale, coef_y_scale);
         }
     }
 
@@ -562,7 +575,8 @@ int main() {
         const std::vector<Molecule> &v = m.get();
         for (int i = 0; i < v.size(); i++) {
             molecules[i].setRadius(radius_molecule);
-            molecules[i].setPosition(v[i].position.first, v[i].position.second);
+            molecules[i].setPosition(v[i].position.first * coef_x_scale, v[i].position.second * coef_y_scale);
+            molecules[i].setScale(coef_x_scale, coef_y_scale);
             molecules[i].setOrigin(radius_molecule, radius_molecule);
             molecules[i].setPointCount(100);
             if (i < def_obs) {
@@ -685,8 +699,10 @@ int main() {
                     //srand(1723210);
                     const std::vector<Molecule> &v = m.get();
                     for (int i = 0; i < v.size(); i++) {
+                        // что делает этот код?
                         molecules[i].setRadius(radius_molecule);
-                        molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                        molecules[i].setPosition(v[i].position.first * coef_x_scale, v[i].position.second * coef_y_scale);
+                        molecules[i].setScale(coef_x_scale, coef_y_scale);
                         molecules[i].setOrigin(radius_molecule, radius_molecule);
                         molecules[i].setPointCount(100);
                         if (i < def_obs) {
@@ -717,7 +733,7 @@ int main() {
                 auto m = molecule_box->get_molecules();
                 const std::vector<Molecule> &v = m.get();
                 for (int i = 0; i < v.size(); i++) {
-                    molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                    molecules[i].setPosition(v[i].position.first * coef_x_scale, v[i].position.second * coef_y_scale);
                 }
                 for(int i=0; i < def_obs; i++) {
                     if (mode_curr == 1) {
@@ -729,9 +745,13 @@ int main() {
                             float break_point_radius = 2.5;
                             sf::CircleShape tmp_point;
                             tmp_point.setRadius(break_point_radius);
-                            tmp_point.setPosition(molecules[i].getPosition());
+                            auto tt = molecules[i].getPosition();
+                            tt.x *= coef_x_scale;
+                            tt.y *= coef_y_scale;
+                            tmp_point.setPosition(tt);
                             tmp_point.setOrigin(break_point_radius, break_point_radius);
                             tmp_point.setPointCount(100);
+                            tmp_point.setScale(coef_x_scale, coef_y_scale);
                             tmp_point.setFillColor(sf::Color(255, 0, 0));
                             break_points[i].push_back(tmp_point);
 //                            std::swap(colors[i][0], colors[i][1]);
@@ -754,8 +774,8 @@ int main() {
                                 continue;
                             }
                             auto new_coord = src;
-                            new_coord.x += i1;
-                            new_coord.y += i2;
+                            new_coord.x += i1 * coef_x_scale;
+                            new_coord.y += i2 * coef_y_scale;
                             additional_trajectories[i1 + 1][i2 + 1].emplace_back(new_coord, colors[i][0]);
                         }
                     }
@@ -1066,6 +1086,7 @@ int main() {
                                 histogram_axis_x_string.seekp(0);
                                 histogram_axis_x_string << L"КОЛИЧЕСТВО СТОЛКНОВЕНИЙ";
                                 histogram_axis_x_text.setString(histogram_axis_x_string.str());
+                                
                             } else if (event.key.code == 50) {
                                 set_rus_string(demo_statistics_type_text, L"Исследуется: ",
                                                L"длина");
@@ -1291,8 +1312,9 @@ int main() {
                                 const std::vector<Molecule> &v = m.get();
                                 for (int i = 0; i < v.size(); i++) {
                                     molecules[i].setRadius(radius_molecule);
-                                    molecules[i].setPosition(v[i].position.first, v[i].position.second);
+                                    molecules[i].setPosition(v[i].position.first * coef_x_scale, v[i].position.second * coef_y_scale);
                                     molecules[i].setOrigin(radius_molecule, radius_molecule);
+                                    molecules[i].setScale(coef_x_scale, coef_y_scale);
                                     molecules[i].setPointCount(100);
                                     if (i < def_obs) {
                                         molecules[i].setFillColor(sf::Color(0, 255, 0));
