@@ -45,6 +45,12 @@ void set_rus_string(object_type &object, const std::wstring &first_string, secon
 
 
 int main() {
+    const float screenWidth = (float)sf::VideoMode::getDesktopMode().width;
+    const float screenHeight = (float)sf::VideoMode::getDesktopMode().height;
+    const float coef_x_scale = (float)screenWidth / 1920;
+    const float coef_y_scale = (float)screenHeight / 1080;
+
+
     setlocale(LC_ALL,"Rus");
     int main_window_state = 0;
     int amount_molecule = def_molnum;
@@ -127,37 +133,45 @@ int main() {
     /* MAIN MENU BUTTONS(0) */
     Button_menu main_menu_demo(L"", demonstration_button_main_menu_texture,
                                sf::Vector2f(
-                                       sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5,
-                                       sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y));
+                                       sf::VideoMode::getDesktopMode().width * 0.19 - demonstration_button_main_menu_texture.getSize().x * 0.5 * coef_x_scale,
+                                       sf::VideoMode::getDesktopMode().height * 0.7 - demonstration_button_main_menu_texture.getSize().y * 0.5 * coef_y_scale),sf::IntRect(0, 0, demonstration_button_main_menu_texture.getSize().x, demonstration_button_main_menu_texture.getSize().y));
 
     Button_menu main_menu_theory(L"", theory_button_main_menu_texture,sf::Vector2f(
-            main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 - theory_button_main_menu_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, theory_button_main_menu_texture.getSize().x,
+            main_menu_demo.bPosition.x + main_menu_demo.sprite.getLocalBounds().width * 1.6 * coef_x_scale - theory_button_main_menu_texture.getSize().x * 0.5 * coef_x_scale,
+            sf::VideoMode::getDesktopMode().height * 0.7 - theory_button_main_menu_texture.getSize().y * 0.5 * coef_y_scale),sf::IntRect(0, 0, theory_button_main_menu_texture.getSize().x,
                                                                                                                           theory_button_main_menu_texture.getSize().y));
 
     Button_menu main_menu_authors(L"", authors_button_main_menu_texture,sf::Vector2f(
-            main_menu_theory.bPosition.x + main_menu_theory.sprite.getLocalBounds().width * 1.6 - authors_button_main_menu_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5),sf::IntRect(0, 0, authors_button_main_menu_texture.getSize().x,
+            main_menu_theory.bPosition.x + coef_x_scale * (main_menu_theory.sprite.getLocalBounds().width * 1.6)  - authors_button_main_menu_texture.getSize().x * 0.5 * coef_x_scale,
+            sf::VideoMode::getDesktopMode().height * 0.7 - authors_button_main_menu_texture.getSize().y * 0.5* coef_y_scale),sf::IntRect(0, 0, authors_button_main_menu_texture.getSize().x,
                                                                                                                            authors_button_main_menu_texture.getSize().y));
     Button_menu main_menu_exit(L"", main_menu_exit_texture, sf::Vector2f(
-            main_menu_authors.bPosition.x + main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5,
-            sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y - 30), sf::IntRect(0, 0, main_menu_exit_texture.getSize().x, main_menu_exit_texture.getSize().y));
+            main_menu_authors.bPosition.x + coef_x_scale * main_menu_authors.sprite.getLocalBounds().width * 0.5 - main_menu_exit_texture.getSize().x * 0.5 * coef_x_scale,
+            sf::VideoMode::getDesktopMode().height - main_menu_exit_texture.getSize().y * coef_y_scale - 30 * coef_y_scale), sf::IntRect(0, 0, main_menu_exit_texture.getSize().x, main_menu_exit_texture.getSize().y));
+
+    main_menu_demo.sprite.setScale(coef_x_scale, coef_y_scale);
+    main_menu_theory.sprite.setScale(coef_x_scale, coef_y_scale);
+    main_menu_authors.sprite.setScale(coef_x_scale, coef_y_scale);
+    main_menu_exit.sprite.setScale(coef_x_scale, coef_y_scale);
+
 
 
     sf::Texture background_main_menu_mini_texture;
     sf::Sprite background_main_menu_mini_sprite;
     background_main_menu_mini_texture.loadFromFile("text/title_lom.png");
     background_main_menu_mini_texture.setSmooth(true);
-    background_main_menu_mini_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_mini_texture.getSize().x * 0.5, 15);
+    background_main_menu_mini_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_mini_texture.getSize().x * coef_x_scale * 0.5, 15 * coef_y_scale);
     background_main_menu_mini_sprite.setTexture(background_main_menu_mini_texture);
-    background_main_menu_mini_sprite.setScale(1, 1);
+    background_main_menu_mini_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 
     sf::Texture background_main_menu_title2_texture;
     sf::Sprite background_main_menu_title2_sprite;
     background_main_menu_title2_texture.loadFromFile("text/title2.png");
     background_main_menu_title2_texture.setSmooth(true);
-    background_main_menu_title2_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title2_texture.getSize().x * 0.5, 105 + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title2_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title2_texture.getSize().x * 0.5 * coef_x_scale, coef_y_scale * (105 + background_main_menu_mini_texture.getSize().y));
     background_main_menu_title2_sprite.setTexture(background_main_menu_title2_texture);
+    // added by ilya
+    background_main_menu_title2_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 //    background_main_menu_title2_sprite.setScale((float) main_window.getSize().x / background_main_menu_title2_texture.getSize().x,
 //                                         (float) main_window.getSize().y / background_main_menu_title2_texture.getSize().y);
 
@@ -165,8 +179,9 @@ int main() {
     sf::Sprite background_main_menu_title3_sprite;
     background_main_menu_title3_texture.loadFromFile("text/title3.png");
     background_main_menu_title3_texture.setSmooth(true);
-    background_main_menu_title3_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title3_texture.getSize().x * 0.5,   195 + background_main_menu_title2_texture.getSize().y + background_main_menu_mini_texture.getSize().y);
+    background_main_menu_title3_sprite.setPosition(sf::VideoMode::getDesktopMode().width * 0.5 - background_main_menu_title3_texture.getSize().x * 0.5 * coef_x_scale,   coef_y_scale * (195 + background_main_menu_title2_texture.getSize().y + background_main_menu_mini_texture.getSize().y));
     background_main_menu_title3_sprite.setTexture(background_main_menu_title3_texture);
+    background_main_menu_title3_sprite.setScale(1 * coef_x_scale, 1 * coef_y_scale);
 //    background_main_menu_title3_sprite.setScale((float) main_window.getSize().x / background_main_menu_title3_texture.getSize().x,
 //                                                (float) main_window.getSize().y / background_main_menu_title3_texture.getSize().y);
 
@@ -187,14 +202,21 @@ int main() {
 
     int button_menu_demo_width = 350;
     int button_menu_demo_height = 50;
-    Button_menu demo_start_stop(L"", start_stop_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - start_stop_button_texture.getSize().x * 2 - 240, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_start_stop(L"", start_stop_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - (start_stop_button_texture.getSize().x * 2 + 240) * coef_x_scale, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height * coef_y_scale),
                                 sf::IntRect(0, 0, start_stop_button_texture.getSize().x, start_stop_button_texture.getSize().y));
-    Button_menu demo_input(L"", input_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - input_button_texture.getSize().x * 2 - 240, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_input(L"", input_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - (input_button_texture.getSize().x * 2 + 240) * coef_x_scale, sf::VideoMode::getDesktopMode().height - (10*button_menu_demo_height - 100) * coef_y_scale),
                            sf::IntRect(0, 0, input_button_texture.getSize().x, input_button_texture.getSize().y));
-    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - clear_button_texture.getSize().x - 20, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height),
+    Button_menu demo_clear(L"", clear_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - (clear_button_texture.getSize().x + 20) * coef_x_scale, sf::VideoMode::getDesktopMode().height - (10*button_menu_demo_height) * coef_y_scale),
                            sf::IntRect(0, 0, clear_button_texture.getSize().x, clear_button_texture.getSize().y));
-    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - demo_back_button_texture.getSize().x - 20, sf::VideoMode::getDesktopMode().height - 10*button_menu_demo_height + 100),
+    Button_menu demo_back(L"", demo_back_button_texture, sf::Vector2f(sf::VideoMode::getDesktopMode().width - (demo_back_button_texture.getSize().x + 20) * coef_x_scale, sf::VideoMode::getDesktopMode().height - (10*button_menu_demo_height - 100) * coef_y_scale),
                           sf::IntRect(0, 0, demo_back_button_texture.getSize().x, demo_back_button_texture.getSize().y));
+    
+    demo_start_stop.sprite.setScale(coef_x_scale, coef_y_scale);
+    demo_input.sprite.setScale(coef_x_scale, coef_y_scale);
+    demo_clear.sprite.setScale(coef_x_scale, coef_y_scale);
+    demo_back.sprite.setScale(coef_x_scale, coef_y_scale);
+    
+
     bool is_clear_box = false;
 
     // INPUT VALUES
