@@ -64,8 +64,6 @@ int main() {
     box_field_sprite.setTexture(box_field_texture);
     box_field_sprite.setPosition(23.0 * coef_x_scale, 23.0 * coef_y_scale);
     box_field_sprite.setScale(coef_x_scale, coef_y_scale);
-//    box_field_sprite.setScale((float) sf::VideoMode::getDesktopMode().width / box_field_texture.getSize().x,
-//                              (double) sf::VideoMode::getDesktopMode().height / 2 / box_field_texture.getSize().y + 0.01);
 
 
     std::tuple<double, double, double, double> bounds = {box_field_sprite.getPosition().x / coef_x_scale + 5 * coef_x_scale, box_field_sprite.getLocalBounds().width + 16,
@@ -84,22 +82,22 @@ int main() {
 
     // VISUAL BORDERS for molecules box
     sf::RectangleShape border1;
-    border1.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
+    border1.setSize(sf::Vector2f(3 * coef_x_scale, sf::VideoMode::getDesktopMode().height/2));
     border1.setFillColor(sf::Color(100, 100, 100));
     border1.setPosition(sf::VideoMode::getDesktopMode().width, 0.0);
 
     sf::RectangleShape border2;
-    border2.setSize(sf::Vector2f(3, sf::VideoMode::getDesktopMode().height/2));
+    border2.setSize(sf::Vector2f(3 * coef_x_scale, sf::VideoMode::getDesktopMode().height/2));
     border2.setFillColor(sf::Color(100, 100, 100));
     border2.setPosition(0.0, 0.0);
 
     sf::RectangleShape border3;
-    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
+    border3.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3 * coef_y_scale));
     border3.setFillColor(sf::Color(100, 100, 100));
     border3.setPosition(0.0, 0.0);
 
     sf::RectangleShape border4;
-    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3));
+    border4.setSize(sf::Vector2f(sf::VideoMode::getDesktopMode().width, 3 * coef_y_scale));
     border4.setFillColor(sf::Color(100, 100, 100));
     border4.setPosition(0.0, sf::VideoMode::getDesktopMode().height/2);
 
