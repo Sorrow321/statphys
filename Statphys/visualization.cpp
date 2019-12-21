@@ -5,7 +5,7 @@
 #include <sstream>
 #include "distributions.cpp"
 #include <stdio.h>
-
+#include "windows.h"
 
 int mode_curr = def_mode;
 bool back_to_menu_was_pressed = false;
@@ -636,8 +636,7 @@ int main() {
 //                                std::swap(molecules_activation_button[0], molecules_activation_button[1]);
                                 main_window_state = 1;
                             } else if (bounds_theory.contains(mouse)) {
-                                std::thread t(system, "theory.pdf");
-                                t.detach();
+                                ShellExecute(GetDesktopWindow(), "open", "theory.pdf", NULL, NULL, SW_SHOWNORMAL);
                                 //system("theory.pdf");
                             } else if (bounds_authors.contains(mouse)) {
                                 main_window_state = 3; // Authors
