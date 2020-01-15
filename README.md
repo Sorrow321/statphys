@@ -8,7 +8,7 @@
 
 Программа использует WinApi.
 
-Разделение труда: 
+Разделение труда:<br>
 https://github.com/Sorrow321/ - box.cpp, molecule.cpp, дизайн<br>
 https://github.com/paniquex - visualization.cpp, distributions.cpp<br>
 Пойманов Дмитрий (github неизвестен) - theory.pdf<br>
