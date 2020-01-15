@@ -9,6 +9,6 @@
 Программа использует WinApi.
 
 Разделение труда: 
-https://github.com/Sorrow321/ - box.cpp, molecule.cpp, дизайн
-https://github.com/paniquex - visualization.cpp, distributions.cpp
-Пойманов Дмитрий (github неизвестен) - theory.pdf
+https://github.com/Sorrow321/ - box.cpp, molecule.cpp, дизайн<br>
+https://github.com/paniquex - visualization.cpp, distributions.cpp<br>
+Пойманов Дмитрий (github неизвестен) - theory.pdf<br>
